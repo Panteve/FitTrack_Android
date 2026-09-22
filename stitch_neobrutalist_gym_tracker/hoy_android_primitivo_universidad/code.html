@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #F5F5F5;
+      margin: 0;
+      padding: 0;
+      color: #212121;
+    }
+    /* Clásica sombra de elevación de Android 2dp y 4dp */
+    .android-elevation-2 {
+      box-shadow: 0 1px 3px rgba(0,0,0,0.24), 0 1px 2px rgba(0,0,0,0.18);
+    }
+    .android-elevation-4 {
+      box-shadow: 0 2px 5px rgba(0,0,0,0.26);
+    }
+    .android-btn {
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 3px;
+      font-weight: 500;
+      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.2), 0 1px 5px 0 rgba(0,0,0,0.12);
+    }
+    .android-btn:active {
+      box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body class="bg-[#F5F5F5] text-[#212121] min-h-full flex flex-col antialiased select-none">
+<!-- Android Status Bar simulada + Classic Android Toolbar (#008577 / #00574B) -->
+<header class="fixed top-0 w-full z-50 bg-[#008577] text-white android-elevation-4">
+<!-- Status Bar (ColorPrimaryDark) -->
+<div class="h-6 bg-[#00574B] px-3 flex items-center justify-between text-[11px] text-gray-200">
+<span>10:30</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[13px]">wifi</span>
+<span class="material-symbols-outlined text-[13px]">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[13px]">battery_std</span>
+</div>
+</div>
+<!-- Action Bar / Toolbar clásica -->
+<div class="h-14 px-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[24px]">fitness_center</span>
+<span class="text-[19px] font-medium tracking-tight">GymApp - MainActivity</span>
+</div>
+<div class="flex items-center gap-2">
+<button aria-label="Buscar" class="w-9 h-9 flex items-center justify-center hover:bg-white/10 rounded-full">
+<span class="material-symbols-outlined text-[22px]">search</span>
+</button>
+<button aria-label="Opciones" class="w-9 h-9 flex items-center justify-center hover:bg-white/10 rounded-full">
+<span class="material-symbols-outlined text-[22px]">more_vert</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main ScrollView Layout -->
+<main class="flex-1 flex flex-col pt-20 pb-20 max-w-md w-full mx-auto px-3.5 gap-3.5">
+<!-- TextView stack novato: Saludo y Fecha -->
+<div class="bg-white border border-[#E0E0E0] rounded-[3px] p-3 android-elevation-2 flex justify-between items-center">
+<div>
+<p class="text-[13px] text-[#757575] font-normal">Fecha: Martes, 28 de mayo de 2024</p>
+<h2 class="text-[18px] font-bold text-[#212121]">Bienvenido: Alex (Usuario)</h2>
+</div>
+<div class="w-10 h-10 border border-[#008577] rounded-[2px] bg-[#E0F2F1] flex items-center justify-center text-[#008577]">
+<span class="material-symbols-outlined text-[24px]">local_fire_department</span>
+</div>
+</div>
+<!-- Classic CardView 1: Registro Semanal con Checkboxes/RadioButtons estilo Android -->
+<div class="bg-white border border-[#E0E0E0] rounded-[3px] p-3 android-elevation-2 flex flex-col gap-2">
+<div class="flex justify-between items-center border-b border-[#EEEEEE] pb-2">
+<span class="text-[14px] font-bold text-[#212121]">REGISTRO SEMANAL</span>
+<span class="text-[12px] bg-[#008577] text-white px-2 py-0.5 rounded-[2px] font-medium">3 / 5 DÍAS</span>
+</div>
+<p class="text-[12px] text-[#757575]">Marque los días asistidos al gimnasio:</p>
+<!-- LinearLayout Horizontal con días y mini checkboxes -->
+<div class="grid grid-cols-7 gap-1 pt-1 text-center">
+<!-- Lunes: Marcado -->
+<div class="flex flex-col items-center gap-1 border border-[#B2DFDB] bg-[#E0F2F1] p-1 rounded-[2px]">
+<span class="text-[11px] font-bold text-[#008577]">LUN</span>
+<span class="material-symbols-outlined text-[#008577] text-[18px]">check_box</span>
+<span class="text-[10px] text-[#008577]">27</span>
+</div>
+<!-- Martes: Hoy / Activo -->
+<div class="flex flex-col items-center gap-1 border-2 border-[#008577] bg-white p-1 rounded-[2px]">
+<span class="text-[11px] font-bold text-[#008577]">MAR</span>
+<span class="material-symbols-outlined text-[#008577] text-[18px]">radio_button_checked</span>
+<span class="text-[10px] font-bold text-[#008577]">28</span>
+</div>
+<!-- Miércoles -->
+<div class="flex flex-col items-center gap-1 border border-[#E0E0E0] p-1 rounded-[2px]">
+<span class="text-[11px] text-[#616161]">MIE</span>
+<span class="material-symbols-outlined text-[#BDBDBD] text-[18px]">check_box_outline_blank</span>
+<span class="text-[10px] text-[#757575]">29</span>
+</div>
+<!-- Jueves -->
+<div class="flex flex-col items-center gap-1 border border-[#E0E0E0] p-1 rounded-[2px]">
+<span class="text-[11px] text-[#616161]">JUE</span>
+<span class="material-symbols-outlined text-[#BDBDBD] text-[18px]">check_box_outline_blank</span>
+<span class="text-[10px] text-[#757575]">30</span>
+</div>
+<!-- Viernes -->
+<div class="flex flex-col items-center gap-1 border border-[#E0E0E0] p-1 rounded-[2px]">
+<span class="text-[11px] text-[#616161]">VIE</span>
+<span class="material-symbols-outlined text-[#BDBDBD] text-[18px]">check_box_outline_blank</span>
+<span class="text-[10px] text-[#757575]">31</span>
+</div>
+<!-- Sábado -->
+<div class="flex flex-col items-center gap-1 border border-[#E0E0E0] bg-[#FAFAFA] p-1 rounded-[2px]">
+<span class="text-[11px] text-[#9E9E9E]">SAB</span>
+<span class="material-symbols-outlined text-[#BDBDBD] text-[18px]">check_box_outline_blank</span>
+<span class="text-[10px] text-[#9E9E9E]">01</span>
+</div>
+<!-- Domingo -->
+<div class="flex flex-col items-center gap-1 border border-[#E0E0E0] bg-[#FAFAFA] p-1 rounded-[2px]">
+<span class="text-[11px] text-[#9E9E9E]">DOM</span>
+<span class="material-symbols-outlined text-[#BDBDBD] text-[18px]">check_box_outline_blank</span>
+<span class="text-[10px] text-[#9E9E9E]">02</span>
+</div>
+</div>
+</div>
+<!-- Classic CardView 2: Rutina Asignada con botón AppCompatButton estándar -->
+<div class="bg-white border border-[#E0E0E0] rounded-[3px] p-3.5 android-elevation-2 flex flex-col gap-3">
+<div class="flex items-start gap-3">
+<div class="w-12 h-12 bg-[#008577] text-white flex items-center justify-center rounded-[3px] flex-shrink-0">
+<span class="material-symbols-outlined text-[28px]">fitness_center</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[11px] font-bold text-[#008577] uppercase tracking-wider">RUTINA ASIGNADA #04</span>
+<h3 class="text-[17px] font-bold text-[#212121]">Piernas &amp; Abdomen</h3>
+<span class="text-[12px] text-[#616161]">Categoría: Hipertrofia Intermedia</span>
+</div>
+</div>
+<!-- Fila simple de datos tipo TextView horizontal con separadores '|' -->
+<div class="flex items-center justify-between bg-[#FAFAFA] border border-[#E0E0E0] px-3 py-1.5 text-[12px] text-[#424242]">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-[#757575]">schedule</span>
+<span>45 min</span>
+</div>
+<span class="text-[#BDBDBD]">|</span>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-[#757575]">format_list_numbered</span>
+<span>4 ejercicios</span>
+</div>
+<span class="text-[#BDBDBD]">|</span>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-[#757575]">speed</span>
+<span>Nivel 2</span>
+</div>
+</div>
+<!-- Botón clásico Android: AppCompatButton rectangular mayúsculas morado o verde Android Studio default (#6200EE) -->
+<button class="android-btn w-full h-11 bg-[#6200EE] hover:bg-[#5300d6] text-white text-[14px] flex items-center justify-center gap-2" id="btnStartWorkout">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+<span>COMENZAR ENTRENAMIENTO</span>
+</button>
+</div>
+<!-- ListView clásica de Android con divisores gris plano de 1px -->
+<div class="bg-white border border-[#E0E0E0] rounded-[3px] android-elevation-2 flex flex-col">
+<!-- ListView Header -->
+<div class="bg-[#EEEEEE] px-3 py-2 border-b border-[#CCCCCC] flex justify-between items-center">
+<span class="text-[12px] font-bold text-[#424242] uppercase">LISTA DE EJERCICIOS (4)</span>
+<span class="text-[11px] text-[#757575]">4 SERIES C/U</span>
+</div>
+<!-- ListView Items con divider -->
+<div class="divide-y divide-[#E0E0E0] text-[13px]">
+<!-- Item 1 -->
+<div class="p-3 flex items-center justify-between hover:bg-[#F5F5F5]">
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 rounded-[2px] bg-[#E0E0E0] text-[#424242] font-bold text-[12px] flex items-center justify-center">1</span>
+<div>
+<p class="font-bold text-[#212121]">Sentadilla con Barra</p>
+<p class="text-[12px] text-[#757575]">4 series x 8-10 reps • Descanso: 90s</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#9E9E9E] text-[20px]">reorder</span>
+</div>
+<!-- Item 2 -->
+<div class="p-3 flex items-center justify-between hover:bg-[#F5F5F5]">
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 rounded-[2px] bg-[#E0E0E0] text-[#424242] font-bold text-[12px] flex items-center justify-center">2</span>
+<div>
+<p class="font-bold text-[#212121]">Prensa Inclinada</p>
+<p class="text-[12px] text-[#757575]">4 series x 12 reps • 80 kg</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#9E9E9E] text-[20px]">reorder</span>
+</div>
+<!-- Item 3 -->
+<div class="p-3 flex items-center justify-between hover:bg-[#F5F5F5]">
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 rounded-[2px] bg-[#E0E0E0] text-[#424242] font-bold text-[12px] flex items-center justify-center">3</span>
+<div>
+<p class="font-bold text-[#212121]">Extensiones de Cuádriceps</p>
+<p class="text-[12px] text-[#757575]">3 series x 15 reps • Máquina</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#9E9E9E] text-[20px]">reorder</span>
+</div>
+<!-- Item 4 -->
+<div class="p-3 flex items-center justify-between hover:bg-[#F5F5F5]">
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 rounded-[2px] bg-[#E0E0E0] text-[#424242] font-bold text-[12px] flex items-center justify-center">4</span>
+<div>
+<p class="font-bold text-[#212121]">Plancha Isométrica</p>
+<p class="text-[12px] text-[#757575]">3 series x 60 seg • Abdomen</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#9E9E9E] text-[20px]">reorder</span>
+</div>
+</div>
+</div>
+<!-- Botón secundario y mensaje Toast simulado / Info simple -->
+<div class="bg-[#FFF9C4] border border-[#FFF59D] p-2.5 rounded-[2px] flex items-start gap-2 text-[#795548]">
+<span class="material-symbols-outlined text-[18px] text-[#F57F17] mt-0.5">info</span>
+<p class="text-[12px] leading-tight">
+<strong>Consejo:</strong> Mantén los descansos de 90 segundos para optimizar la hipertrofia hoy.
+      </p>
+</div>
+<!-- Botón novato extra: Botón rectangular clásico Guardar / Agregar -->
+<div class="flex gap-2 pt-1 pb-4">
+<button class="android-btn flex-1 h-9 bg-[#E0E0E0] text-[#424242] text-[13px]">
+        EDITAR RUTINA
+      </button>
+<button class="android-btn flex-1 h-9 bg-[#03DAC5] text-[#000000] text-[13px] font-bold">
+        + NUEVO EJERCICIO
+      </button>
+</div>
+</main>
+<!-- Classic Floating Action Button (FAB) clásico de Android -->
+<div class="fixed bottom-16 right-4 z-40">
+<button aria-label="Añadir" class="w-14 h-14 rounded-full bg-[#03DAC5] hover:bg-[#00c4af] text-black flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.3)] active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+</div>
+<!-- Classic BottomNavigationView estándar de Android Studio -->
+<nav class="fixed bottom-0 w-full z-50 bg-white border-t border-[#E0E0E0] h-14 shadow-[0_-1px_3px_rgba(0,0,0,0.1)]">
+<div class="flex justify-around items-center h-full max-w-md mx-auto text-[#757575]">
+<!-- Tab 1: Seleccionada (ColorPrimary #008577) -->
+<a class="flex flex-col items-center justify-center flex-1 h-full text-[#008577]" href="#">
+<span class="material-symbols-outlined text-[22px]">calendar_today</span>
+<span class="text-[11px] font-bold">Hoy</span>
+</a>
+<!-- Tab 2 -->
+<a class="flex flex-col items-center justify-center flex-1 h-full hover:text-[#424242]" href="#">
+<span class="material-symbols-outlined text-[22px]">fitness_center</span>
+<span class="text-[11px]">Entrenar</span>
+</a>
+<!-- Tab 3 -->
+<a class="flex flex-col items-center justify-center flex-1 h-full hover:text-[#424242]" href="#">
+<span class="material-symbols-outlined text-[22px]">list_alt</span>
+<span class="text-[11px]">Rutinas</span>
+</a>
+<!-- Tab 4 -->
+<a class="flex flex-col items-center justify-center flex-1 h-full hover:text-[#424242]" href="#">
+<span class="material-symbols-outlined text-[22px]">trending_up</span>
+<span class="text-[11px]">Progreso</span>
+</a>
+</div>
+</nav>
+<script>
+    document.getElementById('btnStartWorkout')?.addEventListener('click', function() {
+      const btn = this;
+      btn.innerText = 'CARGANDO...';
+      btn.classList.add('opacity-75');
+      setTimeout(() => {
+        btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">play_arrow</span><span>COMENZAR ENTRENAMIENTO</span>';
+        btn.classList.remove('opacity-75');
+        alert("Toast: Iniciando sesión de entrenamiento");
+      }, 700);
+    });
+  </script>
+</body></html>
