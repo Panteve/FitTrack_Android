@@ -161,3 +161,11 @@ Cuando una clase nueva no encaje claramente en ningún feature existente, pregun
 ## 7. Compilación y verificación
 
 No compilar el proyecto para verificar cambios, a menos que el usuario lo solicite explícitamente. Para validaciones normales, revisar de forma estática los archivos modificados y sus referencias.
+
+## 8. Diseño de pantallas y Activities
+
+Antes de crear o modificar el diseño de una pantalla, Activity o layout XML, leer `guia_uso_recursos_visuales.md` para aplicar los colores, dimensiones y estilos visuales definidos en el proyecto.
+
+Tomar los mockups de `stitch_neobrutalist_gym_tracker/` como referencia visual. No es necesario copiarlos exactamente, pero la pantalla debe conservar una apariencia coherente con ellos: interfaz Android clásica, paleta teal/morado/turquesa, tarjetas blancas compactas y jerarquía visual sencilla.
+
+Si existe una duda de diseño que no se pueda resolver con la guía o los mockups, preguntar al usuario antes de tomar una decisión visual importante.
