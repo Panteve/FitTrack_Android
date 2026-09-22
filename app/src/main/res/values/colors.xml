@@ -2,4 +2,40 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Colores de marca -->
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorActionPrimary">#6200EE</color>
+    <color name="colorActionPrimaryPressed">#5300D6</color>
+    <color name="colorActionConfirm">#03DAC5</color>
+    <color name="colorActionConfirmPressed">#00C4AF</color>
+
+    <!-- Superficies y bordes -->
+    <color name="colorBackground">#F5F5F5</color>
+    <color name="colorSurface">#FFFFFFFF</color>
+    <color name="colorSurfaceSecondary">#FFFAFAFA</color>
+    <color name="colorSurfaceHeader">#FFEEEEEE</color>
+    <color name="colorDivider">#FFE0E0E0</color>
+    <color name="colorBorder">#FFCCCCCC</color>
+
+    <!-- Texto e iconos -->
+    <color name="colorTextPrimary">#FF212121</color>
+    <color name="colorTextSecondary">#FF616161</color>
+    <color name="colorTextTertiary">#FF757575</color>
+    <color name="colorTextDisabled">#FF9E9E9E</color>
+    <color name="colorOnPrimary">#FFFFFFFF</color>
+    <color name="colorOnConfirm">#FF000000</color>
+
+    <!-- Estados -->
+    <color name="colorSuccess">#FF008577</color>
+    <color name="colorSuccessContainer">#FFE0F2F1</color>
+    <color name="colorSuccessBorder">#FFB2DFDB</color>
+    <color name="colorWarning">#FFF57F17</color>
+    <color name="colorWarningContainer">#FFFFF9C4</color>
+    <color name="colorWarningBorder">#FFFFF59D</color>
+    <color name="colorWarningText">#FF795548</color>
+    <color name="colorError">#FFD32F2F</color>
+    <color name="colorErrorContainer">#FFFFDAD6</color>
+    <color name="colorErrorText">#FFD32F2F</color>
 </resources>

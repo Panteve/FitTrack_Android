@@ -1,9 +1,134 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.FitTrackAndroid" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<resources>
+    <!-- Tema claro basado en vistas nativas de Android. -->
+    <style name="Base.Theme.FitTrackAndroid" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:navigationBarColor">@color/black</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorActionConfirm</item>
     </style>
 
     <style name="Theme.FitTrackAndroid" parent="Base.Theme.FitTrackAndroid" />
+
+    <!-- Botones nativos -->
+    <style name="FitTrack.Button.Primary">
+        <item name="android:minHeight">@dimen/button_height_primary</item>
+        <item name="android:backgroundTint">@color/colorActionPrimary</item>
+        <item name="android:textColor">@color/colorOnPrimary</item>
+        <item name="android:textSize">@dimen/text_size_body</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.05</item>
+        <item name="android:elevation">@dimen/elevation_button</item>
+    </style>
+
+    <style name="FitTrack.Button.Secondary">
+        <item name="android:minHeight">@dimen/button_height_standard</item>
+        <item name="android:backgroundTint">@color/colorDivider</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:textSize">@dimen/text_size_body</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+
+    <style name="FitTrack.Button.Confirm">
+        <item name="android:minHeight">@dimen/button_height_standard</item>
+        <item name="android:backgroundTint">@color/colorActionConfirm</item>
+        <item name="android:textColor">@color/colorOnConfirm</item>
+        <item name="android:textSize">@dimen/text_size_body</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.05</item>
+        <item name="android:elevation">@dimen/elevation_button</item>
+    </style>
+
+    <style name="FitTrack.Button.Danger">
+        <item name="android:minHeight">@dimen/button_height_standard</item>
+        <item name="android:backgroundTint">@color/colorSurface</item>
+        <item name="android:textColor">@color/colorErrorText</item>
+        <item name="android:textSize">@dimen/text_size_body</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+
+    <style name="FitTrack.Button.Compact">
+        <item name="android:minHeight">@dimen/button_height_compact</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:backgroundTint">@color/colorSurfaceHeader</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!-- Tipografía para TextView nativos -->
+    <style name="FitTrack.Text.Title">
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:textSize">@dimen/text_size_title</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="FitTrack.Text.Subtitle">
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:textSize">@dimen/text_size_subtitle</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="FitTrack.Text.Label">
+        <item name="android:textColor">@color/colorTextSecondary</item>
+        <item name="android:textSize">@dimen/text_size_label</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.04</item>
+    </style>
+
+    <style name="FitTrack.Text.Metric">
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:textSize">@dimen/text_size_metric</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="FitTrack.Text.Metric.Large">
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:textSize">@dimen/text_size_metric_large</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="FitTrack.Text.Chip">
+        <item name="android:textColor">@color/colorSuccess</item>
+        <item name="android:textSize">@dimen/text_size_label</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!-- Contenedores para LinearLayout y otras vistas nativas. -->
+    <style name="FitTrack.Container.Card">
+        <item name="android:background">@color/colorSurface</item>
+        <item name="android:padding">@dimen/spacing_md</item>
+        <item name="android:elevation">@dimen/elevation_card</item>
+    </style>
+
+    <style name="FitTrack.Container.CardHeader">
+        <item name="android:background">@color/colorSurfaceHeader</item>
+        <item name="android:paddingStart">@dimen/spacing_md</item>
+        <item name="android:paddingEnd">@dimen/spacing_md</item>
+        <item name="android:paddingTop">@dimen/spacing_sm</item>
+        <item name="android:paddingBottom">@dimen/spacing_sm</item>
+    </style>
+
+    <style name="FitTrack.Container.ListRow">
+        <item name="android:background">@color/colorSurface</item>
+        <item name="android:padding">@dimen/spacing_md</item>
+    </style>
+
+    <style name="FitTrack.Container.BottomNavigation">
+        <item name="android:background">@color/colorSurface</item>
+        <item name="android:minHeight">@dimen/bottom_navigation_height</item>
+        <item name="android:elevation">@dimen/elevation_card</item>
+    </style>
 </resources>
