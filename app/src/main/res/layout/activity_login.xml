@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutLogin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <!-- Toolbar clásica de GymApp: 56dp teal #008577, sin botones de acción -->
+    <LinearLayout
+        android:id="@+id/layoutToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/spacing_md">
+
+        <ImageView
+            android:id="@+id/imgIconoToolbar"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_fitness_center"
+            app:tint="@color/colorOnPrimary" />
+
+        <TextView
+            android:id="@+id/tvToolbarTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:text="@string/tvToolbarTitulo"
+            android:textColor="@color/colorOnPrimary"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/svLogin"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/layoutContenido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <!-- Logo: cuadrado 64x64 teal, radio 3dp, icono blanco -->
+            <ImageView
+                android:id="@+id/imgLogo"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/bg_logo"
+                android:contentDescription="@string/tvAppNombre"
+                android:padding="15dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_fitness_center"
+                app:tint="@color/colorOnPrimary" />
+
+            <TextView
+                android:id="@+id/tvAppNombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:text="@string/tvAppNombre"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="23sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvSubtitulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:letterSpacing="0.08"
+                android:text="@string/tvSubtitulo"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <!-- Tarjeta del formulario con el mismo acabado del resto de la app -->
+            <LinearLayout
+                android:id="@+id/cardFormulario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xxl"
+                android:background="@drawable/bg_card"
+                android:elevation="@dimen/elevation_card"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <TextView
+                    android:id="@+id/tvCabeceraFormulario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tvCabeceraFormulario"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/viewDivisorCabecera"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:background="@color/colorDivider" />
+
+                <!-- Campo correo -->
+                <TextView
+                    android:id="@+id/tvLabelCorreo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:text="@string/tvLabelCorreo"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etCorreo"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height_standard"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:autofillHints="emailAddress"
+                    android:background="@drawable/bg_input"
+                    android:drawableStart="@drawable/ic_mail"
+                    android:drawablePadding="@dimen/spacing_sm"
+                    app:drawableTint="@color/colorTextTertiary"
+                    android:hint="@string/etCorreo_hint"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextStrong"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvErrorCorreo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="@string/tvErrorCorreo"
+                    android:textColor="@color/colorError"
+                    android:textSize="11sp"
+                    android:visibility="gone" />
+
+                <!-- Campo contraseña -->
+                <TextView
+                    android:id="@+id/tvLabelContrasena"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:text="@string/tvLabelContrasena"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <FrameLayout
+                    android:id="@+id/layoutContrasena"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs">
+
+                    <EditText
+                        android:id="@+id/etContrasena"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/button_height_standard"
+                        android:autofillHints="password"
+                        android:background="@drawable/bg_input"
+                        android:drawableStart="@drawable/ic_lock"
+                        android:drawablePadding="@dimen/spacing_sm"
+                        app:drawableTint="@color/colorTextTertiary"
+                        android:hint="@string/etContrasena_hint"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:paddingStart="@dimen/spacing_md"
+                        android:paddingEnd="48dp"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textColorHint="@color/colorTextStrong"
+                        android:textSize="14sp" />
+
+                    <ImageButton
+                        android:id="@+id/btnOjoContrasena"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="@string/cdOjoContrasena"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_visibility"
+                        app:tint="@color/colorTextTertiary" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/tvErrorContrasena"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="@string/tvErrorContrasena"
+                    android:textColor="@color/colorError"
+                    android:textSize="11sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvErrorCredenciales"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="@string/tvErrorCredenciales"
+                    android:textColor="@color/colorError"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvRecuperarClave"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="end|center_vertical"
+                    android:text="@string/tvRecuperarClave"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btnIniciarSesion"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height_standard"
+                    android:layout_marginTop="@dimen/spacing_xl"
+                    android:background="@drawable/bg_button_primary"
+                    android:drawableStart="@drawable/ic_login"
+                    android:drawablePadding="@dimen/spacing_sm"
+                    app:drawableTint="@color/colorOnPrimary"
+                    android:elevation="@dimen/elevation_button"
+                    android:letterSpacing="0.05"
+                    android:text="@string/btnIniciarSesion"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorOnPrimary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvSeparador"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:gravity="center"
+                    android:text="@string/tvSeparador"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btnCrearCuenta"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:background="@drawable/bg_button_neutral"
+                    android:letterSpacing="0.05"
+                    android:text="@string/btnCrearCuenta"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorTextStrong"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:paddingBottom="@dimen/spacing_md"
+                android:text="@string/tvVersion"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="11sp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

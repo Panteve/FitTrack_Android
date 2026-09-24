@@ -1,3 +1,85 @@
 <resources>
     <string name="app_name">FitTrackAndroid</string>
+
+    <!-- LoginActivity -->
+    <string name="tvToolbarTitulo">GymApp - LoginActivity</string>
+    <string name="tvAppNombre">GymApp</string>
+    <string name="tvSubtitulo">CONTROL DE ENTRENAMIENTO</string>
+    <string name="tvCabeceraFormulario">ACCESO AL SISTEMA</string>
+    <string name="cdOjoContrasena">Mostrar u ocultar contraseña</string>
+    <string name="tvLabelCorreo">CORREO ELECTRÓNICO</string>
+    <string name="etCorreo_hint">usuario@correo.com</string>
+    <string name="tvErrorCorreo">Ingresa un correo válido</string>
+    <string name="tvLabelContrasena">CONTRASEÑA</string>
+    <string name="etContrasena_hint">••••••••</string>
+    <string name="tvErrorContrasena">Ingresa tu contraseña</string>
+    <string name="tvErrorCredenciales">Correo o contraseña incorrectos</string>
+    <string name="tvRecuperarClave">¿Olvidaste tu contraseña?</string>
+    <string name="btnIniciarSesion">INICIAR SESIÓN</string>
+    <string name="btnIniciarSesion_loading">INICIANDO SESIÓN…</string>
+    <string name="tvSeparador">— O —</string>
+    <string name="btnCrearCuenta">CREAR CUENTA</string>
+    <string name="tvVersion">v1.0 • Proyecto universitario</string>
+
+    <!-- MainActivity (Hoy) -->
+    <string name="tvToolbarTituloMain">GymApp - MainActivity</string>
+    <string name="cdBuscar">Buscar</string>
+    <string name="cdOpciones">Opciones</string>
+    <string name="cdAgregar">Agregar ejercicio</string>
+    <string name="tvFecha">Fecha: %1$s</string>
+    <string name="tvBienvenida">Bienvenido: Alex (Usuario)</string>
+
+    <string name="tvTituloRegistroSemanal">REGISTRO SEMANAL</string>
+    <string name="tvBadgeDias">3 / 5 DÍAS</string>
+    <string name="tvAyudaRegistro">Marque los días asistidos al gimnasio:</string>
+    <string name="tvDiaLunes">LUN</string>
+    <string name="tvNumeroLunes">27</string>
+    <string name="tvDiaMartes">MAR</string>
+    <string name="tvNumeroMartes">28</string>
+    <string name="tvDiaMiercoles">MIE</string>
+    <string name="tvNumeroMiercoles">29</string>
+    <string name="tvDiaJueves">JUE</string>
+    <string name="tvNumeroJueves">30</string>
+    <string name="tvDiaViernes">VIE</string>
+    <string name="tvNumeroViernes">31</string>
+    <string name="tvDiaSabado">SAB</string>
+    <string name="tvNumeroSabado">01</string>
+    <string name="tvDiaDomingo">DOM</string>
+    <string name="tvNumeroDomingo">02</string>
+
+    <string name="tvLabelRutina">RUTINA ASIGNADA #04</string>
+    <string name="tvNombreRutina">Piernas &amp; Abdomen</string>
+    <string name="tvCategoriaRutina">Categoría: Hipertrofia Intermedia</string>
+    <string name="tvDuracionRutina">45 min</string>
+    <string name="tvEjerciciosRutina">4 ejercicios</string>
+    <string name="tvNivelRutina">Nivel 2</string>
+    <string name="tvSeparador1">|</string>
+    <string name="tvSeparador2">|</string>
+    <string name="btnIniciarEntrenamiento">COMENZAR ENTRENAMIENTO</string>
+    <string name="btnIniciarEntrenamiento_loading">CARGANDO…</string>
+
+    <string name="tvTituloLista">LISTA DE EJERCICIOS (4)</string>
+    <string name="tvSubtituloLista">4 SERIES C/U</string>
+    <string name="tvNumeroEjercicio1">1</string>
+    <string name="tvNumeroEjercicio2">2</string>
+    <string name="tvNumeroEjercicio3">3</string>
+    <string name="tvNumeroEjercicio4">4</string>
+    <string name="tvNombreEjercicio1">Sentadilla con Barra</string>
+    <string name="tvDetalleEjercicio1">4 series x 8–10 reps • Descanso: 90s</string>
+    <string name="tvNombreEjercicio2">Prensa Inclinada</string>
+    <string name="tvDetalleEjercicio2">4 series x 12 reps • 80 kg</string>
+    <string name="tvNombreEjercicio3">Extensiones de Cuádriceps</string>
+    <string name="tvDetalleEjercicio3">3 series x 15 reps • Máquina</string>
+    <string name="tvNombreEjercicio4">Plancha Isométrica</string>
+    <string name="tvDetalleEjercicio4">3 series x 60 seg • Abdomen</string>
+
+    <string name="tvConsejo">Consejo: Mantén los descansos de 90 segundos para optimizar la hipertrofia hoy.</string>
+
+    <string name="btnEditarRutina">EDITAR RUTINA</string>
+    <string name="btnNuevoEjercicio">+ NUEVO EJERCICIO</string>
+
+    <string name="tvNavHoy">Hoy</string>
+    <string name="tvNavEntrenar">Entrenar</string>
+    <string name="tvNavRutinas">Rutinas</string>
+    <string name="tvNavProgreso">Progreso</string>
 </resources>
