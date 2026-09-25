@@ -1,23 +1,27 @@
 package ue.edu.co.fittrackandroid.login;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
 import ue.edu.co.fittrackandroid.R;
 
-public class LoginActivity extends AppCompatActivity {
+/**
+ * Fragment para el login del usuario.
+ */
+public class LoginFragment extends Fragment {
 
     private EditText etCorreo;
     private EditText etContrasena;
@@ -28,19 +32,23 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean contrasenaVisible = false;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+    public LoginFragment() {
+        // Required empty public constructor
+    }
 
-        etCorreo = findViewById(R.id.etCorreo);
-        etContrasena = findViewById(R.id.etContrasena);
-        btnOjoContrasena = findViewById(R.id.btnOjoContrasena);
-        btnIniciarSesion = findViewById(R.id.btnIniciarSesion);
-        tvErrorCorreo = findViewById(R.id.tvErrorCorreo);
-        tvErrorContrasena = findViewById(R.id.tvErrorContrasena);
-        TextView tvRecuperarClave = findViewById(R.id.tvRecuperarClave);
-        Button btnCrearCuenta = findViewById(R.id.btnCrearCuenta);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
+
+        etCorreo = view.findViewById(R.id.etCorreo);
+        etContrasena = view.findViewById(R.id.etContrasena);
+        btnOjoContrasena = view.findViewById(R.id.btnOjoContrasena);
+        btnIniciarSesion = view.findViewById(R.id.btnIniciarSesion);
+        tvErrorCorreo = view.findViewById(R.id.tvErrorCorreo);
+        tvErrorContrasena = view.findViewById(R.id.tvErrorContrasena);
+        TextView tvRecuperarClave = view.findViewById(R.id.tvRecuperarClave);
+        Button btnCrearCuenta = view.findViewById(R.id.btnCrearCuenta);
 
         limpiarErrorAlEscribir(etCorreo, tvErrorCorreo);
         limpiarErrorAlEscribir(etContrasena, tvErrorContrasena);
@@ -48,16 +56,19 @@ public class LoginActivity extends AppCompatActivity {
         btnIniciarSesion.setOnClickListener(v -> iniciarSesion());
         btnOjoContrasena.setOnClickListener(v -> alternarVisibilidadContrasena());
         tvRecuperarClave.setOnClickListener(v ->
-                Toast.makeText(this, "Recuperación de contraseña próximamente", Toast.LENGTH_SHORT).show());
+                Toast.makeText(requireContext(), "Recuperación de contraseña próximamente", Toast.LENGTH_SHORT).show());
         btnCrearCuenta.setOnClickListener(v ->
-                Toast.makeText(this, "Registro próximamente", Toast.LENGTH_SHORT).show());
+                Toast.makeText(requireContext(), "Registro próximamente", Toast.LENGTH_SHORT).show());
+
+        return view;
     }
 
     private void iniciarSesion() {
         mostrarCargando(true);
         btnIniciarSesion.postDelayed(() -> {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
+            // TODO: Validar credenciales reales contra backend / base de datos
+            // Si login OK → guardar sesión (SharedPreferences, token, etc.)
+            ((MainActivity) requireActivity()).mostrarHome();
         }, 900);
     }
 
