@@ -7,26 +7,27 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <!-- Toolbar: 48dp teal #008577, solo título centrado (más compacto) -->
+    <!-- Toolbar: 44dp teal #008577, solo título centrado (compacto) -->
     <TextView
         android:id="@+id/tvToolbarTituloMain"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="44dp"
         android:background="@color/colorPrimary"
         android:elevation="4dp"
         android:gravity="center"
         android:paddingHorizontal="@dimen/spacing_md"
         android:text="@string/tvToolbarTituloMain"
         android:textColor="@color/colorOnPrimary"
-        android:textSize="17sp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
-    <!-- Contenedor del fragment -->
+    <!-- Contenedor del fragment (centrado verticalmente para login) -->
     <FrameLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:gravity="center_vertical" />
 
     <!-- Barra de navegación inferior -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
