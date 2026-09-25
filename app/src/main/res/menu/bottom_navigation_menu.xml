@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/navigation_hoy"
-        android:icon="@drawable/ic_calendar_today"
-        android:title="@string/tvNavHoy" />
-
-    <item
-        android:id="@+id/navigation_entrenar"
-        android:icon="@drawable/ic_fitness_center"
-        android:title="@string/tvNavEntrenar" />
+        android:id="@+id/navigation_inicio"
+        android:icon="@drawable/ic_home"
+        android:title="@string/tvNavInicio" />
 
     <item
         android:id="@+id/navigation_rutinas"
@@ -16,7 +11,7 @@
         android:title="@string/tvNavRutinas" />
 
     <item
-        android:id="@+id/navigation_progreso"
-        android:icon="@drawable/ic_trending_up"
-        android:title="@string/tvNavProgreso" />
+        android:id="@+id/navigation_perfil"
+        android:icon="@drawable/ic_person"
+        android:title="@string/tvNavPerfil" />
 </menu>

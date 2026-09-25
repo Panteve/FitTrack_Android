@@ -83,17 +83,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Fragment obtenerFragment (int itemId){
-
-        if (itemId == R.id.navigation_hoy) {
+        if (itemId == R.id.navigation_inicio) {
             return new HomeFragment();
-        } else if (itemId == R.id.navigation_entrenar) {
-            // TODO: Navegar a Entrenar
+        } else if (itemId == R.id.navigation_perfil) {
+            // TODO: Navegar a Perfil
             return null;
         } else if (itemId == R.id.navigation_rutinas) {
             // TODO: Navegar a Rutinas
-            return null;
-        } else if (itemId == R.id.navigation_progreso) {
-            // TODO: Navegar a Progreso
             return null;
         }
         return null; // Retorna null si no hay correspondencia
@@ -118,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, new HomeFragment())
                 .commit();
-        bottomNavigation.setSelectedItemId(R.id.navigation_hoy);
+        bottomNavigation.setSelectedItemId(R.id.navigation_inicio);
     }
 
     /** Muestra el fragment de Login SIN toolbar ni bottom nav. */
