@@ -7,18 +7,18 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <!-- Toolbar: 56dp teal #008577, solo título centrado -->
+    <!-- Toolbar: 48dp teal #008577, solo título centrado (más compacto) -->
     <TextView
         android:id="@+id/tvToolbarTituloMain"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="48dp"
         android:background="@color/colorPrimary"
         android:elevation="4dp"
         android:gravity="center"
         android:paddingHorizontal="@dimen/spacing_md"
         android:text="@string/tvToolbarTituloMain"
         android:textColor="@color/colorOnPrimary"
-        android:textSize="19sp"
+        android:textSize="17sp"
         android:textStyle="bold" />
 
     <!-- Contenedor del fragment -->

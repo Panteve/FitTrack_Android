@@ -33,13 +33,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        initObjects();
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.layoutPrincipal), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0); // Bottom lo maneja el BottomNavigationView
+            // Aplicar bottom inset al BottomNavigationView para que quede pegado al borde superior de la barra de gestos
+            bottomNavigation.setPadding(0, 0, 0, systemBars.bottom);
             return insets;
         });
 
-        initObjects();
         configurarBottomNavigation();
 
         if (savedInstanceState == null) {
