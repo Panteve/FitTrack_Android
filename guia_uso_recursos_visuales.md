@@ -1,8 +1,6 @@
 # Guía de uso de recursos visuales de FitTrack
 
-Esta guía explica cómo reutilizar los colores, dimensiones y estilos definidos para FitTrack. Los recursos están pensados para vistas nativas de Android XML (`Button`, `TextView`, `EditText`, `LinearLayout`, etc.).
-
-No usar `MaterialButton`, `MaterialCardView` ni estilos de Material 3.
+Esta guía explica cómo reutilizar los colores, dimensiones y estilos definidos para FitTrack. Los recursos están pensados para vistas Android XML (`Button`, `TextView`, `EditText`, `LinearLayout`, etc.) y pueden combinarse con componentes Material ya incluidos en el proyecto cuando sea necesario.
 
 ## 1. Colores
 

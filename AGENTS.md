@@ -87,6 +87,8 @@ Regla simple: si alguien lee el nombre de la variable sin ver el resto del códi
 
 Usar solo lo que ofrece el SDK de Android por defecto (Java estándar, `AppCompat`, `RecyclerView`, `CardView`, etc., que ya vienen incluidos en un proyecto Android normal). No agregar dependencias nuevas en `build.gradle` (Retrofit, Glide, Room, Dagger/Hilt, etc.) a menos que el usuario lo pida de forma explícita.
 
+Los componentes y estilos de Material ya incluidos en el proyecto sí se pueden usar cuando sean adecuados para la interfaz. Esto no autoriza agregar nuevas dependencias sin solicitarlo primero.
+
 Si en algún momento una librería externa realmente simplifica mucho una tarea, se debe **preguntar primero** en vez de agregarla directamente al proyecto.
 
 ## 5. Código simple, no sobre-ingenierizado

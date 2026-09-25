@@ -2,8 +2,8 @@
     <string name="app_name">FitTrackAndroid</string>
 
     <!-- LoginActivity -->
-    <string name="tvToolbarTitulo">GymApp - LoginActivity</string>
-    <string name="tvAppNombre">GymApp</string>
+    <string name="tvToolbarTitulo">FitTrack</string>
+    <string name="tvAppNombre">FitTrack</string>
     <string name="tvSubtitulo">CONTROL DE ENTRENAMIENTO</string>
     <string name="tvCabeceraFormulario">ACCESO AL SISTEMA</string>
     <string name="cdOjoContrasena">Mostrar u ocultar contraseña</string>
@@ -22,7 +22,7 @@
     <string name="tvVersion">v1.0 • Proyecto universitario</string>
 
     <!-- MainActivity (Hoy) -->
-    <string name="tvToolbarTituloMain">GymApp - MainActivity</string>
+    <string name="tvToolbarTituloMain">FitTrack</string>
     <string name="cdBuscar">Buscar</string>
     <string name="cdOpciones">Opciones</string>
     <string name="cdAgregar">Agregar ejercicio</string>
@@ -82,4 +82,6 @@
     <string name="tvNavEntrenar">Entrenar</string>
     <string name="tvNavRutinas">Rutinas</string>
     <string name="tvNavProgreso">Progreso</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
