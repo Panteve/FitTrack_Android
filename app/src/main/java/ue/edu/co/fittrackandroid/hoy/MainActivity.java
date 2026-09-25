@@ -9,6 +9,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
+import android.view.View;
+import android.widget.TextView;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import ue.edu.co.fittrackandroid.HomeFragment;
@@ -23,6 +26,7 @@ import ue.edu.co.fittrackandroid.R;
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigation;
+    private TextView toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initObjects() {
         bottomNavigation = findViewById(R.id.bottomNavigation);
+        toolbar = findViewById(R.id.tvToolbarTituloMain);
     }
 
     private Fragment obtenerFragment (int itemId){
@@ -104,14 +109,18 @@ public class MainActivity extends AppCompatActivity {
 
     /** Muestra el fragment de Home (pantalla principal "Hoy"). */
     public void mostrarHome() {
+        toolbar.setVisibility(View.VISIBLE);
+        bottomNavigation.setVisibility(View.VISIBLE);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, new HomeFragment())
                 .commit();
         bottomNavigation.setSelectedItemId(R.id.navigation_hoy);
     }
 
-    /** Muestra el fragment de Login. */
+    /** Muestra el fragment de Login SIN toolbar ni bottom nav. */
     public void mostrarLogin() {
+        toolbar.setVisibility(View.GONE);
+        bottomNavigation.setVisibility(View.GONE);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, new LoginFragment())
                 .commit();
