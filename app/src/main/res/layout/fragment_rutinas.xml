@@ -1,0 +1,1011 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutRutinas"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <ScrollView
+        android:id="@+id/svRutinas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/layoutContenidoRutinas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <!-- Acción principal -->
+            <Button
+                android:id="@+id/btnNuevaRutina"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height_standard"
+                android:background="@drawable/bg_button_primary"
+                android:drawableStart="@drawable/ic_add"
+                android:drawablePadding="@dimen/spacing_sm"
+                android:elevation="@dimen/elevation_button"
+                android:letterSpacing="0.05"
+                android:text="@string/btnNuevaRutina"
+                android:textAllCaps="true"
+                android:textColor="@color/colorOnPrimary"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:drawableTint="@color/colorOnPrimary" />
+
+            <!-- Acción secundaria -->
+            <Button
+                android:id="@+id/btnEmpezarRutinaVacia"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height_standard"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:background="@drawable/bg_button_neutral"
+                android:letterSpacing="0.05"
+                android:text="@string/btnEmpezarRutinaVacia"
+                android:textAllCaps="true"
+                android:textColor="@color/colorTextStrong"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <!-- Cabecera de planes -->
+            <LinearLayout
+                android:id="@+id/layoutCabeceraPlanes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xxl"
+                android:baselineAligned="false"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvTituloPlanes"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/tvTituloPlanes"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCantidadPlanes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_sm"
+                    android:background="@drawable/bg_badge_teal"
+                    android:paddingHorizontal="@dimen/spacing_sm"
+                    android:paddingVertical="3dp"
+                    android:text="@string/tvCantidadPlanes"
+                    android:textColor="@color/colorOnPrimary"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/imgOrdenarPlanes"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:contentDescription="@string/cdOrdenarPlanes"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_sort"
+                    app:tint="@color/colorTextTertiary" />
+            </LinearLayout>
+
+            <!-- TARJETA 1: Día A -->
+            <LinearLayout
+                android:id="@+id/cardRutina1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:background="@drawable/bg_card"
+                android:elevation="@dimen/elevation_card"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_md">
+
+                <!-- Cabecera de la tarjeta -->
+                <LinearLayout
+                    android:id="@+id/layoutCabeceraRutina1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/imgIconoRutina1"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_day_checked"
+                        android:contentDescription="@null"
+                        android:padding="11dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_fitness_center"
+                        app:tint="@color/colorPrimary" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_md"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvNombreRutina1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreRutina1"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvResumenRutina1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvResumenRutina1"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/imgMenuRutina1"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/cdMenuRutina1"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_more_vert"
+                        app:tint="@color/colorTextTertiary" />
+                </LinearLayout>
+
+                <!-- Lista de ejercicios -->
+                <LinearLayout
+                    android:id="@+id/layoutEjerciciosRutina1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:background="@drawable/bg_day_weekend"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="44dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_dot_teal" />
+
+                        <TextView
+                            android:id="@+id/tvNombreEjercicio1_1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreEjercicio1_1"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvSeriesEjercicio1_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:text="@string/tvSeriesEjercicio1_1"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDivider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="44dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_dot_teal" />
+
+                        <TextView
+                            android:id="@+id/tvNombreEjercicio1_2"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreEjercicio1_2"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvSeriesEjercicio1_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:text="@string/tvSeriesEjercicio1_2"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDivider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="44dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_dot_teal" />
+
+                        <TextView
+                            android:id="@+id/tvNombreEjercicio1_3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreEjercicio1_3"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvSeriesEjercicio1_3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:text="@string/tvSeriesEjercicio1_3"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDivider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="44dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_dot_teal" />
+
+                        <TextView
+                            android:id="@+id/tvNombreEjercicio1_4"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreEjercicio1_4"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvSeriesEjercicio1_4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:text="@string/tvSeriesEjercicio1_4"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:background="@color/colorBorder" />
+
+                <!-- Acciones de la tarjeta -->
+                <LinearLayout
+                    android:id="@+id/layoutAccionesRutina1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnVerDetalles1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/button_height_compact"
+                        android:background="@drawable/bg_button_neutral"
+                        android:letterSpacing="0.05"
+                        android:minWidth="0dp"
+                        android:paddingHorizontal="@dimen/spacing_lg"
+                        android:text="@string/btnVerDetalles1"
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorTextStrong"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/btnIniciarRutina1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/button_height_compact"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        android:background="@drawable/bg_button_primary"
+                        android:drawableStart="@drawable/ic_play_arrow"
+                        android:drawablePadding="6dp"
+                        android:letterSpacing="0.05"
+                        android:minWidth="0dp"
+                        android:paddingHorizontal="@dimen/spacing_lg"
+                        android:text="@string/btnIniciarRutina1"
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorOnPrimary"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:drawableTint="@color/colorOnPrimary" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- TARJETA 2: Día B -->
+            <LinearLayout
+                android:id="@+id/cardRutina2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:background="@drawable/bg_card"
+                android:elevation="@dimen/elevation_card"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_md">
+
+                <!-- Cabecera de la tarjeta -->
+                <LinearLayout
+                    android:id="@+id/layoutCabeceraRutina2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/imgIconoRutina2"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_day_checked"
+                        android:contentDescription="@null"
+                        android:padding="11dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_fitness_center"
+                        app:tint="@color/colorPrimary" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_md"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvNombreRutina2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreRutina2"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvResumenRutina2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvResumenRutina2"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/imgMenuRutina2"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/cdMenuRutina2"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_more_vert"
+                        app:tint="@color/colorTextTertiary" />
+                </LinearLayout>
+
+                <!-- Lista de ejercicios -->
+                <LinearLayout
+                    android:id="@+id/layoutEjerciciosRutina2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:background="@drawable/bg_day_weekend"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="44dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_dot_teal" />
+
+                        <TextView
+                            android:id="@+id/tvNombreEjercicio2_1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreEjercicio2_1"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvSeriesEjercicio2_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:text="@string/tvSeriesEjercicio2_1"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDivider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="44dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_dot_teal" />
+
+                        <TextView
+                            android:id="@+id/tvNombreEjercicio2_2"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreEjercicio2_2"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvSeriesEjercicio2_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:text="@string/tvSeriesEjercicio2_2"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDivider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="44dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_dot_teal" />
+
+                        <TextView
+                            android:id="@+id/tvNombreEjercicio2_3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreEjercicio2_3"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvSeriesEjercicio2_3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:text="@string/tvSeriesEjercicio2_3"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDivider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="44dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_dot_teal" />
+
+                        <TextView
+                            android:id="@+id/tvNombreEjercicio2_4"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreEjercicio2_4"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvSeriesEjercicio2_4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:text="@string/tvSeriesEjercicio2_4"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:background="@color/colorBorder" />
+
+                <!-- Acciones de la tarjeta -->
+                <LinearLayout
+                    android:id="@+id/layoutAccionesRutina2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnVerDetalles2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/button_height_compact"
+                        android:background="@drawable/bg_button_neutral"
+                        android:letterSpacing="0.05"
+                        android:minWidth="0dp"
+                        android:paddingHorizontal="@dimen/spacing_lg"
+                        android:text="@string/btnVerDetalles2"
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorTextStrong"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/btnIniciarRutina2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/button_height_compact"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        android:background="@drawable/bg_button_primary"
+                        android:drawableStart="@drawable/ic_play_arrow"
+                        android:drawablePadding="6dp"
+                        android:letterSpacing="0.05"
+                        android:minWidth="0dp"
+                        android:paddingHorizontal="@dimen/spacing_lg"
+                        android:text="@string/btnIniciarRutina2"
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorOnPrimary"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:drawableTint="@color/colorOnPrimary" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- TARJETA 3: Día C -->
+            <LinearLayout
+                android:id="@+id/cardRutina3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:background="@drawable/bg_card"
+                android:elevation="@dimen/elevation_card"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_md">
+
+                <!-- Cabecera de la tarjeta -->
+                <LinearLayout
+                    android:id="@+id/layoutCabeceraRutina3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/imgIconoRutina3"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_day_checked"
+                        android:contentDescription="@null"
+                        android:padding="11dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_fitness_center"
+                        app:tint="@color/colorPrimary" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_md"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvNombreRutina3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreRutina3"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvResumenRutina3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvResumenRutina3"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/imgMenuRutina3"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/cdMenuRutina3"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_more_vert"
+                        app:tint="@color/colorTextTertiary" />
+                </LinearLayout>
+
+                <!-- Lista de ejercicios -->
+                <LinearLayout
+                    android:id="@+id/layoutEjerciciosRutina3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:background="@drawable/bg_day_weekend"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="44dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_dot_teal" />
+
+                        <TextView
+                            android:id="@+id/tvNombreEjercicio3_1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreEjercicio3_1"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvSeriesEjercicio3_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:text="@string/tvSeriesEjercicio3_1"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDivider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="44dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_dot_teal" />
+
+                        <TextView
+                            android:id="@+id/tvNombreEjercicio3_2"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreEjercicio3_2"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvSeriesEjercicio3_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:text="@string/tvSeriesEjercicio3_2"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDivider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="44dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_dot_teal" />
+
+                        <TextView
+                            android:id="@+id/tvNombreEjercicio3_3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreEjercicio3_3"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvSeriesEjercicio3_3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:text="@string/tvSeriesEjercicio3_3"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDivider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="44dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_dot_teal" />
+
+                        <TextView
+                            android:id="@+id/tvNombreEjercicio3_4"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreEjercicio3_4"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvSeriesEjercicio3_4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:text="@string/tvSeriesEjercicio3_4"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDivider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="44dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_dot_teal" />
+
+                        <TextView
+                            android:id="@+id/tvNombreEjercicio3_5"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/tvNombreEjercicio3_5"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvSeriesEjercicio3_5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_sm"
+                            android:text="@string/tvSeriesEjercicio3_5"
+                            android:textColor="@color/colorTextTertiary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:background="@color/colorBorder" />
+
+                <!-- Acciones de la tarjeta -->
+                <LinearLayout
+                    android:id="@+id/layoutAccionesRutina3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnVerDetalles3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/button_height_compact"
+                        android:background="@drawable/bg_button_neutral"
+                        android:letterSpacing="0.05"
+                        android:minWidth="0dp"
+                        android:paddingHorizontal="@dimen/spacing_lg"
+                        android:text="@string/btnVerDetalles3"
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorTextStrong"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/btnIniciarRutina3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/button_height_compact"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        android:background="@drawable/bg_button_primary"
+                        android:drawableStart="@drawable/ic_play_arrow"
+                        android:drawablePadding="6dp"
+                        android:letterSpacing="0.05"
+                        android:minWidth="0dp"
+                        android:paddingHorizontal="@dimen/spacing_lg"
+                        android:text="@string/btnIniciarRutina3"
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorOnPrimary"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:drawableTint="@color/colorOnPrimary" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/spacing_xxl" />
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

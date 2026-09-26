@@ -75,6 +75,58 @@
 
     <string name="btnNuevoEjercicio">+ NUEVO EJERCICIO</string>
 
+    <!-- RutinasFragment -->
+    <string name="btnNuevaRutina">NUEVA RUTINA</string>
+    <string name="btnEmpezarRutinaVacia">EMPEZAR RUTINA VACÍA</string>
+
+    <string name="tvTituloPlanes">MIS PLANES DE ENTRENAMIENTO</string>
+    <string name="tvCantidadPlanes">3 ACTIVOS</string>
+    <string name="cdOrdenarPlanes">Ordenar planes</string>
+
+    <string name="tvNombreRutina1">Día A: Pecho y Tríceps</string>
+    <string name="tvResumenRutina1">4 ejercicios  •  45 min</string>
+    <string name="cdMenuRutina1">Opciones de Día A</string>
+    <string name="tvNombreEjercicio1_1">Press de Banca Plano con Barra</string>
+    <string name="tvSeriesEjercicio1_1">4 × 8-10</string>
+    <string name="tvNombreEjercicio1_2">Press Inclinado con Mancuernas</string>
+    <string name="tvSeriesEjercicio1_2">3 × 10</string>
+    <string name="tvNombreEjercicio1_3">Fondos en Paralelas (Dips)</string>
+    <string name="tvSeriesEjercicio1_3">3 × 12</string>
+    <string name="tvNombreEjercicio1_4">Extensión de Tríceps en Polea</string>
+    <string name="tvSeriesEjercicio1_4">4 × 12-15</string>
+    <string name="btnVerDetalles1">VER DETALLES</string>
+    <string name="btnIniciarRutina1">INICIAR</string>
+
+    <string name="tvNombreRutina2">Día B: Espalda y Bíceps</string>
+    <string name="tvResumenRutina2">4 ejercicios  •  50 min</string>
+    <string name="cdMenuRutina2">Opciones de Día B</string>
+    <string name="tvNombreEjercicio2_1">Dominadas Pronas (Pull-ups)</string>
+    <string name="tvSeriesEjercicio2_1">4 × 6-8</string>
+    <string name="tvNombreEjercicio2_2">Remo con Barra Pendlay</string>
+    <string name="tvSeriesEjercicio2_2">4 × 8</string>
+    <string name="tvNombreEjercicio2_3">Jalón al Pecho Agarre Neutro</string>
+    <string name="tvSeriesEjercicio2_3">3 × 12</string>
+    <string name="tvNombreEjercicio2_4">Curl Bíceps Barra Z</string>
+    <string name="tvSeriesEjercicio2_4">3 × 12</string>
+    <string name="btnVerDetalles2">VER DETALLES</string>
+    <string name="btnIniciarRutina2">INICIAR</string>
+
+    <string name="tvNombreRutina3">Día C: Pierna y Hombro</string>
+    <string name="tvResumenRutina3">5 ejercicios  •  55 min</string>
+    <string name="cdMenuRutina3">Opciones de Día C</string>
+    <string name="tvNombreEjercicio3_1">Sentadilla Trasera Profunda</string>
+    <string name="tvSeriesEjercicio3_1">4 × 6</string>
+    <string name="tvNombreEjercicio3_2">Prensa Inclinada 45°</string>
+    <string name="tvSeriesEjercicio3_2">3 × 12</string>
+    <string name="tvNombreEjercicio3_3">Curl Femoral Tumbado</string>
+    <string name="tvSeriesEjercicio3_3">4 × 12</string>
+    <string name="tvNombreEjercicio3_4">Press Militar con Mancuernas</string>
+    <string name="tvSeriesEjercicio3_4">4 × 8-10</string>
+    <string name="tvNombreEjercicio3_5">Elevaciones Laterales</string>
+    <string name="tvSeriesEjercicio3_5">3 × 15</string>
+    <string name="btnVerDetalles3">VER DETALLES</string>
+    <string name="btnIniciarRutina3">INICIAR</string>
+
     <string name="tvNavInicio">Inicio</string>
     <string name="tvNavRutinas">Rutinas</string>
     <string name="tvNavPerfil">Perfil</string>

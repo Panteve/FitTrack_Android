@@ -16,6 +16,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import ue.edu.co.fittrackandroid.HomeFragment;
 import ue.edu.co.fittrackandroid.login.LoginFragment;
+import ue.edu.co.fittrackandroid.rutinas.RutinasFragment;
 import ue.edu.co.fittrackandroid.R;
 
 /**
@@ -89,8 +90,7 @@ public class MainActivity extends AppCompatActivity {
             // TODO: Navegar a Perfil
             return null;
         } else if (itemId == R.id.navigation_rutinas) {
-            // TODO: Navegar a Rutinas
-            return null;
+            return new RutinasFragment();
         }
         return null; // Retorna null si no hay correspondencia
     }
@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)
                 .commit();
-        bottomNavigation.setSelectedItemId(fragment.getId());
     }
 
     private boolean verificarSesionActiva() {
