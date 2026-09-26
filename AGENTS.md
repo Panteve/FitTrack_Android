@@ -4,7 +4,7 @@ Este archivo define cómo debe escribirse el código en este proyecto. Cualquier
 
 ## Contexto del proyecto
 
-App de Android para gestionar rutinas de gimnasio (ejercicios, rutinas, progreso, etc.), escrita en Java con Vistas XML tradicionales (no Jetpack Compose).
+App de Android para gestionar rutinas de gimnasio (ejercicios, rutinas, progreso, etc.), escrita en Java con Vistas XML tradicionales (no Jetpack Compose). La aplicación usa una sola Activity principal y las pantallas se implementan con Fragments.
 
 ## 1. Nunca hardcodear texto
 
@@ -108,7 +108,23 @@ Sí mantener:
 
 En resumen: preferir siempre la solución más directa y fácil de entender, aunque exista una forma "más elegante" o más avanzada de resolverlo.
 
-## 6. Estructura de carpetas — organizada por feature
+## 6. Una sola Activity principal y pantallas con Fragments
+
+El proyecto debe tener una única Activity principal, `MainActivity`, que funciona como contenedor de la toolbar, el contenedor de fragments y la navegación general de la aplicación.
+
+Cada pantalla o sección nueva se debe implementar como un `Fragment` con su propio layout XML. No crear una Activity por pantalla ni registrar Activities adicionales en `AndroidManifest.xml`. La navegación entre Inicio, Rutinas, Progreso, Perfil y cualquier otra sección debe reemplazar el Fragment mostrado dentro de `MainActivity`.
+
+La toolbar y la navegación inferior pertenecen a `MainActivity`. Por eso, los layouts de los Fragments no deben volver a dibujar estos elementos. Si una pantalla necesita ocultarlos, debe solicitarlo a `MainActivity` mediante un método simple y explícito, como ya ocurre con el login.
+
+Convenciones:
+
+- Clase de pantalla: `NombrePantallaFragment.java`.
+- Layout de pantalla: `fragment_nombre_pantalla.xml`.
+- El código del Fragment debe permanecer dentro de la carpeta de su feature.
+- Usar `getSupportFragmentManager()` desde `MainActivity` para cambiar la pantalla visible.
+- Mantener la navegación simple, sin agregar Navigation Component ni otras dependencias salvo petición explícita del usuario.
+
+## 7. Estructura de carpetas — organizada por feature
 
 El código Java se organiza por *feature* (funcionalidad/pantalla), no por tipo de archivo. Todo lo relacionado a una misma funcionalidad va en la misma carpeta.
 
@@ -116,12 +132,12 @@ El código Java se organiza por *feature* (funcionalidad/pantalla), no por tipo 
 app/src/main/
 ├── java/com/tuempresa/gymapp/
 │   ├── login/
-│   │   ├── LoginActivity.java
+│   │   ├── LoginFragment.java
 │   │   └── Usuario.java
 │   │
 │   ├── rutinas/
-│   │   ├── RutinasListaActivity.java
-│   │   ├── RutinaDetalleActivity.java
+│   │   ├── RutinasListaFragment.java
+│   │   ├── RutinaDetalleFragment.java
 │   │   ├── RutinaAdapter.java
 │   │   └── Rutina.java
 │   │
@@ -130,7 +146,7 @@ app/src/main/
 │   │   └── Ejercicio.java
 │   │
 │   ├── perfil/
-│   │   ├── PerfilActivity.java
+│   │   ├── PerfilFragment.java
 │   │   └── EstadisticaUsuario.java
 │   │
 │   └── utils/                → compartido entre features (validaciones, formateo, constantes)
@@ -138,35 +154,38 @@ app/src/main/
 │
 └── res/
     └── layout/               → Android no permite subcarpetas por feature aquí, queda plano
-        ├── activity_login.xml
-        ├── activity_rutinas_lista.xml
-        ├── activity_rutina_detalle.xml
+        ├── activity_main.xml
+        ├── fragment_login.xml
+        ├── fragment_rutinas_lista.xml
+        ├── fragment_rutina_detalle.xml
         ├── item_rutina.xml
         ├── item_ejercicio.xml
-        └── activity_perfil.xml
+        └── fragment_perfil.xml
 ```
 
-**Nota sobre `res/layout/`:** aunque el código Java se organice por feature, los layouts XML siempre quedan juntos en una sola carpeta (limitación de Android sin configurar `sourceSets`, que no vamos a usar). Por eso el nombre del archivo debe dejar claro a qué pantalla pertenece (`activity_rutina_detalle.xml`, `item_ejercicio.xml`).
+**Nota sobre `res/layout/`:** aunque el código Java se organice por feature, los layouts XML siempre quedan juntos en una sola carpeta (limitación de Android sin configurar `sourceSets`, que no vamos a usar). Por eso el nombre del archivo debe dejar claro a qué pantalla pertenece (`fragment_rutina_detalle.xml`, `item_ejercicio.xml`).
 
 ### Convención de nombres de archivos
 
 | Tipo | Convención | Ejemplo |
 |---|---|---|
-| Activity | `NombrePantallaActivity.java` | `RutinaDetalleActivity.java` |
-| Layout de Activity | `activity_nombre_pantalla.xml` | `activity_rutina_detalle.xml` |
+| Activity contenedora | `MainActivity.java` | `MainActivity.java` |
+| Fragment de pantalla | `NombrePantallaFragment.java` | `RutinaDetalleFragment.java` |
+| Layout de Activity principal | `activity_main.xml` | `activity_main.xml` |
+| Layout de Fragment | `fragment_nombre_pantalla.xml` | `fragment_rutina_detalle.xml` |
 | Adapter | `NombreAdapter.java` | `EjercicioAdapter.java` |
 | Layout de item (RecyclerView) | `item_nombre.xml` | `item_ejercicio.xml` |
 | Modelo | `Nombre.java` (singular) | `Rutina.java`, `Ejercicio.java` |
 
 Cuando una clase nueva no encaje claramente en ningún feature existente, preguntar antes de crear un feature nuevo o de meterla en `utils/` por defecto.
 
-## 7. Compilación y verificación
+## 8. Compilación y verificación
 
 No compilar el proyecto para verificar cambios, a menos que el usuario lo solicite explícitamente. Para validaciones normales, revisar de forma estática los archivos modificados y sus referencias.
 
-## 8. Diseño de pantallas y Activities
+## 9. Diseño de pantallas y Fragments
 
-Antes de crear o modificar el diseño de una pantalla, Activity o layout XML, leer `guia_uso_recursos_visuales.md` para aplicar los colores, dimensiones y estilos visuales definidos en el proyecto.
+Antes de crear o modificar el diseño de una pantalla, Fragment o layout XML, leer `guia_uso_recursos_visuales.md` para aplicar los colores, dimensiones y estilos visuales definidos en el proyecto.
 
 Tomar los mockups de `stitch_neobrutalist_gym_tracker/` como referencia visual. No es necesario copiarlos exactamente, pero la pantalla debe conservar una apariencia coherente con ellos: interfaz Android clásica, paleta teal/morado/turquesa, tarjetas blancas compactas y jerarquía visual sencilla.
 
