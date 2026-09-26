@@ -5,9 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import ue.edu.co.fittrackandroid.R;
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
@@ -19,18 +25,8 @@ public class RutinasFragment extends Fragment {
 
     private Button btnNuevaRutina;
     private Button btnEmpezarRutinaVacia;
-
-    // Botones de tarjeta 1
-    private Button btnVerDetalles1;
-    private Button btnIniciarRutina1;
-
-    // Botones de tarjeta 2
-    private Button btnVerDetalles2;
-    private Button btnIniciarRutina2;
-
-    // Botones de tarjeta 3
-    private Button btnVerDetalles3;
-    private Button btnIniciarRutina3;
+    private TextView tvCantidadPlanes;
+    private List<Rutina> planes;
 
     public RutinasFragment() {
         // Required empty public constructor
@@ -43,36 +39,21 @@ public class RutinasFragment extends Fragment {
 
         btnNuevaRutina = view.findViewById(R.id.btnNuevaRutina);
         btnEmpezarRutinaVacia = view.findViewById(R.id.btnEmpezarRutinaVacia);
+        tvCantidadPlanes = view.findViewById(R.id.tvCantidadPlanes);
+        RecyclerView rvPlanes = view.findViewById(R.id.rvPlanes);
 
-        btnVerDetalles1 = view.findViewById(R.id.btnVerDetalles1);
-        btnIniciarRutina1 = view.findViewById(R.id.btnIniciarRutina1);
+        planes = crearListaPlanes();
 
-        btnVerDetalles2 = view.findViewById(R.id.btnVerDetalles2);
-        btnIniciarRutina2 = view.findViewById(R.id.btnIniciarRutina2);
+        rvPlanes.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvPlanes.setAdapter(new RutinaAdapter(planes));
 
-        btnVerDetalles3 = view.findViewById(R.id.btnVerDetalles3);
-        btnIniciarRutina3 = view.findViewById(R.id.btnIniciarRutina3);
+        tvCantidadPlanes.setText(getString(R.string.tvCantidadPlanes, planes.size()));
 
         btnNuevaRutina.setOnClickListener(v ->
                 Toast.makeText(requireContext(), "Crear nueva rutina próximamente", Toast.LENGTH_SHORT).show());
 
         btnEmpezarRutinaVacia.setOnClickListener(v ->
                 Toast.makeText(requireContext(), "Empezar rutina vacía próximamente", Toast.LENGTH_SHORT).show());
-
-        btnVerDetalles1.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Ver detalles: Día A", Toast.LENGTH_SHORT).show());
-        btnIniciarRutina1.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Iniciar: Día A", Toast.LENGTH_SHORT).show());
-
-        btnVerDetalles2.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Ver detalles: Día B", Toast.LENGTH_SHORT).show());
-        btnIniciarRutina2.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Iniciar: Día B", Toast.LENGTH_SHORT).show());
-
-        btnVerDetalles3.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Ver detalles: Día C", Toast.LENGTH_SHORT).show());
-        btnIniciarRutina3.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Iniciar: Día C", Toast.LENGTH_SHORT).show());
 
         return view;
     }
@@ -82,5 +63,54 @@ public class RutinasFragment extends Fragment {
         super.onResume();
         // Al volver desde Ejercicios o Crear ejercicio, la toolbar debe quedar como la principal.
         ((MainActivity) requireActivity()).mostrarToolbarPrincipal();
+    }
+
+    /**
+     * Arma los planes de ejemplo. TODO: reemplazar por los planes guardados
+     * (base de datos o backend) cuando exista esa capa.
+     */
+    private List<Rutina> crearListaPlanes() {
+        List<Rutina> listaPlanes = new ArrayList<>();
+        listaPlanes.add(new Rutina(
+                getString(R.string.tvNombreRutina1),
+                getString(R.string.tvResumenRutina1),
+                crearEjerciciosPlan1()));
+        listaPlanes.add(new Rutina(
+                getString(R.string.tvNombreRutina2),
+                getString(R.string.tvResumenRutina2),
+                crearEjerciciosPlan2()));
+        listaPlanes.add(new Rutina(
+                getString(R.string.tvNombreRutina3),
+                getString(R.string.tvResumenRutina3),
+                crearEjerciciosPlan3()));
+        return listaPlanes;
+    }
+
+    private List<EjercicioRutina> crearEjerciciosPlan1() {
+        List<EjercicioRutina> lista = new ArrayList<>();
+        lista.add(new EjercicioRutina(getString(R.string.tvNombreEjercicio1_1), getString(R.string.tvSeriesEjercicio1_1)));
+        lista.add(new EjercicioRutina(getString(R.string.tvNombreEjercicio1_2), getString(R.string.tvSeriesEjercicio1_2)));
+        lista.add(new EjercicioRutina(getString(R.string.tvNombreEjercicio1_3), getString(R.string.tvSeriesEjercicio1_3)));
+        lista.add(new EjercicioRutina(getString(R.string.tvNombreEjercicio1_4), getString(R.string.tvSeriesEjercicio1_4)));
+        return lista;
+    }
+
+    private List<EjercicioRutina> crearEjerciciosPlan2() {
+        List<EjercicioRutina> lista = new ArrayList<>();
+        lista.add(new EjercicioRutina(getString(R.string.tvNombreEjercicio2_1), getString(R.string.tvSeriesEjercicio2_1)));
+        lista.add(new EjercicioRutina(getString(R.string.tvNombreEjercicio2_2), getString(R.string.tvSeriesEjercicio2_2)));
+        lista.add(new EjercicioRutina(getString(R.string.tvNombreEjercicio2_3), getString(R.string.tvSeriesEjercicio2_3)));
+        lista.add(new EjercicioRutina(getString(R.string.tvNombreEjercicio2_4), getString(R.string.tvSeriesEjercicio2_4)));
+        return lista;
+    }
+
+    private List<EjercicioRutina> crearEjerciciosPlan3() {
+        List<EjercicioRutina> lista = new ArrayList<>();
+        lista.add(new EjercicioRutina(getString(R.string.tvNombreEjercicio3_1), getString(R.string.tvSeriesEjercicio3_1)));
+        lista.add(new EjercicioRutina(getString(R.string.tvNombreEjercicio3_2), getString(R.string.tvSeriesEjercicio3_2)));
+        lista.add(new EjercicioRutina(getString(R.string.tvNombreEjercicio3_3), getString(R.string.tvSeriesEjercicio3_3)));
+        lista.add(new EjercicioRutina(getString(R.string.tvNombreEjercicio3_4), getString(R.string.tvSeriesEjercicio3_4)));
+        lista.add(new EjercicioRutina(getString(R.string.tvNombreEjercicio3_5), getString(R.string.tvSeriesEjercicio3_5)));
+        return lista;
     }
 }
