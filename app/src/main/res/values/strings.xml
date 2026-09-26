@@ -25,7 +25,6 @@
     <string name="tvToolbarTituloMain">FitTrack</string>
     <string name="cdBuscar">Buscar</string>
     <string name="cdOpciones">Opciones</string>
-    <string name="cdAgregar">Agregar ejercicio</string>
     <string name="tvFecha">Fecha: %1$s</string>
     <string name="tvBienvenida">Bienvenido: Alex (Usuario)</string>
 
@@ -130,4 +129,56 @@
     <string name="tvNavInicio">Inicio</string>
     <string name="tvNavRutinas">Rutinas</string>
     <string name="tvNavPerfil">Perfil</string>
+
+    <!-- Barra de herramientas (MainActivity) -->
+    <string name="cdVolver">Volver</string>
+    <string name="tvToolbarTituloEjercicios">Ejercicios</string>
+    <string name="btnCrearEjercicio">CREAR</string>
+    <string name="tvToolbarTituloCrearEjercicio">Crear ejercicio</string>
+    <string name="btnGuardar">GUARDAR</string>
+
+    <!-- EjerciciosFragment -->
+    <string name="cdBuscarEjercicio">Buscar un ejercicio por nombre</string>
+    <string name="etBuscarEjercicio_hint">Buscar ejercicio…</string>
+    <string name="tvChipTodos">TODOS</string>
+    <string name="tvChipPecho">PECHO</string>
+    <string name="tvChipEspalda">ESPALDA</string>
+    <string name="tvChipPierna">PIERNA</string>
+
+    <!-- Datos de ejemplo de la lista de ejercicios -->
+    <string name="tvNombreEjercicioLista1">Press de Banca Plano</string>
+    <string name="tvSubtituloEjercicioLista1">Pecho • Barra • 4×8-10</string>
+    <string name="tvNombreEjercicioLista2">Press Inclinado con Mancuernas</string>
+    <string name="tvSubtituloEjercicioLista2">Pecho • Mancuernas • 3×10</string>
+    <string name="tvNombreEjercicioLista3">Dominadas Pronas</string>
+    <string name="tvSubtituloEjercicioLista3">Espalda • Peso corporal • 4×6-8</string>
+    <string name="tvNombreEjercicioLista4">Remo con Barra Pendlay</string>
+    <string name="tvSubtituloEjercicioLista4">Espalda • Barra • 4×8</string>
+    <string name="tvNombreEjercicioLista5">Sentadilla Trasera Profunda</string>
+    <string name="tvSubtituloEjercicioLista5">Pierna • Barra • 4×6</string>
+    <string name="tvNombreEjercicioLista6">Prensa Inclinada 45°</string>
+    <string name="tvSubtituloEjercicioLista6">Pierna • Máquina • 3×12</string>
+
+    <!-- item_ejercicio.xml -->
+    <string name="tvNombreEjercicio">Nombre del ejercicio</string>
+    <string name="tvSubtituloEjercicio">Grupo muscular • Detalle</string>
+
+    <!-- CrearEjercicioFragment -->
+    <string name="cdMultimediaEjercicio">Agregar foto o video del ejercicio</string>
+    <string name="tvCardMultimedia">AGREGAR FOTO O VIDEO DEL EJERCICIO</string>
+    <string name="tvLabelNombreEjercicio">NOMBRE DEL EJERCICIO</string>
+    <string name="etNombreEjercicio_hint">Ej. Sentadilla con Barra</string>
+    <string name="tvErrorNombreEjercicio">Ingresa el nombre del ejercicio</string>
+    <string name="tvLabelGrupoMuscular">GRUPO MUSCULAR</string>
+    <string name="tvValorGrupoMuscular">Seleccionar</string>
+    <string name="cdGrupoMuscular">Seleccionar grupo muscular</string>
+    <string name="tvLabelTipoEquipo">TIPO DE EQUIPO</string>
+    <string name="tvValorTipoEquipo">Seleccionar</string>
+    <string name="cdTipoEquipo">Seleccionar tipo de equipo</string>
+    <string name="tvLabelPeso">PESO</string>
+    <string name="tvValorPeso">Seleccionar</string>
+    <string name="cdPeso">Seleccionar peso</string>
+    <string name="tvLabelRepeticiones">REPETICIONES</string>
+    <string name="tvValorRepeticiones">Seleccionar</string>
+    <string name="cdRepeticiones">Seleccionar repeticiones</string>
 </resources>

@@ -8,13 +8,18 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import ue.edu.co.fittrackandroid.HomeFragment;
+import ue.edu.co.fittrackandroid.ejercicios.CrearEjercicioFragment;
+import ue.edu.co.fittrackandroid.ejercicios.EjerciciosFragment;
 import ue.edu.co.fittrackandroid.login.LoginFragment;
 import ue.edu.co.fittrackandroid.rutinas.RutinasFragment;
 import ue.edu.co.fittrackandroid.R;
@@ -27,7 +32,10 @@ import ue.edu.co.fittrackandroid.R;
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigation;
-    private TextView toolbar;
+    private View layoutToolbar;
+    private TextView tvToolbarTituloMain;
+    private ImageButton btnVolverToolbar;
+    private Button btnAccionToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
             if (fragment == null) {
                 return false;
             }
+            // Las pestañas del menú inferior son raíces: se descarta cualquier pantalla secundaria abierta.
+            limpiarBackStack();
             cargarFragment(fragment);
             return true;
         });
@@ -80,7 +90,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void initObjects() {
         bottomNavigation = findViewById(R.id.bottomNavigation);
-        toolbar = findViewById(R.id.tvToolbarTituloMain);
+        layoutToolbar = findViewById(R.id.layoutToolbar);
+        tvToolbarTituloMain = findViewById(R.id.tvToolbarTituloMain);
+        btnVolverToolbar = findViewById(R.id.btnVolverToolbar);
+        btnAccionToolbar = findViewById(R.id.btnAccionToolbar);
+
+        mostrarToolbarPrincipal();
+        btnVolverToolbar.setOnClickListener(v -> onBackPressed());
     }
 
     private Fragment obtenerFragment (int itemId){
@@ -108,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     /** Muestra el fragment de Home (pantalla principal "Hoy"). */
     public void mostrarHome() {
-        toolbar.setVisibility(View.VISIBLE);
+        layoutToolbar.setVisibility(View.VISIBLE);
         bottomNavigation.setVisibility(View.VISIBLE);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, new HomeFragment())
@@ -118,10 +134,83 @@ public class MainActivity extends AppCompatActivity {
 
     /** Muestra el fragment de Login SIN toolbar ni bottom nav. */
     public void mostrarLogin() {
-        toolbar.setVisibility(View.GONE);
+        layoutToolbar.setVisibility(View.GONE);
         bottomNavigation.setVisibility(View.GONE);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, new LoginFragment())
                 .commit();
     }
+
+    private void cargarFragmentConBackStack(Fragment fragment){
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void limpiarBackStack() {
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            fm.popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    /** Restaura la toolbar principal: solo título "FitTrack", sin volver ni acción. */
+    public void mostrarToolbarPrincipal() {
+        layoutToolbar.setVisibility(View.VISIBLE);
+        tvToolbarTituloMain.setText(R.string.tvToolbarTituloMain);
+        btnVolverToolbar.setVisibility(View.GONE);
+        btnAccionToolbar.setVisibility(View.GONE);
+        btnAccionToolbar.setOnClickListener(null);
+    }
+
+    /** Configura la toolbar para una pantalla secundaria (título, volver opcional y acción opcional).
+     *  La acción debe configurarse con {@link #setAccionToolbar(Runnable)}. */
+    public void mostrarToolbarSecundaria(String titulo, boolean conVolver, String textoAccion) {
+        layoutToolbar.setVisibility(View.VISIBLE);
+        tvToolbarTituloMain.setText(titulo);
+        btnVolverToolbar.setVisibility(conVolver ? View.VISIBLE : View.GONE);
+        btnAccionToolbar.setOnClickListener(null);
+        if (textoAccion != null) {
+            btnAccionToolbar.setVisibility(View.VISIBLE);
+            btnAccionToolbar.setText(textoAccion);
+        } else {
+            btnAccionToolbar.setVisibility(View.GONE);
+        }
+    }
+
+    /** Asigna la acción del botón derecho de la toolbar. */
+    public void setAccionToolbar(Runnable accion) {
+        btnAccionToolbar.setOnClickListener(v -> accion.run());
+    }
+
+    /**
+     * Navega a la lista de ejercicios (con retroceso).
+     * Todavía no se llama desde ninguna pantalla: la lista se conectará más adelante.
+     */
+    public void mostrarEjercicios() {
+        cargarFragmentConBackStack(new EjerciciosFragment());
+    }
+
+    /** Navega a la pantalla de crear ejercicio (con retroceso). */
+    public void mostrarCrearEjercicio() {
+        cargarFragmentConBackStack(new CrearEjercicioFragment());
+    }
+
+    /** Retrocede a la pantalla anterior si hay una en la pila. */
+    public void regresar() {
+        onBackPressed();
+    }
+
+
 }

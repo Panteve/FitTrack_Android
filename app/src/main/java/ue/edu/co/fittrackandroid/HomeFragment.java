@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import ue.edu.co.fittrackandroid.R;
+import ue.edu.co.fittrackandroid.hoy.MainActivity;
 
 /**
  * Fragment para la pantalla principal (Hoy).
@@ -23,7 +23,6 @@ import ue.edu.co.fittrackandroid.R;
 public class HomeFragment extends Fragment {
 
     private Button btnIniciarEntrenamiento;
-    private ImageButton btnFabAgregar;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -37,17 +36,24 @@ public class HomeFragment extends Fragment {
         TextView tvFecha = view.findViewById(R.id.tvFecha);
         Button btnNuevoEjercicio = view.findViewById(R.id.btnNuevoEjercicio);
         btnIniciarEntrenamiento = view.findViewById(R.id.btnIniciarEntrenamiento);
-        btnFabAgregar = view.findViewById(R.id.btnFabAgregar);
 
         tvFecha.setText(getString(R.string.tvFecha, formatearFechaHoy()));
 
         btnIniciarEntrenamiento.setOnClickListener(v -> iniciarEntrenamiento());
-        btnNuevoEjercicio.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Nuevo ejercicio próximamente", Toast.LENGTH_SHORT).show());
-        btnFabAgregar.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Agregar ejercicio próximamente", Toast.LENGTH_SHORT).show());
+        btnNuevoEjercicio.setOnClickListener(v -> abrirCrearEjercicio());
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Al volver desde Crear ejercicio, la toolbar debe quedar como la principal.
+        ((MainActivity) requireActivity()).mostrarToolbarPrincipal();
+    }
+
+    private void abrirCrearEjercicio() {
+        ((MainActivity) requireActivity()).mostrarCrearEjercicio();
     }
 
     private void iniciarEntrenamiento() {

@@ -7,19 +7,61 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <!-- Toolbar: 44dp teal #008577, solo título centrado (compacto) -->
-    <TextView
-        android:id="@+id/tvToolbarTituloMain"
+    <!-- Toolbar: 44dp teal #008577, con volver (opcional), título y acción (opcional).
+         Es un FrameLayout para que el título quede centrado respecto a toda la barra
+         y no al espacio sobrante entre los botones. -->
+    <FrameLayout
+        android:id="@+id/layoutToolbar"
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:background="@color/colorPrimary"
-        android:elevation="4dp"
-        android:gravity="center"
-        android:paddingHorizontal="@dimen/spacing_md"
-        android:text="@string/tvToolbarTituloMain"
-        android:textColor="@color/colorOnPrimary"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:elevation="4dp">
+
+        <!-- Título: se dibuja primero (queda al fondo) y reserva un ancho igual a cada
+             lado, así nunca se solapa con la flecha de volver ni con el botón de acción. -->
+        <TextView
+            android:id="@+id/tvToolbarTituloMain"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:paddingHorizontal="@dimen/toolbar_side_reserved"
+            android:text="@string/tvToolbarTituloMain"
+            android:textColor="@color/colorOnPrimary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnVolverToolbar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical|start"
+            android:layout_marginStart="@dimen/spacing_xs"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/cdVolver"
+            android:padding="9dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_arrow_back"
+            android:visibility="gone"
+            app:tint="@color/colorOnPrimary" />
+
+        <Button
+            android:id="@+id/btnAccionToolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="@dimen/spacing_xs"
+            android:background="@drawable/bg_button_neutral"
+            android:letterSpacing="0.05"
+            android:minWidth="0dp"
+            android:paddingHorizontal="@dimen/spacing_md"
+            android:textAllCaps="true"
+            android:textColor="@color/colorTextStrong"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </FrameLayout>
 
     <!-- Contenedor del fragment (centrado verticalmente para login) -->
     <FrameLayout

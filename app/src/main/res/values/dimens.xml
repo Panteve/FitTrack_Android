@@ -13,8 +13,11 @@
     <dimen name="button_height_standard">48dp</dimen>
     <dimen name="button_height_primary">48dp</dimen>
     <dimen name="bottom_navigation_height">56dp</dimen>
-    <dimen name="floating_action_button_size">56dp</dimen>
     <dimen name="border_width">1dp</dimen>
+
+    <!-- Barra de herramientas: espacio que se reserva a cada lado del título
+         para que quede centrado y nunca debajo de la flecha ni del botón de acción. -->
+    <dimen name="toolbar_side_reserved">88dp</dimen>
     <dimen name="elevation_card">2dp</dimen>
     <dimen name="elevation_button">2dp</dimen>
 

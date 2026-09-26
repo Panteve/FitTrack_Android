@@ -860,19 +860,4 @@
                 android:textStyle="bold" />
         </LinearLayout>
     </ScrollView>
-
-    <!-- FAB clásico aqua -->
-    <ImageButton
-        android:id="@+id/btnFabAgregar"
-        android:layout_width="@dimen/floating_action_button_size"
-        android:layout_height="@dimen/floating_action_button_size"
-        android:layout_gravity="end|bottom"
-        android:layout_marginEnd="@dimen/spacing_xl"
-        android:layout_marginBottom="72dp"
-        android:background="@drawable/bg_fab"
-        android:contentDescription="@string/cdAgregar"
-        android:elevation="4dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_add"
-        app:tint="@color/colorOnConfirm" />
 </FrameLayout>

@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import ue.edu.co.fittrackandroid.R;
+import ue.edu.co.fittrackandroid.hoy.MainActivity;
 
 /**
  * Fragment para la pantalla de rutinas (lista de planes de entrenamiento).
@@ -74,5 +75,12 @@ public class RutinasFragment extends Fragment {
                 Toast.makeText(requireContext(), "Iniciar: Día C", Toast.LENGTH_SHORT).show());
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Al volver desde Ejercicios o Crear ejercicio, la toolbar debe quedar como la principal.
+        ((MainActivity) requireActivity()).mostrarToolbarPrincipal();
     }
 }
