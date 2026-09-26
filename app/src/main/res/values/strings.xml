@@ -44,14 +44,11 @@
     <string name="tvDiaDomingo">DOM</string>
     <string name="tvNumeroDomingo">02</string>
 
-    <string name="tvLabelRutina">RUTINA ASIGNADA #04</string>
+    <string name="tvLabelRutina">RUTINA RECOMENDADA</string>
     <string name="tvNombreRutina">Piernas &amp; Abdomen</string>
-    <string name="tvCategoriaRutina">Categoría: Hipertrofia Intermedia</string>
     <string name="tvDuracionRutina">45 min</string>
     <string name="tvEjerciciosRutina">4 ejercicios</string>
-    <string name="tvNivelRutina">Nivel 2</string>
     <string name="tvSeparador1">|</string>
-    <string name="tvSeparador2">|</string>
     <string name="btnIniciarEntrenamiento">COMENZAR ENTRENAMIENTO</string>
     <string name="btnIniciarEntrenamiento_loading">CARGANDO…</string>
 
@@ -62,13 +59,13 @@
     <string name="tvNumeroEjercicio3">3</string>
     <string name="tvNumeroEjercicio4">4</string>
     <string name="tvNombreEjercicio1">Sentadilla con Barra</string>
-    <string name="tvDetalleEjercicio1">4 series x 8–10 reps • Descanso: 90s</string>
+    <string name="tvGrupoMuscularEjercicio1">Pierna</string>
     <string name="tvNombreEjercicio2">Prensa Inclinada</string>
-    <string name="tvDetalleEjercicio2">4 series x 12 reps • 80 kg</string>
+    <string name="tvGrupoMuscularEjercicio2">Pecho</string>
     <string name="tvNombreEjercicio3">Extensiones de Cuádriceps</string>
-    <string name="tvDetalleEjercicio3">3 series x 15 reps • Máquina</string>
+    <string name="tvGrupoMuscularEjercicio3">Pierna</string>
     <string name="tvNombreEjercicio4">Plancha Isométrica</string>
-    <string name="tvDetalleEjercicio4">3 series x 60 seg • Abdomen</string>
+    <string name="tvGrupoMuscularEjercicio4">Abdomen</string>
 
     <string name="tvConsejo">Consejo: Mantén los descansos de 90 segundos para optimizar la hipertrofia hoy.</string>
 
@@ -128,6 +125,32 @@
     <string name="tvNombreEjercicio3_5">Elevaciones Laterales</string>
     <string name="tvSeriesEjercicio3_5">3 × 15</string>
 
+    <!-- CrearRutinaFragment -->
+    <string name="tvToolbarTituloCrearRutina">Crear rutina</string>
+    <string name="btnGuardarRutinaNueva">GUARDAR</string>
+    <string name="tvLabelNombreRutinaNueva">NOMBRE DE LA RUTINA</string>
+    <string name="etNombreRutinaNueva_hint">Ej. Día A: Pecho y tríceps</string>
+    <string name="tvErrorNombreRutinaNueva">Ingresa el nombre de la rutina</string>
+    <string name="tvRutinaSinEjercicios">Todavía no hay ejercicios</string>
+    <string name="btnAgregarPrimerEjercicio">AGREGAR EJERCICIO</string>
+    <string name="tvTituloEjerciciosRutina">EJERCICIOS</string>
+    <string name="btnAgregarEjercicio">AGREGAR EJERCICIO</string>
+
+    <!-- Toolbar del selector de ejercicios (EjerciciosFragment) -->
+    <string name="tvToolbarTituloSeleccionarEjercicio">Seleccionar ejercicio</string>
+
+    <!-- item_ejercicio_crear_rutina.xml -->
+    <string name="tvNombreEjercicioRutinaEditable">Nombre del ejercicio</string>
+    <string name="tvGrupoMuscularEjercicioRutina">Grupo muscular</string>
+    <string name="tvCabeceraPesoObjetivo">PESO OBJ.</string>
+    <string name="tvCabeceraRepeticiones">REPS</string>
+    <string name="btnAgregarSerie">AGREGAR OTRA SERIE</string>
+
+    <!-- item_serie_rutina.xml -->
+    <string name="tvNumeroSerie">1</string>
+    <string name="etPesoObjetivoSerie_hint">60</string>
+    <string name="etRepeticionesSerie_hint">10</string>
+
     <string name="tvNavInicio">Inicio</string>
     <string name="tvNavRutinas">Rutinas</string>
     <string name="tvNavPerfil">Perfil</string>
@@ -149,21 +172,15 @@
 
     <!-- Datos de ejemplo de la lista de ejercicios -->
     <string name="tvNombreEjercicioLista1">Press de Banca Plano</string>
-    <string name="tvSubtituloEjercicioLista1">Pecho • Barra • 4×8-10</string>
     <string name="tvNombreEjercicioLista2">Press Inclinado con Mancuernas</string>
-    <string name="tvSubtituloEjercicioLista2">Pecho • Mancuernas • 3×10</string>
     <string name="tvNombreEjercicioLista3">Dominadas Pronas</string>
-    <string name="tvSubtituloEjercicioLista3">Espalda • Peso corporal • 4×6-8</string>
     <string name="tvNombreEjercicioLista4">Remo con Barra Pendlay</string>
-    <string name="tvSubtituloEjercicioLista4">Espalda • Barra • 4×8</string>
     <string name="tvNombreEjercicioLista5">Sentadilla Trasera Profunda</string>
-    <string name="tvSubtituloEjercicioLista5">Pierna • Barra • 4×6</string>
     <string name="tvNombreEjercicioLista6">Prensa Inclinada 45°</string>
-    <string name="tvSubtituloEjercicioLista6">Pierna • Máquina • 3×12</string>
 
     <!-- item_ejercicio.xml -->
     <string name="tvNombreEjercicio">Nombre del ejercicio</string>
-    <string name="tvSubtituloEjercicio">Grupo muscular • Detalle</string>
+    <string name="tvGrupoMuscularEjercicio">Grupo muscular</string>
 
     <!-- CrearEjercicioFragment -->
     <string name="cdMultimediaEjercicio">Agregar foto o video del ejercicio</string>

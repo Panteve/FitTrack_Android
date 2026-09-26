@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutCrearRutina"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <ScrollView
+        android:id="@+id/svCrearRutina"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <!-- layout_height="match_parent" + fillViewport: cuando la pantalla queda vacía,
+             el espacio sobrante se reparte y el estado vacío puede quedar centrado. -->
+        <LinearLayout
+            android:id="@+id/layoutContenidoCrearRutina"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <!-- Nombre de la rutina nueva -->
+            <TextView
+                android:id="@+id/tvLabelNombreRutinaNueva"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tvLabelNombreRutinaNueva"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etNombreRutinaNueva"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height_standard"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:autofillHints="name"
+                android:background="@drawable/bg_input"
+                android:hint="@string/etNombreRutinaNueva_hint"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:singleLine="true"
+                android:textColor="@color/colorTextPrimary"
+                android:textColorHint="@color/colorTextStrong"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvErrorNombreRutinaNueva"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:text="@string/tvErrorNombreRutinaNueva"
+                android:textColor="@color/colorError"
+                android:textSize="11sp"
+                android:visibility="gone" />
+
+            <!-- Estado vacío: se muestra únicamente cuando la rutina no tiene ejercicios. -->
+            <LinearLayout
+                android:id="@+id/layoutRutinaSinEjercicios"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvRutinaSinEjercicios"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/tvRutinaSinEjercicios"
+                    android:textColor="@color/colorTextTertiary"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnAgregarPrimerEjercicio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/button_height_standard"
+                    android:layout_marginTop="@dimen/spacing_xl"
+                    android:background="@drawable/bg_button_primary"
+                    android:drawableStart="@drawable/ic_add"
+                    android:drawablePadding="@dimen/spacing_sm"
+                    android:elevation="@dimen/elevation_button"
+                    android:letterSpacing="0.05"
+                    android:paddingHorizontal="@dimen/spacing_xxl"
+                    android:text="@string/btnAgregarPrimerEjercicio"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorOnPrimary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:drawableTint="@color/colorOnPrimary" />
+            </LinearLayout>
+
+            <!-- Estado con ejercicios: se muestra cuando la rutina ya tiene al menos uno. -->
+            <LinearLayout
+                android:id="@+id/layoutRutinaConEjercicios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvTituloEjerciciosRutina"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xxl"
+                    android:text="@string/tvTituloEjerciciosRutina"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <!-- El desplazamiento lo maneja svCrearRutina, por eso el RecyclerView
+                     se ajusta a su contenido y no hace scroll propio. -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvEjerciciosRutina"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never" />
+
+                <Button
+                    android:id="@+id/btnAgregarEjercicio"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height_standard"
+                    android:background="@drawable/bg_button_primary"
+                    android:drawableStart="@drawable/ic_add"
+                    android:drawablePadding="@dimen/spacing_sm"
+                    android:elevation="@dimen/elevation_button"
+                    android:letterSpacing="0.05"
+                    android:text="@string/btnAgregarEjercicio"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorOnPrimary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:drawableTint="@color/colorOnPrimary" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

@@ -15,6 +15,9 @@
     <dimen name="bottom_navigation_height">56dp</dimen>
     <dimen name="border_width">1dp</dimen>
 
+    <!-- Número de serie: recuadro cuadrado que se alinea con los campos de la serie. -->
+    <dimen name="badge_number_size">24dp</dimen>
+
     <!-- Avatar circular del perfil: tamaño total y relleno que deja ver el ícono de persona. -->
     <dimen name="avatar_size">96dp</dimen>
     <dimen name="avatar_icon_padding">26dp</dimen>

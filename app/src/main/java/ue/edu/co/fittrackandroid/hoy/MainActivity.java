@@ -22,6 +22,7 @@ import ue.edu.co.fittrackandroid.ejercicios.CrearEjercicioFragment;
 import ue.edu.co.fittrackandroid.ejercicios.EjerciciosFragment;
 import ue.edu.co.fittrackandroid.login.LoginFragment;
 import ue.edu.co.fittrackandroid.perfil.PerfilFragment;
+import ue.edu.co.fittrackandroid.rutinas.CrearRutinaFragment;
 import ue.edu.co.fittrackandroid.rutinas.RutinasFragment;
 import ue.edu.co.fittrackandroid.R;
 
@@ -195,11 +196,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Navega a la lista de ejercicios (con retroceso).
-     * Todavía no se llama desde ninguna pantalla: la lista se conectará más adelante.
+     * Navega al selector de ejercicios (con retroceso).
+     * Se usa desde la creación de rutinas para elegir un ejercicio.
      */
-    public void mostrarEjercicios() {
+    public void mostrarSelectorEjercicios() {
         cargarFragmentConBackStack(new EjerciciosFragment());
+    }
+
+    /** Navega a la pantalla de crear una rutina (con retroceso). */
+    public void mostrarCrearRutina() {
+        cargarFragmentConBackStack(new CrearRutinaFragment());
     }
 
     /** Navega a la pantalla de crear ejercicio (con retroceso). */

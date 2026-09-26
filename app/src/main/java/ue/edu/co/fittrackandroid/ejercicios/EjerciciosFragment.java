@@ -21,9 +21,15 @@ import ue.edu.co.fittrackandroid.R;
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
 
 /**
- * Fragment con la lista de ejercicios: buscador, filtros y acceso a la creación de ejercicios.
+ * Fragment selector de ejercicios: buscador, filtros por grupo muscular y lista.
+ * Al tocar un ejercicio lo devuelve a la pantalla que lo abrió y regresa.
  */
 public class EjerciciosFragment extends Fragment {
+
+    /** Claves usadas para devolver el ejercicio elegido a CrearRutinaFragment. */
+    public static final String REQUEST_SELECCION_EJERCICIO = "seleccionEjercicio";
+    public static final String RESULT_NOMBRE_EJERCICIO = "nombreEjercicio";
+    public static final String RESULT_GRUPO_MUSCULAR = "grupoMuscular";
 
     private static final String GRUPO_PECHO = "Pecho";
     private static final String GRUPO_ESPALDA = "Espalda";
@@ -59,7 +65,7 @@ public class EjerciciosFragment extends Fragment {
         tvChipEspalda = view.findViewById(R.id.tvChipEspalda);
         tvChipPierna = view.findViewById(R.id.tvChipPierna);
 
-        adapter = new EjercicioAdapter(crearListaEjercicios());
+        adapter = new EjercicioAdapter(crearListaEjercicios(), this::seleccionarEjercicio);
         rvEjercicios.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvEjercicios.setAdapter(adapter);
 
@@ -90,13 +96,12 @@ public class EjerciciosFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        MainActivity activity = (MainActivity) requireActivity();
-        activity.mostrarToolbarSecundaria(
-                getString(R.string.tvToolbarTituloEjercicios),
+        // Solo es un selector: la flecha de la toolbar regresa a la creación de la rutina.
+        ((MainActivity) requireActivity()).mostrarToolbarSecundaria(
+                getString(R.string.tvToolbarTituloSeleccionarEjercicio),
                 true,
-                getString(R.string.btnCrearEjercicio)
+                null
         );
-        activity.setAccionToolbar(this::abrirCrearEjercicio);
     }
 
     private List<Ejercicio> crearListaEjercicios() {
@@ -104,33 +109,36 @@ public class EjerciciosFragment extends Fragment {
         // TODO: Reemplazar esta lista de ejemplo por los ejercicios guardados (base de datos / backend)
         lista.add(new Ejercicio(
                 getString(R.string.tvNombreEjercicioLista1),
-                getString(R.string.tvSubtituloEjercicioLista1),
                 GRUPO_PECHO));
         lista.add(new Ejercicio(
                 getString(R.string.tvNombreEjercicioLista2),
-                getString(R.string.tvSubtituloEjercicioLista2),
                 GRUPO_PECHO));
         lista.add(new Ejercicio(
                 getString(R.string.tvNombreEjercicioLista3),
-                getString(R.string.tvSubtituloEjercicioLista3),
                 GRUPO_ESPALDA));
         lista.add(new Ejercicio(
                 getString(R.string.tvNombreEjercicioLista4),
-                getString(R.string.tvSubtituloEjercicioLista4),
                 GRUPO_ESPALDA));
         lista.add(new Ejercicio(
                 getString(R.string.tvNombreEjercicioLista5),
-                getString(R.string.tvSubtituloEjercicioLista5),
                 GRUPO_PIERNA));
         lista.add(new Ejercicio(
                 getString(R.string.tvNombreEjercicioLista6),
-                getString(R.string.tvSubtituloEjercicioLista6),
                 GRUPO_PIERNA));
         return lista;
     }
 
-    private void abrirCrearEjercicio() {
-        ((MainActivity) requireActivity()).mostrarCrearEjercicio();
+    /**
+     * Devuelve el ejercicio elegido a quien abrió el selector y regresa a esa pantalla.
+     * Se envían solo textos porque los modelos no implementan Parcelable ni Serializable.
+     */
+    private void seleccionarEjercicio(Ejercicio ejercicio) {
+        Bundle datosEjercicio = new Bundle();
+        datosEjercicio.putString(RESULT_NOMBRE_EJERCICIO, ejercicio.getNombre());
+        datosEjercicio.putString(RESULT_GRUPO_MUSCULAR, ejercicio.getGrupoMuscular());
+
+        getParentFragmentManager().setFragmentResult(REQUEST_SELECCION_EJERCICIO, datosEjercicio);
+        ((MainActivity) requireActivity()).regresar();
     }
 
     private void seleccionarChip(TextView seleccionado, String grupoMuscular) {

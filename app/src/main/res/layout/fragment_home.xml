@@ -432,19 +432,10 @@
                             android:textColor="@color/colorTextPrimary"
                             android:textSize="17sp"
                             android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvCategoriaRutina"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/tvCategoriaRutina"
-                            android:textColor="@color/colorTextSecondary"
-                            android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Fila de datos: duración | ejercicios | nivel -->
+                <!-- Fila de datos: duración | ejercicios -->
                 <LinearLayout
                     android:id="@+id/layoutDatosRutina"
                     android:layout_width="match_parent"
@@ -510,39 +501,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/spacing_xs"
                             android:text="@string/tvEjerciciosRutina"
-                            android:textColor="@color/colorTextStrong"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/tvSeparador2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tvSeparador2"
-                        android:textColor="@color/colorIconSubtle"
-                        android:textSize="12sp" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/imgNivel"
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:contentDescription="@string/tvNivelRutina"
-                            android:src="@drawable/ic_speed"
-                            app:tint="@color/colorTextTertiary" />
-
-                        <TextView
-                            android:id="@+id/tvNivelRutina"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/spacing_xs"
-                            android:text="@string/tvNivelRutina"
                             android:textColor="@color/colorTextStrong"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -647,11 +605,11 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/tvDetalleEjercicio1"
+                            android:id="@+id/tvGrupoMuscularEjercicio1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="@string/tvDetalleEjercicio1"
+                            android:text="@string/tvGrupoMuscularEjercicio1"
                             android:textColor="@color/colorTextTertiary"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -707,11 +665,11 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/tvDetalleEjercicio2"
+                            android:id="@+id/tvGrupoMuscularEjercicio2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="@string/tvDetalleEjercicio2"
+                            android:text="@string/tvGrupoMuscularEjercicio2"
                             android:textColor="@color/colorTextTertiary"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -767,11 +725,11 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/tvDetalleEjercicio3"
+                            android:id="@+id/tvGrupoMuscularEjercicio3"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="@string/tvDetalleEjercicio3"
+                            android:text="@string/tvGrupoMuscularEjercicio3"
                             android:textColor="@color/colorTextTertiary"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -827,11 +785,11 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/tvDetalleEjercicio4"
+                            android:id="@+id/tvGrupoMuscularEjercicio4"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="@string/tvDetalleEjercicio4"
+                            android:text="@string/tvGrupoMuscularEjercicio4"
                             android:textColor="@color/colorTextTertiary"
                             android:textSize="12sp" />
                     </LinearLayout>

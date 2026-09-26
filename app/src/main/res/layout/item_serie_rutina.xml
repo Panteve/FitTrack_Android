@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fila de una serie: número, peso objetivo y repeticiones, todo en una sola línea. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutSerieRutina"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/spacing_xs"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tvNumeroSerie"
+        android:layout_width="@dimen/badge_number_size"
+        android:layout_height="@dimen/badge_number_size"
+        android:background="@drawable/bg_number_badge"
+        android:gravity="center"
+        android:text="@string/tvNumeroSerie"
+        android:textColor="@color/colorPrimary"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etPesoObjetivoSerie"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/button_height_standard"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:layout_weight="1.2"
+        android:background="@drawable/bg_input"
+        android:gravity="center"
+        android:hint="@string/etPesoObjetivoSerie_hint"
+        android:importantForAutofill="no"
+        android:inputType="numberDecimal"
+        android:maxLines="1"
+        android:paddingHorizontal="@dimen/spacing_sm"
+        android:singleLine="true"
+        android:textColor="@color/colorTextPrimary"
+        android:textColorHint="@color/colorTextStrong"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/etRepeticionesSerie"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/button_height_standard"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:layout_weight="0.8"
+        android:background="@drawable/bg_input"
+        android:gravity="center"
+        android:hint="@string/etRepeticionesSerie_hint"
+        android:importantForAutofill="no"
+        android:inputType="number"
+        android:maxLines="1"
+        android:paddingHorizontal="@dimen/spacing_sm"
+        android:singleLine="true"
+        android:textColor="@color/colorTextPrimary"
+        android:textColorHint="@color/colorTextStrong"
+        android:textSize="14sp" />
+</LinearLayout>

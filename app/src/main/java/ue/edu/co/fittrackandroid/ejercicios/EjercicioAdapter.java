@@ -4,7 +4,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,15 +15,23 @@ import java.util.Locale;
 import ue.edu.co.fittrackandroid.R;
 
 /**
- * Adapter para la lista de ejercicios. Permite filtrar por nombre desde el buscador.
+ * Adapter para la lista de ejercicios. Permite filtrar por nombre desde el buscador
+ * y avisa cuándo el usuario toca un ejercicio.
  */
 public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.EjercicioViewHolder> {
 
+    /** Callback que recibe el ejercicio que el usuario tocó en la lista. */
+    public interface OnEjercicioClickListener {
+        void onEjercicioClick(Ejercicio ejercicio);
+    }
+
     private final List<Ejercicio> listaCompleta;
     private final List<Ejercicio> listaFiltrada = new ArrayList<>();
+    private final OnEjercicioClickListener listener;
 
-    public EjercicioAdapter(List<Ejercicio> lista) {
+    public EjercicioAdapter(List<Ejercicio> lista, OnEjercicioClickListener listener) {
         this.listaCompleta = lista;
+        this.listener = listener;
         listaFiltrada.addAll(lista);
     }
 
@@ -38,7 +45,7 @@ public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.Ejer
 
     @Override
     public void onBindViewHolder(@NonNull EjercicioViewHolder holder, int position) {
-        holder.asignar(listaFiltrada.get(position));
+        holder.asignar(listaFiltrada.get(position), listener);
     }
 
     @Override
@@ -58,7 +65,7 @@ public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.Ejer
 
             boolean coincideTexto = busqueda.isEmpty()
                     || ejercicio.getNombre().toLowerCase(Locale.getDefault()).contains(busqueda)
-                    || ejercicio.getSubtitulo().toLowerCase(Locale.getDefault()).contains(busqueda);
+                    || ejercicio.getGrupoMuscular().toLowerCase(Locale.getDefault()).contains(busqueda);
 
             if (coincideGrupo && coincideTexto) {
                 listaFiltrada.add(ejercicio);
@@ -71,19 +78,18 @@ public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.Ejer
     static class EjercicioViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView tvNombre;
-        private final TextView tvSubtitulo;
+        private final TextView tvGrupoMuscular;
 
         EjercicioViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombre = itemView.findViewById(R.id.tvNombreEjercicio);
-            tvSubtitulo = itemView.findViewById(R.id.tvSubtituloEjercicio);
+            tvGrupoMuscular = itemView.findViewById(R.id.tvGrupoMuscularEjercicio);
         }
 
-        void asignar(Ejercicio ejercicio) {
+        void asignar(Ejercicio ejercicio, OnEjercicioClickListener listener) {
             tvNombre.setText(ejercicio.getNombre());
-            tvSubtitulo.setText(ejercicio.getSubtitulo());
-            itemView.setOnClickListener(v -> Toast.makeText(v.getContext(),
-                    "Ver detalles: " + ejercicio.getNombre(), Toast.LENGTH_SHORT).show());
+            tvGrupoMuscular.setText(ejercicio.getGrupoMuscular());
+            itemView.setOnClickListener(v -> listener.onEjercicioClick(ejercicio));
         }
     }
 }

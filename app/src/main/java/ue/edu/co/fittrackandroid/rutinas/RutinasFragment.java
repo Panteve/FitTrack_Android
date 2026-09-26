@@ -50,7 +50,7 @@ public class RutinasFragment extends Fragment {
         tvCantidadPlanes.setText(getString(R.string.tvCantidadPlanes, planes.size()));
 
         btnNuevaRutina.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Crear nueva rutina próximamente", Toast.LENGTH_SHORT).show());
+                ((MainActivity) requireActivity()).mostrarCrearRutina());
 
         btnEmpezarRutinaVacia.setOnClickListener(v ->
                 Toast.makeText(requireContext(), "Empezar rutina vacía próximamente", Toast.LENGTH_SHORT).show());
