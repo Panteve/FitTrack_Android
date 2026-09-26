@@ -60,6 +60,8 @@ Todo `id` de un elemento en un layout XML debe llevar un prefijo que indique su 
 | CheckBox | `cb` | `cbCompletado` |
 | Spinner | `sp` | `spCategoria` |
 | ProgressBar | `pb` | `pbCarga` |
+| ScrollView | `sv` | `svLogin`, `svCrearEjercicio`, `svPerfil` |
+| View (separador) | `view` | `viewSeparadorUltimoEntrenamiento` |
 
 Si aparece un elemento que no está en esta tabla, usar un prefijo corto y consistente con el mismo criterio (ej. `sw` para Switch) y avisar para agregarlo a esta lista.
 

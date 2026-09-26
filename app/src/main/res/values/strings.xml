@@ -183,4 +183,41 @@
     <string name="tvLabelRepeticiones">REPETICIONES</string>
     <string name="tvValorRepeticiones">Seleccionar</string>
     <string name="cdRepeticiones">Seleccionar repeticiones</string>
+
+    <!-- PerfilFragment -->
+    <string name="cdFotoPerfil">Foto de perfil</string>
+    <string name="cdCambiarFoto">Cambiar la foto de perfil</string>
+    <string name="btnCambiarFoto">CAMBIAR FOTO</string>
+    <string name="tvLabelDatosPersonales">DATOS PERSONALES</string>
+    <string name="tvLabelNombrePerfil">NOMBRE</string>
+    <string name="etNombrePerfil_hint">Tu nombre</string>
+    <string name="etNombrePerfil_error">Ingresa tu nombre</string>
+    <string name="btnGuardarNombre">GUARDAR NOMBRE</string>
+    <string name="tvLabelCorreoPerfil">CORREO ELECTRÓNICO</string>
+    <!-- TODO: Reemplazar por el correo del usuario autenticado cuando exista la sesión real. -->
+    <string name="tvCorreoPerfil">alex.ramirez@correo.com</string>
+    <string name="tvTituloUltimosEntrenamientos">ÚLTIMOS ENTRENAMIENTOS</string>
+    <string name="tvCantidadUltimosEntrenamientos">%1$d REGISTROS</string>
+    <string name="tvSinEntrenamientos">Todavía no has registrado entrenamientos</string>
+    <string name="btnCerrarSesion">CERRAR SESIÓN</string>
+    <string name="tvTituloCerrarSesion">Cerrar sesión</string>
+    <string name="tvMensajeCerrarSesion">¿Seguro que quieres salir de FitTrack? Tus rutinas y tu nombre se guardarán.</string>
+    <string name="btnConfirmarCerrarSesion">CERRAR SESIÓN</string>
+    <string name="btnCancelarCerrarSesion">CANCELAR</string>
+    <string name="tvNombreInicialPerfil">Alex Ramírez</string>
+
+    <!-- item_ultimo_entrenamiento.xml -->
+    <string name="tvNombreUltimoEntrenamiento">Nombre de la rutina</string>
+    <string name="tvDetalleUltimoEntrenamiento">%1$s  •  %2$d min</string>
+
+    <!-- Datos de ejemplo de los últimos entrenamientos -->
+    <string name="tvNombreUltimoEntrenamiento1">Pierna y abdomen</string>
+    <string name="tvFechaUltimoEntrenamiento1">24 de mayo</string>
+    <string name="duracionUltimoEntrenamiento1">58</string>
+    <string name="tvNombreUltimoEntrenamiento2">Pecho y tríceps</string>
+    <string name="tvFechaUltimoEntrenamiento2">22 de mayo</string>
+    <string name="duracionUltimoEntrenamiento2">45</string>
+    <string name="tvNombreUltimoEntrenamiento3">Espalda y bíceps</string>
+    <string name="tvFechaUltimoEntrenamiento3">20 de mayo</string>
+    <string name="duracionUltimoEntrenamiento3">52</string>
 </resources>

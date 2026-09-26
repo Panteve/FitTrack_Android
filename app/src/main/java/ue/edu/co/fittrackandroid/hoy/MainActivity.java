@@ -21,6 +21,7 @@ import ue.edu.co.fittrackandroid.HomeFragment;
 import ue.edu.co.fittrackandroid.ejercicios.CrearEjercicioFragment;
 import ue.edu.co.fittrackandroid.ejercicios.EjerciciosFragment;
 import ue.edu.co.fittrackandroid.login.LoginFragment;
+import ue.edu.co.fittrackandroid.perfil.PerfilFragment;
 import ue.edu.co.fittrackandroid.rutinas.RutinasFragment;
 import ue.edu.co.fittrackandroid.R;
 
@@ -103,8 +104,7 @@ public class MainActivity extends AppCompatActivity {
         if (itemId == R.id.navigation_inicio) {
             return new HomeFragment();
         } else if (itemId == R.id.navigation_perfil) {
-            // TODO: Navegar a Perfil
-            return null;
+            return new PerfilFragment();
         } else if (itemId == R.id.navigation_rutinas) {
             return new RutinasFragment();
         }
@@ -210,6 +210,18 @@ public class MainActivity extends AppCompatActivity {
     /** Retrocede a la pantalla anterior si hay una en la pila. */
     public void regresar() {
         onBackPressed();
+    }
+
+    /**
+     * Cierra la sesión activa y vuelve al login.
+     * Solo se borran los datos que representan la sesión; el nombre y la foto del perfil
+     * se conservan en sus propias preferencias.
+     */
+    public void cerrarSesion() {
+        // TODO: Eliminar también el token / credenciales cuando exista autenticación real.
+        getSharedPreferences("sesion", MODE_PRIVATE).edit().clear().apply();
+        limpiarBackStack();
+        mostrarLogin();
     }
 
 
