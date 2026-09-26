@@ -35,7 +35,6 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         TextView tvFecha = view.findViewById(R.id.tvFecha);
-        Button btnEditarRutina = view.findViewById(R.id.btnEditarRutina);
         Button btnNuevoEjercicio = view.findViewById(R.id.btnNuevoEjercicio);
         btnIniciarEntrenamiento = view.findViewById(R.id.btnIniciarEntrenamiento);
         btnFabAgregar = view.findViewById(R.id.btnFabAgregar);
@@ -43,8 +42,6 @@ public class HomeFragment extends Fragment {
         tvFecha.setText(getString(R.string.tvFecha, formatearFechaHoy()));
 
         btnIniciarEntrenamiento.setOnClickListener(v -> iniciarEntrenamiento());
-        btnEditarRutina.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Edición de rutina próximamente", Toast.LENGTH_SHORT).show());
         btnNuevoEjercicio.setOnClickListener(v ->
                 Toast.makeText(requireContext(), "Nuevo ejercicio próximamente", Toast.LENGTH_SHORT).show());
         btnFabAgregar.setOnClickListener(v ->

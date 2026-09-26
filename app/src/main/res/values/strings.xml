@@ -30,8 +30,6 @@
     <string name="tvBienvenida">Bienvenido: Alex (Usuario)</string>
 
     <string name="tvTituloRegistroSemanal">REGISTRO SEMANAL</string>
-    <string name="tvBadgeDias">3 / 5 DÍAS</string>
-    <string name="tvAyudaRegistro">Marque los días asistidos al gimnasio:</string>
     <string name="tvDiaLunes">LUN</string>
     <string name="tvNumeroLunes">27</string>
     <string name="tvDiaMartes">MAR</string>
@@ -75,12 +73,9 @@
 
     <string name="tvConsejo">Consejo: Mantén los descansos de 90 segundos para optimizar la hipertrofia hoy.</string>
 
-    <string name="btnEditarRutina">EDITAR RUTINA</string>
     <string name="btnNuevoEjercicio">+ NUEVO EJERCICIO</string>
 
     <string name="tvNavInicio">Inicio</string>
     <string name="tvNavRutinas">Rutinas</string>
     <string name="tvNavPerfil">Perfil</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

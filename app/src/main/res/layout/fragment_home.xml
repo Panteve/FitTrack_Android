@@ -79,7 +79,6 @@
                 android:elevation="@dimen/elevation_card"
                 android:orientation="vertical"
                 android:padding="@dimen/spacing_md">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -96,27 +95,7 @@
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/tvBadgeDias"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_badge_teal"
-                        android:paddingHorizontal="@dimen/spacing_sm"
-                        android:paddingVertical="2dp"
-                        android:text="@string/tvBadgeDias"
-                        android:textColor="@color/colorOnPrimary"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tvAyudaRegistro"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:text="@string/tvAyudaRegistro"
-                    android:textColor="@color/colorTextTertiary"
-                    android:textSize="12sp" />
 
                 <!-- Rejilla de 7 días -->
                 <LinearLayout
@@ -867,42 +846,18 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Botones secundarios -->
-            <LinearLayout
-                android:id="@+id/layoutAcciones"
+            <!-- Botón principal -->
+            <Button
+                android:id="@+id/btnNuevoEjercicio"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_sm"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnEditarRutina"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/button_height_compact"
-                    android:layout_marginEnd="@dimen/spacing_xs"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_button_neutral"
-                    android:letterSpacing="0.05"
-                    android:text="@string/btnEditarRutina"
-                    android:textAllCaps="true"
-                    android:textColor="@color/colorTextStrong"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/btnNuevoEjercicio"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/button_height_compact"
-                    android:layout_marginStart="@dimen/spacing_xs"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_button_confirm"
-                    android:letterSpacing="0.05"
-                    android:text="@string/btnNuevoEjercicio"
-                    android:textAllCaps="true"
-                    android:textColor="@color/colorOnConfirm"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:layout_height="@dimen/button_height_compact"
+                android:background="@drawable/bg_button_confirm"
+                android:letterSpacing="0.05"
+                android:text="@string/btnNuevoEjercicio"
+                android:textAllCaps="true"
+                android:textColor="@color/colorOnConfirm"
+                android:textSize="13sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </ScrollView>
 
