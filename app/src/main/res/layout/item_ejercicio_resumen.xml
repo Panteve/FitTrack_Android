@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tarjeta de un ejercicio del resumen: nombre, grupo muscular y la lista de series
+     realizadas. No tiene opciones de menú, botones ni checks. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cardEjercicioResumen"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_sm"
+    android:background="@drawable/bg_card"
+    android:elevation="@dimen/elevation_card"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_md">
+
+    <TextView
+        android:id="@+id/tvNombreEjercicioResumen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tvNombreEjercicioResumen"
+        android:textColor="@color/colorTextPrimary"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvGrupoMuscularEjercicioResumen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="@string/tvGrupoMuscularEjercicioResumen"
+        android:textColor="@color/colorTextSecondary"
+        android:textSize="12sp" />
+
+    <!-- Las filas de series se inflan desde ResumenEjercicioAdapter. -->
+    <LinearLayout
+        android:id="@+id/layoutSeriesEjercicioResumen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:orientation="vertical" />
+</LinearLayout>

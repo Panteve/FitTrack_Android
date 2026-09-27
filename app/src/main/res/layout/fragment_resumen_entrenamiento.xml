@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pantalla de solo lectura con el resultado de un entrenamiento terminado:
+     nombre, fecha y hora, métricas finales, distribución de grupos musculares y
+     los ejercicios con sus series realizadas. Todo el contenido se desplaza aquí,
+     por eso el RecyclerView de ejercicios no hace scroll propio. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutResumenEntrenamiento"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <ScrollView
+        android:id="@+id/svResumenEntrenamiento"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/layoutContenidoResumenEntrenamiento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <!-- Cabecera: nombre del entrenamiento y día y hora reales en que se hizo -->
+            <LinearLayout
+                android:id="@+id/layoutCabeceraResumenEntrenamiento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:background="@color/colorSurfaceHeader"
+                android:elevation="@dimen/elevation_card"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_md">
+
+                <TextView
+                    android:id="@+id/tvNombreResumenEntrenamiento"
+                    style="@style/FitTrack.Text.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tvNombreResumenEntrenamiento" />
+
+                <TextView
+                    android:id="@+id/tvFechaResumenEntrenamiento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="@string/tvFechaResumenEntrenamiento"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Métricas finales: duración, volumen y series completadas sobre totales -->
+            <LinearLayout
+                android:id="@+id/layoutMetricasResumenEntrenamiento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:background="@drawable/bg_card"
+                android:baselineAligned="false"
+                android:elevation="@dimen/elevation_card"
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:id="@+id/layoutDuracionResumenEntrenamiento"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelDuracionResumenEntrenamiento"
+                        style="@style/FitTrack.Text.Label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tvLabelDuracionResumenEntrenamiento" />
+
+                    <TextView
+                        android:id="@+id/tvDuracionResumenEntrenamiento"
+                        style="@style/FitTrack.Text.Metric"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:maxLines="1"
+                        android:text="@string/tvDuracionResumenEntrenamiento"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewSeparadorResumenVolumen"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="@dimen/spacing_sm"
+                    android:background="@color/colorDivider" />
+
+                <LinearLayout
+                    android:id="@+id/layoutVolumenResumenEntrenamiento"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelVolumenResumenEntrenamiento"
+                        style="@style/FitTrack.Text.Label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tvLabelVolumenResumenEntrenamiento" />
+
+                    <TextView
+                        android:id="@+id/tvVolumenResumenEntrenamiento"
+                        style="@style/FitTrack.Text.Metric"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:maxLines="1"
+                        android:text="@string/tvVolumenResumenEntrenamiento"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewSeparadorResumenSeries"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="@dimen/spacing_sm"
+                    android:background="@color/colorDivider" />
+
+                <LinearLayout
+                    android:id="@+id/layoutSeriesResumenEntrenamiento"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelSeriesResumenEntrenamiento"
+                        style="@style/FitTrack.Text.Label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tvLabelSeriesResumenEntrenamiento" />
+
+                    <TextView
+                        android:id="@+id/tvSeriesResumenEntrenamiento"
+                        style="@style/FitTrack.Text.Metric"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:maxLines="1"
+                        android:text="@string/tvSeriesResumenEntrenamiento"
+                        android:textSize="18sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvTituloGruposMuscularesResumen"
+                style="@style/FitTrack.Text.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tvTituloGruposMuscularesResumen" />
+
+            <!-- Una fila por grupo muscular; son pocas, así que no hace falta otro RecyclerView. -->
+            <LinearLayout
+                android:id="@+id/layoutGruposMuscularesResumen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md" />
+
+            <TextView
+                android:id="@+id/tvTituloEjerciciosResumen"
+                style="@style/FitTrack.Text.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tvTituloEjerciciosResumen" />
+
+            <!-- El desplazamiento lo maneja svResumenEntrenamiento, por eso el RecyclerView
+                 se ajusta a su contenido y no hace scroll propio. -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvEjerciciosResumen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never" />
+
+            <TextView
+                android:id="@+id/tvResumenSinEjercicios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:text="@string/tvResumenSinEjercicios"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="13sp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

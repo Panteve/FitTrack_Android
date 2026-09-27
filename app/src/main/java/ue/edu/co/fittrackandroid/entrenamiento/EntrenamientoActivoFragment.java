@@ -23,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import ue.edu.co.fittrackandroid.R;
@@ -501,11 +503,61 @@ public class EntrenamientoActivoFragment extends Fragment
     }
 
     private void terminarEntrenamiento() {
-        // TODO: Guardar el entrenamiento y actualizar los últimos entrenamientos del perfil
-        //       cuando exista la capa de persistencia.
-        Toast.makeText(requireContext(), "Entrenamiento terminado", Toast.LENGTH_SHORT).show();
+        // Se copian los datos finales antes de cerrar la sesión, porque después de esto
+        // el entrenamiento en curso deja de existir.
+        ResumenEntrenamiento resumen = crearResumenFinal();
+
         detenerActualizacionesVisuales();
-        activity.cerrarEntrenamientoEnCurso();
+        // TODO: Agregar el entrenamiento a los últimos entrenamientos de Inicio y al
+        //       historial cuando exista la capa de persistencia.
+        activity.mostrarResumenEntrenamiento(resumen);
+    }
+
+    /**
+     * Arma la copia de solo lectura del entrenamiento terminado.
+     *
+     * <p>Solo se copian las series completadas y con valores válidos, y los ejercicios que
+     * se quedan sin ninguna serie completada no aparecen en el resumen. El resultado no
+     * guarda ninguna referencia a la sesión en curso, así que puede mostrarse aunque la
+     * sesión ya haya sido borrada.
+     */
+    private ResumenEntrenamiento crearResumenFinal() {
+        List<EjercicioResumen> ejerciciosResumen = new ArrayList<>();
+
+        for (EjercicioEntrenamiento ejercicio : entrenamiento.getEjercicios()) {
+            List<SerieResumen> seriesResumen = new ArrayList<>();
+
+            for (SerieEntrenamiento serie : ejercicio.getSeries()) {
+                if (serie.isCompletada() && serie.tieneDatosValidos()) {
+                    seriesResumen.add(new SerieResumen(serie.obtenerPesoNumerico(),
+                            serie.obtenerRepeticionesNumericas()));
+                }
+            }
+
+            if (seriesResumen.isEmpty()) {
+                continue;
+            }
+
+            ejerciciosResumen.add(new EjercicioResumen(ejercicio.getNombre(),
+                    grupoMuscularDe(ejercicio), seriesResumen));
+        }
+
+        return new ResumenEntrenamiento(entrenamiento.getNombre(),
+                entrenamiento.getFechaHoraInicio(),
+                entrenamiento.getSegundosTranscurridos(),
+                contarSeriesTotales(),
+                ejerciciosResumen);
+    }
+
+    /**
+     * @return el grupo muscular del ejercicio, o un nombre de respaldo cuando la sesión se
+     *         inició desde una rutina que aún no traía ese dato.
+     */
+    private String grupoMuscularDe(EjercicioEntrenamiento ejercicio) {
+        if (ejercicio.getGrupoMuscular() == null || ejercicio.getGrupoMuscular().trim().isEmpty()) {
+            return getString(R.string.tvGrupoMuscularResumen_fallback);
+        }
+        return ejercicio.getGrupoMuscular();
     }
 
     /** Pide confirmación antes de descartar la sesión y todo lo registrado en ella. */

@@ -55,8 +55,12 @@ public class LoginFragment extends Fragment {
 
         btnIniciarSesion.setOnClickListener(v -> iniciarSesion());
         btnOjoContrasena.setOnClickListener(v -> alternarVisibilidadContrasena());
+
+        // TODO: Implementar el flujo para recuperar la contraseña mediante el correo del usuario.
         tvRecuperarClave.setOnClickListener(v ->
                 Toast.makeText(requireContext(), "Recuperación de contraseña próximamente", Toast.LENGTH_SHORT).show());
+
+        // TODO: Crear CrearCuentaFragment y navegar hacia él mediante MainActivity.
         btnCrearCuenta.setOnClickListener(v ->
                 Toast.makeText(requireContext(), "Registro próximamente", Toast.LENGTH_SHORT).show());
 
@@ -64,10 +68,21 @@ public class LoginFragment extends Fragment {
     }
 
     private void iniciarSesion() {
+        // TODO: Validar que el correo tenga un formato correcto y que la contraseña no esté vacía.
+        // Los errores deben mostrarse en tvErrorCorreo y tvErrorContrasena antes de continuar.
         mostrarCargando(true);
+
+        // TODO: Reemplazar esta espera simulada por la autenticación real contra el backend
+        // o la base de datos. Las credenciales no deben quedar hardcodeadas en la aplicación.
         btnIniciarSesion.postDelayed(() -> {
-            // TODO: Validar credenciales reales contra backend / base de datos
-            // Si login OK → guardar sesión (SharedPreferences, token, etc.)
+            // TODO: Procesar por separado las respuestas de acceso exitoso, credenciales
+            // incorrectas y errores de conexión. Si ocurre un error, llamar a
+            // mostrarCargando(false) y mostrar el mensaje correspondiente.
+
+            // TODO: Cuando el acceso sea exitoso, guardar el token y los datos mínimos de
+            // la sesión antes de abrir Home. No guardar la contraseña del usuario.
+
+            // TODO: Eliminar esta navegación directa cuando la autenticación real esté lista.
             ((MainActivity) requireActivity()).mostrarHome();
         }, 900);
     }

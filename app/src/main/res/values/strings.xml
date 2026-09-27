@@ -301,6 +301,36 @@
     <string name="btnConfirmarDescartarEntrenamiento">DESCARTAR</string>
     <string name="btnCancelarDescartarEntrenamiento">CANCELAR</string>
 
+    <!-- ResumenEntrenamientoFragment: pantalla de solo lectura del entrenamiento terminado -->
+    <string name="tvToolbarTituloResumenEntrenamiento">Resumen del entreno</string>
+    <string name="tvNombreResumenEntrenamiento">Nombre del entrenamiento</string>
+    <!-- Nombre de respaldo cuando el entrenamiento se inició sin nombre de rutina. -->
+    <string name="tvNombreResumenEntrenamiento_fallback">Entrenamiento libre</string>
+    <string name="tvFechaResumenEntrenamiento">%1$s  •  %2$s</string>
+    <string name="tvLabelDuracionResumenEntrenamiento">DURACIÓN</string>
+    <string name="tvDuracionResumenEntrenamiento">00:00:00</string>
+    <string name="tvLabelVolumenResumenEntrenamiento">VOLUMEN</string>
+    <string name="tvVolumenResumenEntrenamiento">%1$s kg</string>
+    <string name="tvLabelSeriesResumenEntrenamiento">SERIES</string>
+    <string name="tvSeriesResumenEntrenamiento">%1$d/%2$d</string>
+    <string name="tvTituloGruposMuscularesResumen">GRUPOS MUSCULARES TRABAJADOS</string>
+    <string name="tvTituloEjerciciosResumen">EJERCICIOS REALIZADOS</string>
+    <string name="tvResumenSinEjercicios">No se registraron ejercicios en este entrenamiento</string>
+
+    <!-- item_grupo_muscular_resumen.xml -->
+    <string name="tvNombreGrupoMuscularResumen">Grupo muscular</string>
+    <string name="tvPorcentajeGrupoMuscularResumen">%1$d %%</string>
+    <!-- Nombre de respaldo para los ejercicios iniciados sin grupo muscular conocido. -->
+    <string name="tvGrupoMuscularResumen_fallback">Sin grupo</string>
+
+    <!-- item_ejercicio_resumen.xml -->
+    <string name="tvNombreEjercicioResumen">Nombre del ejercicio</string>
+    <string name="tvGrupoMuscularEjercicioResumen">Grupo muscular</string>
+
+    <!-- item_serie_resumen.xml -->
+    <string name="tvNumeroSerieResumen">1</string>
+    <string name="tvDetalleSerieResumen">%1$s kg × %2$d reps</string>
+
     <!-- Datos de ejemplo de los últimos entrenamientos -->
     <string name="tvNombreUltimoEntrenamiento1">Pierna y abdomen</string>
     <string name="tvFechaUltimoEntrenamiento1">24 de mayo</string>
@@ -311,4 +341,10 @@
     <string name="tvNombreUltimoEntrenamiento3">Espalda y bíceps</string>
     <string name="tvFechaUltimoEntrenamiento3">20 de mayo</string>
     <string name="duracionUltimoEntrenamiento3">52</string>
+
+    <!-- Grupos musculares de los ejercicios de ejemplo de los últimos entrenamientos -->
+    <string name="tvGrupoMuscularEjemploPecho">Pecho</string>
+    <string name="tvGrupoMuscularEjemploTriceps">Tríceps</string>
+    <string name="tvGrupoMuscularEjemploEspalda">Espalda</string>
+    <string name="tvGrupoMuscularEjemploBiceps">Bíceps</string>
 </resources>

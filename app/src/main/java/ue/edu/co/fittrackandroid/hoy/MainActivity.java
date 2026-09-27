@@ -28,6 +28,8 @@ import ue.edu.co.fittrackandroid.ejercicios.EjerciciosFragment;
 import ue.edu.co.fittrackandroid.entrenamiento.EjercicioEntrenamiento;
 import ue.edu.co.fittrackandroid.entrenamiento.EntrenamientoActivoFragment;
 import ue.edu.co.fittrackandroid.entrenamiento.EntrenamientoEnCurso;
+import ue.edu.co.fittrackandroid.entrenamiento.ResumenEntrenamiento;
+import ue.edu.co.fittrackandroid.entrenamiento.ResumenEntrenamientoFragment;
 import ue.edu.co.fittrackandroid.login.LoginFragment;
 import ue.edu.co.fittrackandroid.perfil.PerfilFragment;
 import ue.edu.co.fittrackandroid.rutinas.CrearRutinaFragment;
@@ -62,6 +64,13 @@ public class MainActivity extends AppCompatActivity {
      */
     private EntrenamientoEnCurso entrenamientoEnCurso;
 
+    /**
+     * Resumen del último entrenamiento terminado que se está mostrando.
+     * Vive en la Activity porque todavía no existe el historial guardado.
+     * TODO: Reemplazar por el entrenamiento leído del almacenamiento cuando exista.
+     */
+    private ResumenEntrenamiento resumenEntrenamientoActual;
+
     /** Reloj de la isla del entrenamiento minimizado. */
     private final Handler handlerIsla = new Handler(Looper.getMainLooper());
 
@@ -92,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
         configurarBottomNavigation();
 
         if (savedInstanceState == null) {
-            // TODO: Verificar si hay sesión guardada (SharedPreferences, token, etc.)
             boolean haySesionActiva = verificarSesionActiva();
 
             if (haySesionActiva) {
@@ -108,14 +116,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         handlerIsla.removeCallbacksAndMessages(null);
     }
-
-    /**
-     * TODO: Implementar verificación real de sesión.
-     * Ejemplos:
-     * - SharedPreferences: getSharedPreferences("session", MODE_PRIVATE).getBoolean("logged_in", false)
-     * - Token JWT: comprobar expiración
-     * - DataStore / Room: leer usuario actual
-     */
 
     private void configurarBottomNavigation(){
         bottomNavigation.setOnItemSelectedListener(item -> {
@@ -172,8 +172,14 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
+    /**
+     * TODO: Consultar la sesión guardada y comprobar que el token exista y siga vigente.
+     * Si el token expiró o no es válido, se debe limpiar la sesión local y mostrar el login.
+     *
+     * @return {@code true} cuando el usuario tenga una sesión válida.
+     */
     private boolean verificarSesionActiva() {
-        // Por ahora siempre false para que muestre login al iniciar
+        // TODO: Reemplazar este valor fijo por el resultado de la verificación del token.
         return false;
     }
 
@@ -346,10 +352,9 @@ public class MainActivity extends AppCompatActivity {
      * @param nombresEjercicios nombres de los ejercicios, uno por cada ejercicio de la sesión.
      */
     public void mostrarEntrenamientoActivo(String nombreRutina, String[] nombresEjercicios) {
-        // TODO: Guardar el nombre de la rutina dentro de la sesión y mostrarlo en el resumen.
         pedirConfirmacionSiHayEntrenamientoEnCurso(() -> {
             if (entrenamientoEnCurso == null) {
-                iniciarEntrenamientoEnCurso(nombresEjercicios);
+                iniciarEntrenamientoEnCurso(nombreRutina, nombresEjercicios);
             }
 
             abrirEntrenamientoEnCurso();
@@ -360,10 +365,15 @@ public class MainActivity extends AppCompatActivity {
      * Crea la sesión de entrenamiento con los ejercicios recibidos. Solo se usa cuando todavía
      * no hay ninguna: si el usuario ya minimizó una sesión, esa misma se reabre.
      *
+     * @param nombreRutina      nombre de la rutina que se va a entrenar.
      * @param nombresEjercicios nombres de los ejercicios, uno por cada ejercicio de la sesión.
      */
-    private void iniciarEntrenamientoEnCurso(String[] nombresEjercicios) {
-        entrenamientoEnCurso = new EntrenamientoEnCurso(SystemClock.elapsedRealtime());
+    private void iniciarEntrenamientoEnCurso(String nombreRutina, String[] nombresEjercicios) {
+        // Son dos referencias de tiempo distintas: elElapsedRealtime sirve para medir la
+        // duración aunque cambie la hora del dispositivo, y el currentTimeMillis guarda el
+        // día y la hora reales en que empezó la sesión, que luego muestra el resumen.
+        entrenamientoEnCurso = new EntrenamientoEnCurso(nombreRutina,
+                SystemClock.elapsedRealtime(), System.currentTimeMillis());
 
         for (String nombreEjercicio : nombresEjercicios) {
             // Cada ejercicio arranca con una serie editable; los objetivos de la rutina
@@ -427,6 +437,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Abre el resumen de un entrenamiento terminado. Lo usan tanto el entrenamiento en
+     * curso al confirmar "Terminar" como Inicio al pulsar un entrenamiento reciente.
+     *
+     * <p>La sesión en curso se borra antes de mostrar el resumen, y la pantalla del
+     * entrenamiento sale de la pila, así la flecha hacia atrás nunca devuelve a una sesión
+     * finalizada: se recupera la pantalla desde la que se empezó a entrenar.
+     *
+     * @param resumen copia de solo lectura del entrenamiento terminado.
+     */
+    public void mostrarResumenEntrenamiento(ResumenEntrenamiento resumen) {
+        // TODO: Reemplazar esta referencia en memoria por el historial guardado cuando exista.
+        resumenEntrenamientoActual = resumen;
+
+        descartarEntrenamientoEnCurso();
+        mostrarNavegacionInferior();
+
+        getSupportFragmentManager().popBackStackImmediate();
+        cargarFragmentConBackStack(new ResumenEntrenamientoFragment());
+    }
+
+    /**
+     * @return el resumen del entrenamiento que se está mostrando, o null si no hay ninguno.
+     */
+    public ResumenEntrenamiento obtenerResumenEntrenamientoActual() {
+        return resumenEntrenamientoActual;
+    }
+
+    /**
+     * Olvida el resumen que se está mostrando.
+     * TODO: Se usará para dejar de depender de la referencia en memoria cuando exista
+     *       el historial guardado; por ahora nadie la llama.
+     */
+    public void limpiarResumenEntrenamientoActual() {
+        resumenEntrenamientoActual = null;
+    }
+
+    /**
      * Elimina la sesión en curso: detiene su descanso, borra el estado y oculta la isla.
      * La usan el descarte de la isla y el cierre completo de la sesión.
      */
@@ -452,8 +499,11 @@ public class MainActivity extends AppCompatActivity {
         handlerIsla.post(runnableTiempoIsla);
     }
 
-    /** Oculta la isla y detiene su reloj. */
-    private void ocultarIslaEntrenamiento() {
+    /**
+     * Oculta la isla y detiene su reloj. La usan el cierre de la sesión y las pantallas
+     * que se abren con un entrenamiento ya terminado, como el resumen.
+     */
+    public void ocultarIslaEntrenamiento() {
         detenerRelojIsla();
         layoutIslaEntrenamiento.setVisibility(View.GONE);
     }
@@ -547,6 +597,7 @@ public class MainActivity extends AppCompatActivity {
         getSharedPreferences("sesion", MODE_PRIVATE).edit().clear().apply();
         // Un entrenamiento en curso no puede sobrevivir al cierre de sesión.
         descartarEntrenamientoEnCurso();
+        limpiarResumenEntrenamientoActual();
         limpiarBackStack();
         mostrarLogin();
     }

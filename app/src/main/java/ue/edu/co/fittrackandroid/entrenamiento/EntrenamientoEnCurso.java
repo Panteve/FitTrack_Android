@@ -15,12 +15,20 @@ import java.util.Locale;
  *
  * <p>Los tiempos se guardan como instantes de {@link SystemClock#elapsedRealtime()} y nunca como
  * contadores que se van sumando, así el tiempo no se altera si cambia la hora del dispositivo.
+ * Además se guarda el momento real de inicio, con {@link System#currentTimeMillis()}, que es
+ * el que se muestra como día y hora en el resumen del entrenamiento terminado.
  * Esta primera versión no guarda nada en disco: si Android cierra el proceso, la sesión se pierde.
  */
 public class EntrenamientoEnCurso {
 
     /** Instante en que empezó el entrenamiento, en milisegundos de reloj del sistema. */
     private final long instanteInicio;
+
+    /** Momento real en que empezó el entrenamiento, para mostrar el día y la hora. */
+    private final long fechaHoraInicio;
+
+    /** Nombre de la rutina que se está entrenando; puede estar vacío si no se conoce. */
+    private final String nombre;
 
     /** Ejercicios de la sesión, con sus series y el estado de cada una. */
     private final List<EjercicioEntrenamiento> ejercicios = new ArrayList<>();
@@ -32,15 +40,34 @@ public class EntrenamientoEnCurso {
     private boolean activa = true;
 
     /**
+     * @param nombre         nombre de la rutina que se está entrenando, o vacío si no se conoce.
      * @param instanteInicio momento en que comenzó el entrenamiento, con
      *                       {@link SystemClock#elapsedRealtime()}.
+     * @param fechaHoraInicio momento real en que comenzó el entrenamiento, con
+     *                        {@link System#currentTimeMillis()}.
      */
-    public EntrenamientoEnCurso(long instanteInicio) {
+    public EntrenamientoEnCurso(String nombre, long instanteInicio, long fechaHoraInicio) {
+        this.nombre = nombre;
         this.instanteInicio = instanteInicio;
+        this.fechaHoraInicio = fechaHoraInicio;
     }
 
     public long getInstanteInicio() {
         return instanteInicio;
+    }
+
+    /**
+     * @return el momento real de inicio, en milisegundos de reloj, para mostrar día y hora.
+     */
+    public long getFechaHoraInicio() {
+        return fechaHoraInicio;
+    }
+
+    /**
+     * @return el nombre de la rutina entrenada, o una cadena vacía si no se conoce.
+     */
+    public String getNombre() {
+        return nombre;
     }
 
     public List<EjercicioEntrenamiento> getEjercicios() {

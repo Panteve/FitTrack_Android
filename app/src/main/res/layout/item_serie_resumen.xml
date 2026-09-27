@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fila de una serie del resumen: solo el número de serie y el resultado realizado.
+     Es de solo lectura, por eso no tiene campos de texto ni checks. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutSerieResumen"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/spacing_xs"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tvNumeroSerieResumen"
+        android:layout_width="@dimen/badge_number_size"
+        android:layout_height="@dimen/badge_number_size"
+        android:background="@drawable/bg_number_badge"
+        android:gravity="center"
+        android:text="@string/tvNumeroSerieResumen"
+        android:textColor="@color/colorPrimary"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvDetalleSerieResumen"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:text="@string/tvDetalleSerieResumen"
+        android:textColor="@color/colorTextPrimary"
+        android:textSize="14sp" />
+</LinearLayout>

@@ -78,6 +78,32 @@ public class SerieEntrenamiento {
     }
 
     /**
+     * Convierte el peso escrito en un número, para poder copiarlo al resumen del
+     * entrenamiento terminado.
+     *
+     * @return el peso como número, o cero si el usuario no escribió un valor válido.
+     */
+    public double obtenerPesoNumerico() {
+        if (!esPesoValido()) {
+            return 0;
+        }
+        return Double.parseDouble(peso.trim().replace(',', '.'));
+    }
+
+    /**
+     * Convierte las repeticiones escritas en un número, para poder copiarlas al resumen
+     * del entrenamiento terminado.
+     *
+     * @return las repeticiones como número, o cero si no son válidas.
+     */
+    public int obtenerRepeticionesNumericas() {
+        if (!sonRepeticionesValidas()) {
+            return 0;
+        }
+        return Integer.parseInt(repeticiones.trim());
+    }
+
+    /**
      * Calcula el volumen de la serie: peso multiplicado por repeticiones.
      * Una serie que todavía no está completada, o que tiene valores inválidos,
      * no aporta nada al volumen del entrenamiento.
@@ -89,8 +115,6 @@ public class SerieEntrenamiento {
             return 0;
         }
 
-        double pesoRegistrado = Double.parseDouble(peso.trim().replace(',', '.'));
-        int repeticionesRegistradas = Integer.parseInt(repeticiones.trim());
-        return pesoRegistrado * repeticionesRegistradas;
+        return obtenerPesoNumerico() * obtenerRepeticionesNumericas();
     }
 }
