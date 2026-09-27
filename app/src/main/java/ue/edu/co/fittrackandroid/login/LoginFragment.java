@@ -13,10 +13,18 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
 import ue.edu.co.fittrackandroid.R;
+import ue.edu.co.fittrackandroid.remote.TokenManager;
+import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 /**
  * Fragment para el login del usuario.
@@ -29,7 +37,12 @@ public class LoginFragment extends Fragment {
     private Button btnIniciarSesion;
     private TextView tvErrorCorreo;
     private TextView tvErrorContrasena;
+    private TextView tvErrorCredenciales;
     private Button btnCrearCuenta;
+    private TokenManager tokenManager;
+    private LoginRepository repository;
+    private Call<LoginResponse> currentCall;
+
     private boolean contrasenaVisible = false;
 
     public LoginFragment() {
@@ -47,7 +60,7 @@ public class LoginFragment extends Fragment {
         btnIniciarSesion.setOnClickListener(v -> iniciarSesion());
         btnOjoContrasena.setOnClickListener(v -> alternarVisibilidadContrasena());
         btnCrearCuenta.setOnClickListener(v -> abrirCrearCuenta());
-
+        repository = new LoginRepository();
         return view;
     }
 
@@ -58,6 +71,7 @@ public class LoginFragment extends Fragment {
         btnIniciarSesion = view.findViewById(R.id.btnIniciarSesion);
         tvErrorCorreo = view.findViewById(R.id.tvErrorCorreo);
         tvErrorContrasena = view.findViewById(R.id.tvErrorContrasena);
+        tvErrorCredenciales = view.findViewById(R.id.tvErrorCredenciales);
         btnCrearCuenta = view.findViewById(R.id.btnCrearCuenta);
     }
 
@@ -80,32 +94,74 @@ public class LoginFragment extends Fragment {
         String contrasena = etContrasena.getText().toString().trim();
 
         if (correo.isEmpty()) {
-            Toast.makeText(requireContext(), R.string.error_correo_vacio, Toast.LENGTH_SHORT).show();
+            tvErrorCorreo.setText(R.string.error_correo_vacio);
             tvErrorCorreo.setVisibility(View.VISIBLE);
             mostrarCargando(false);
             return;
+        } else {
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+                tvErrorCorreo.setText(R.string.error_correo_invalido);
+                tvErrorCorreo.setVisibility(View.VISIBLE);
+                mostrarCargando(false);
+                return;
+            }
         }
 
         if (contrasena.isEmpty()) {
-            Toast.makeText(requireContext(), R.string.error_contrasena_vacia, Toast.LENGTH_SHORT).show();
             tvErrorContrasena.setVisibility(View.VISIBLE);
             mostrarCargando(false);
             return;
         }
 
-        // TODO: Reemplazar esta espera simulada por la autenticación real contra el backend
-        // o la base de datos. Las credenciales no deben quedar hardcodeadas en la aplicación.
-        btnIniciarSesion.postDelayed(() -> {
-            // TODO: Procesar por separado las respuestas de acceso exitoso, credenciales
-            // incorrectas y errores de conexión. Si ocurre un error, llamar a
-            // mostrarCargando(false) y mostrar el mensaje correspondiente.
+        LoginRequest loginRequest =  new LoginRequest(correo, contrasena);
+        currentCall = repository.loginUser(loginRequest);
+        currentCall.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(
+                    @NonNull Call<LoginResponse> call,
+                    @NonNull Response<LoginResponse> response
+            ) {
+                mostrarCargando(false);
 
-            // TODO: Cuando el acceso sea exitoso, guardar el token y los datos mínimos de
-            // la sesión antes de abrir Home. No guardar la contraseña del usuario.
+                if (response.isSuccessful() && response.body() != null) {
+                    tokenManager =
+                            new TokenManager(requireContext());
+                    tokenManager.guardarTokens(
+                            response.body().getToken()
+                    );
+                    ((MainActivity) requireActivity()).mostrarHome();
+                }
 
-            // TODO: Eliminar esta navegación directa cuando la autenticación real esté lista.
-            ((MainActivity) requireActivity()).mostrarHome();
-        }, 900);
+                int codigoRespuesta = response.code();
+                if (codigoRespuesta == 400 || codigoRespuesta == 401 ) {
+                    tvErrorCredenciales.setVisibility(View.VISIBLE);
+                }else if (codigoRespuesta == 404) {
+                    Toast.makeText(
+                            requireContext(),
+                            R.string.error_usuario_no_encontrado,
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+                else {
+                    ManejadorErroresApi
+                            .obtenerToast(requireContext(), codigoRespuesta)
+                            .show();
+                }
+            }
+
+            @Override
+            public void onFailure(
+                    @NonNull Call<LoginResponse> call,
+                    @NonNull Throwable throwable
+            ) {
+                mostrarCargando(false);
+
+                ManejadorErroresApi
+                        .obtenerToast(requireContext(), throwable)
+                        .show();
+            }
+        });
+
     }
 
     private void mostrarCargando(boolean cargando) {
@@ -143,6 +199,7 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                tvErrorCredenciales.setVisibility(View.GONE);
                 textoError.setVisibility(View.GONE);
                 campo.setBackgroundResource(R.drawable.bg_input);
             }

@@ -1,5 +1,15 @@
 <resources>
     <string name="app_name">FitTrackAndroid</string>
+    <string name="error_servidor">El servidor presenta problemas. Inténtalo más tarde</string>
+    <string name="error_tiempo_espera">El servidor tardó demasiado en responder</string>
+    <string name="error_respuesta_invalida">La respuesta del servidor no es válida</string>
+    <string name="error_conexion">Revisa tu conexión a internet</string>
+    <string name="error_solicitud_invalida">Los datos enviados no son válidos</string>
+    <string name="error_sesion_expirada">Tu sesión expiró. Inicia sesión nuevamente</string>
+    <string name="error_sin_permisos">No tienes permiso para realizar esta acción</string>
+    <string name="error_recurso_no_encontrado">No se encontró la información solicitada</string>
+    <string name="error_demasiadas_solicitudes">Espera un momento antes de intentarlo nuevamente</string>
+    <string name="error_desconocido">Ocurrió un error inesperado</string>
 
     <!-- LoginActivity -->
     <string name="tvToolbarTitulo">FitTrack</string>
@@ -19,6 +29,11 @@
     <string name="tvSeparador">— O —</string>
     <string name="btnCrearCuenta">CREAR CUENTA</string>
     <string name="tvVersion">v1.0 • Proyecto universitario</string>
+    <string name="error_login">No fue posible iniciar sesión</string>
+    <string name="error_usuario_no_encontrado">Usuario no encontrado</string>
+    <string name="error_correo_vacio">Correo vacio</string>
+    <string name="error_correo_invalido">Correo invalido</string>
+    <string name="error_contrasena_vacia">Contraseña vacia</string>
 
     <!-- CrearCuentaFragment -->
     <string name="tvToolbarTituloCrearCuenta">Crear cuenta</string>
@@ -372,6 +387,4 @@
     <string name="tvGrupoMuscularEjemploTriceps">Tríceps</string>
     <string name="tvGrupoMuscularEjemploEspalda">Espalda</string>
     <string name="tvGrupoMuscularEjemploBiceps">Bíceps</string>
-    <string name="error_correo_vacio">Correo vacio</string>
-    <string name="error_contrasena_vacia">Contraseña vacia</string>
 </resources>

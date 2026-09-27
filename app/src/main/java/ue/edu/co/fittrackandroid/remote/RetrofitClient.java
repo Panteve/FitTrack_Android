@@ -13,14 +13,13 @@ public final class RetrofitClient {
     private RetrofitClient() {
     }
 
-
     public static Retrofit getInstance() {
         if (retrofit == null) {
-            HttpLoggingInterceptor interceptorRegistro = new HttpLoggingInterceptor();
-            interceptorRegistro.setLevel(HttpLoggingInterceptor.Level.BASIC);
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
 
             OkHttpClient clienteHttp = new OkHttpClient.Builder()
-                    .addInterceptor(interceptorRegistro)
+                    .addInterceptor(logging)
                     .build();
 
             retrofit = new Retrofit.Builder()
