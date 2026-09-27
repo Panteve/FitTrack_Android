@@ -45,7 +45,7 @@ public class RutinasFragment extends Fragment {
         planes = crearListaPlanes();
 
         rvPlanes.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvPlanes.setAdapter(new RutinaAdapter(planes));
+        rvPlanes.setAdapter(new RutinaAdapter(planes, this::iniciarEntrenamientoConRutina));
 
         tvCantidadPlanes.setText(getString(R.string.tvCantidadPlanes, planes.size()));
 
@@ -63,6 +63,24 @@ public class RutinasFragment extends Fragment {
         super.onResume();
         // Al volver desde Ejercicios o Crear ejercicio, la toolbar debe quedar como la principal.
         ((MainActivity) requireActivity()).mostrarToolbarPrincipal();
+    }
+
+    /**
+     * Abre el entrenamiento en curso con los ejercicios del plan elegido.
+     * Solo se envían nombres porque el modelo de rutinas guarda las series como un texto
+     * de presentación, no como datos que se puedan recuperar.
+     */
+    private void iniciarEntrenamientoConRutina(Rutina rutina) {
+        List<String> nombresEjercicios = new ArrayList<>();
+        for (EjercicioRutina ejercicio : rutina.getEjercicios()) {
+            nombresEjercicios.add(ejercicio.getNombre());
+        }
+
+        // TODO: Cargar las cantidades y objetivos de cada serie cuando el modelo de rutinas
+        //       deje de guardarlos como texto de presentación.
+        ((MainActivity) requireActivity()).mostrarEntrenamientoActivo(
+                rutina.getNombre(),
+                nombresEjercicios.toArray(new String[0]));
     }
 
     /**

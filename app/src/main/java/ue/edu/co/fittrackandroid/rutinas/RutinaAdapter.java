@@ -19,13 +19,24 @@ import ue.edu.co.fittrackandroid.R;
 /**
  * Adapter para la lista de planes de entrenamiento.
  * Cada tarjeta muestra sus ejercicios con un RecyclerView anidado.
+ * El botón de iniciar no navega: avisa a la pantalla para que sea ella la que abra
+ * el entrenamiento en curso.
  */
 public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaViewHolder> {
 
-    private final List<Rutina> planes;
+    /**
+     * Callback que avisa qué plan se quiere iniciar.
+     */
+    public interface OnIniciarRutinaListener {
+        void onIniciarRutina(Rutina rutina);
+    }
 
-    public RutinaAdapter(List<Rutina> planes) {
+    private final List<Rutina> planes;
+    private final OnIniciarRutinaListener listenerIniciarRutina;
+
+    public RutinaAdapter(List<Rutina> planes, OnIniciarRutinaListener listenerIniciarRutina) {
         this.planes = planes;
+        this.listenerIniciarRutina = listenerIniciarRutina;
     }
 
     @NonNull
@@ -33,7 +44,7 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
     public RutinaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_rutina, parent, false);
-        return new RutinaViewHolder(view);
+        return new RutinaViewHolder(view, listenerIniciarRutina);
     }
 
     @Override
@@ -54,9 +65,12 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
         private final RecyclerView rvEjercicios;
         private final Button btnVerDetalles;
         private final Button btnIniciar;
+        private final OnIniciarRutinaListener listenerIniciarRutina;
 
-        RutinaViewHolder(@NonNull View itemView) {
+        RutinaViewHolder(@NonNull View itemView, OnIniciarRutinaListener listenerIniciarRutina) {
             super(itemView);
+            this.listenerIniciarRutina = listenerIniciarRutina;
+
             tvNombre = itemView.findViewById(R.id.tvNombrePlan);
             tvResumen = itemView.findViewById(R.id.tvResumenPlan);
             imgMenu = itemView.findViewById(R.id.imgMenuPlan);
@@ -76,8 +90,7 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
                     "Opciones de: " + rutina.getNombre(), Toast.LENGTH_SHORT).show());
             btnVerDetalles.setOnClickListener(v -> Toast.makeText(v.getContext(),
                     "Ver detalles: " + rutina.getNombre(), Toast.LENGTH_SHORT).show());
-            btnIniciar.setOnClickListener(v -> Toast.makeText(v.getContext(),
-                    "Iniciar: " + rutina.getNombre(), Toast.LENGTH_SHORT).show());
+            btnIniciar.setOnClickListener(v -> listenerIniciarRutina.onIniciarRutina(rutina));
         }
     }
 }

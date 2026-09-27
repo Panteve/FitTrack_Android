@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fila de una serie del entrenamiento en curso: número, peso, repeticiones y check,
+     todo en una sola línea. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutSerieEntrenamiento"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/spacing_xs"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tvNumeroSerieEntrenamiento"
+        android:layout_width="@dimen/badge_number_size"
+        android:layout_height="@dimen/badge_number_size"
+        android:background="@drawable/bg_number_badge"
+        android:gravity="center"
+        android:text="@string/tvNumeroSerieEntrenamiento"
+        android:textColor="@color/colorPrimary"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etPesoSerieEntrenamiento"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/button_height_standard"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:layout_weight="1.2"
+        android:background="@drawable/bg_input"
+        android:gravity="center"
+        android:hint="@string/etPesoSerieEntrenamiento_hint"
+        android:importantForAutofill="no"
+        android:inputType="numberDecimal"
+        android:maxLines="1"
+        android:paddingHorizontal="@dimen/spacing_sm"
+        android:singleLine="true"
+        android:textColor="@color/colorTextPrimary"
+        android:textColorHint="@color/colorTextStrong"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/etRepeticionesSerieEntrenamiento"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/button_height_standard"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:layout_weight="0.8"
+        android:background="@drawable/bg_input"
+        android:gravity="center"
+        android:hint="@string/etRepeticionesSerieEntrenamiento_hint"
+        android:importantForAutofill="no"
+        android:inputType="number"
+        android:maxLines="1"
+        android:paddingHorizontal="@dimen/spacing_sm"
+        android:singleLine="true"
+        android:textColor="@color/colorTextPrimary"
+        android:textColorHint="@color/colorTextStrong"
+        android:textSize="14sp" />
+
+    <CheckBox
+        android:id="@+id/cbSerieCompletada"
+        android:layout_width="@dimen/check_serie_width"
+        android:layout_height="@dimen/button_height_standard"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:buttonTint="@color/colorPrimary"
+        android:contentDescription="@string/cbSerieCompletada"
+        android:gravity="center"
+        android:minWidth="0dp"
+        android:paddingHorizontal="0dp" />
+</LinearLayout>

@@ -1,18 +1,17 @@
-package ue.edu.co.fittrackandroid.perfil;
+package ue.edu.co.fittrackandroid;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import ue.edu.co.fittrackandroid.R;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 /**
- * Adapter de la lista de entrainamientos recientes del perfil.
+ * Adapter de la lista de entrainamientos recientes de la pantalla de inicio.
  * Solo muestra nombre y detalle de cada fila, sin navegación ni lógica de negocio.
  */
 public class UltimoEntrenamientoAdapter extends RecyclerView.Adapter<UltimoEntrenamientoAdapter.EntrenamientoViewHolder> {

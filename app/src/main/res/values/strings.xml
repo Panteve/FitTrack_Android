@@ -52,6 +52,16 @@
     <string name="btnIniciarEntrenamiento">COMENZAR ENTRENAMIENTO</string>
     <string name="btnIniciarEntrenamiento_loading">CARGANDO…</string>
 
+    <!-- fragment_home.xml: últimos entrenamientos -->
+    <string name="tvTituloUltimosEntrenamientos">ÚLTIMOS ENTRENAMIENTOS</string>
+    <string name="tvCantidadUltimosEntrenamientos">%1$d REGISTROS</string>
+    <string name="tvSinEntrenamientos">Todavía no has registrado entrenamientos</string>
+    <string name="tvDetalleUltimoEntrenamiento">%1$s  •  %2$d min</string>
+
+    <!-- item_ultimo_entrenamiento.xml -->
+    <string name="tvNombreUltimoEntrenamiento">Nombre de la rutina</string>
+
+    <!-- fragment_perfil.xml: lista de ejercicios de la rutina -->
     <string name="tvTituloLista">LISTA DE EJERCICIOS (4)</string>
     <string name="tvSubtituloLista">4 SERIES C/U</string>
     <string name="tvNumeroEjercicio1">1</string>
@@ -66,10 +76,9 @@
     <string name="tvGrupoMuscularEjercicio3">Pierna</string>
     <string name="tvNombreEjercicio4">Plancha Isométrica</string>
     <string name="tvGrupoMuscularEjercicio4">Abdomen</string>
+    <string name="btnNuevoEjercicio">+ NUEVO EJERCICIO</string>
 
     <string name="tvConsejo">Consejo: Mantén los descansos de 90 segundos para optimizar la hipertrofia hoy.</string>
-
-    <string name="btnNuevoEjercicio">+ NUEVO EJERCICIO</string>
 
     <!-- RutinasFragment -->
     <string name="btnNuevaRutina">NUEVA RUTINA</string>
@@ -213,9 +222,6 @@
     <string name="tvLabelCorreoPerfil">CORREO ELECTRÓNICO</string>
     <!-- TODO: Reemplazar por el correo del usuario autenticado cuando exista la sesión real. -->
     <string name="tvCorreoPerfil">alex.ramirez@correo.com</string>
-    <string name="tvTituloUltimosEntrenamientos">ÚLTIMOS ENTRENAMIENTOS</string>
-    <string name="tvCantidadUltimosEntrenamientos">%1$d REGISTROS</string>
-    <string name="tvSinEntrenamientos">Todavía no has registrado entrenamientos</string>
     <string name="btnCerrarSesion">CERRAR SESIÓN</string>
     <string name="tvTituloCerrarSesion">Cerrar sesión</string>
     <string name="tvMensajeCerrarSesion">¿Seguro que quieres salir de FitTrack? Tus rutinas y tu nombre se guardarán.</string>
@@ -223,9 +229,77 @@
     <string name="btnCancelarCerrarSesion">CANCELAR</string>
     <string name="tvNombreInicialPerfil">Alex Ramírez</string>
 
-    <!-- item_ultimo_entrenamiento.xml -->
-    <string name="tvNombreUltimoEntrenamiento">Nombre de la rutina</string>
-    <string name="tvDetalleUltimoEntrenamiento">%1$s  •  %2$d min</string>
+    <!-- EntrenamientoActivoFragment: toolbar e isla del entrenamiento minimizado -->
+    <string name="tvToolbarTituloEntrenamientoActivo">Entrenamiento activo</string>
+    <string name="btnTerminarEntrenamiento">TERMINAR</string>
+    <string name="cdMinimizarEntrenamiento">Minimizar entrenamiento</string>
+
+    <!-- layoutIslaEntrenamiento: fila compacta sobre la navegación inferior -->
+    <string name="cdAbrirEntrenamiento">Abrir entrenamiento activo</string>
+    <string name="tvEntrenamientoActivoMinimizado">ENTRENAMIENTO ACTIVO</string>
+    <string name="tvSeparadorEntrenamientoMinimizado">/</string>
+    <string name="tvTiempoEntrenamientoMinimizado">00:00:00</string>
+    <string name="cdDescartarEntrenamientoMinimizado">Descartar entrenamiento activo</string>
+    <string name="tvTituloDescartarEntrenamientoMinimizado">Descartar entrenamiento</string>
+    <string name="tvMensajeDescartarEntrenamientoMinimizado">Se perderá el entrenamiento actual y todo lo que registraste en esta sesión. ¿Quieres descartarlo?</string>
+    <string name="btnConfirmarDescartarEntrenamientoMinimizado">DESCARTAR</string>
+    <string name="btnCancelarDescartarEntrenamientoMinimizado">CANCELAR</string>
+
+    <!-- Diálogo de MainActivity: acción que reemplazaría el entrenamiento en curso -->
+    <string name="tvTituloReemplazarEntrenamiento">Ya tienes un entrenamiento activo</string>
+    <string name="tvMensajeReemplazarEntrenamiento">Llevas %1$s en el entrenamiento actual. Si continúas, se perderán los ejercicios y las series de esta sesión.</string>
+    <string name="btnDescartarYContinuar">DESCARTAR</string>
+    <string name="btnReanudarEntrenamientoActual">REANUDAR</string>
+    <string name="btnCancelarReemplazarEntrenamiento">CANCELAR</string>
+
+    <!-- fragment_entrenamiento_activo.xml: resumen de la sesión -->
+    <string name="tvLabelDuracionEntrenamiento">DURACIÓN</string>
+    <string name="tvDuracionEntrenamiento">00:00:00</string>
+    <string name="tvLabelVolumenEntrenamiento">VOLUMEN</string>
+    <string name="tvVolumenEntrenamiento">%1$s kg</string>
+    <string name="tvLabelSeriesEntrenamiento">SERIES</string>
+    <string name="tvSeriesEntrenamiento">%1$d/%2$d</string>
+    <string name="tvTituloEjerciciosEntrenamiento">EJERCICIOS</string>
+    <string name="btnAgregarEjercicioEntrenamiento">AGREGAR EJERCICIO</string>
+    <string name="btnDescartarEntrenamiento">DESCARTAR ENTRENO</string>
+
+    <!-- item_ejercicio_entrenamiento.xml -->
+    <string name="tvNombreEjercicioEntrenamiento">Nombre del ejercicio</string>
+    <string name="tvGrupoMuscularEjercicioEntrenamiento">Grupo muscular</string>
+    <string name="cdQuitarEjercicioEntrenamiento">Quitar ejercicio</string>
+    <string name="tvCabeceraPesoEntrenamiento">PESO</string>
+    <string name="tvCabeceraRepeticionesEntrenamiento">REPS</string>
+    <string name="btnAgregarSerieEntrenamiento">AGREGAR OTRA SERIE</string>
+
+    <!-- item_serie_entrenamiento.xml -->
+    <string name="tvNumeroSerieEntrenamiento">1</string>
+    <string name="etPesoSerieEntrenamiento_hint">60</string>
+    <string name="etRepeticionesSerieEntrenamiento_hint">10</string>
+    <string name="etPesoSerieEntrenamiento_error">Ingresa un peso válido (0 o más)</string>
+    <string name="etRepeticionesSerieEntrenamiento_error">Ingresa repeticiones (entero mayor que 0)</string>
+    <string name="cbSerieCompletada">Marcar la serie como completada</string>
+
+    <!-- Panel de descanso -->
+    <string name="tvTituloDescansoEntrenamiento">DESCANSO ENTRE SERIES</string>
+    <string name="btnRestarDescanso">-15 s</string>
+    <string name="tvTiempoDescanso">03:00</string>
+    <string name="btnSumarDescanso">+15 s</string>
+    <string name="btnOmitirDescanso">OMITIR</string>
+
+    <!-- Diálogos del entrenamiento activo -->
+    <string name="tvTituloQuitarEjercicio">Quitar ejercicio</string>
+    <string name="tvMensajeQuitarEjercicio">¿Quitar %1$s del entrenamiento? Se borrarán todas sus series.</string>
+    <string name="btnConfirmarQuitarEjercicio">QUITAR</string>
+    <string name="btnCancelarQuitarEjercicio">CANCELAR</string>
+    <string name="tvTituloTerminarEntrenamiento">Terminar entrenamiento</string>
+    <string name="tvMensajeTerminarEntrenamiento">%1$s  •  %2$s  •  %3$d/%4$d series\n\n¿Seguro que quieres terminar este entrenamiento?</string>
+    <string name="tvMensajeTerminarSinSeries">Marca al menos una serie como completada antes de terminar</string>
+    <string name="btnConfirmarTerminarEntrenamiento">TERMINAR</string>
+    <string name="btnCancelarTerminarEntrenamiento">CANCELAR</string>
+    <string name="tvTituloDescartarEntrenamiento">Descartar entrenamiento</string>
+    <string name="tvMensajeDescartarEntrenamiento">Se perderán los ejercicios y las series de esta sesión. ¿Quieres descartarla?</string>
+    <string name="btnConfirmarDescartarEntrenamiento">DESCARTAR</string>
+    <string name="btnCancelarDescartarEntrenamiento">CANCELAR</string>
 
     <!-- Datos de ejemplo de los últimos entrenamientos -->
     <string name="tvNombreUltimoEntrenamiento1">Pierna y abdomen</string>

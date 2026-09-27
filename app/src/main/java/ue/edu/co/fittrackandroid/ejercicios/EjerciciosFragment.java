@@ -26,7 +26,10 @@ import ue.edu.co.fittrackandroid.hoy.MainActivity;
  */
 public class EjerciciosFragment extends Fragment {
 
-    /** Claves usadas para devolver el ejercicio elegido a CrearRutinaFragment. */
+    /**
+     * Claves usadas para devolver el ejercicio elegido a la pantalla que abrió el selector.
+     * Quien las escucha puede ser CrearRutinaFragment o EntrenamientoActivoFragment.
+     */
     public static final String REQUEST_SELECCION_EJERCICIO = "seleccionEjercicio";
     public static final String RESULT_NOMBRE_EJERCICIO = "nombreEjercicio";
     public static final String RESULT_GRUPO_MUSCULAR = "grupoMuscular";
@@ -90,18 +93,54 @@ public class EjerciciosFragment extends Fragment {
         tvChipEspalda.setOnClickListener(v -> seleccionarChip(tvChipEspalda, GRUPO_ESPALDA));
         tvChipPierna.setOnClickListener(v -> seleccionarChip(tvChipPierna, GRUPO_PIERNA));
 
+        restaurarFiltrosEnVista();
+
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // Solo es un selector: la flecha de la toolbar regresa a la creación de la rutina.
-        ((MainActivity) requireActivity()).mostrarToolbarSecundaria(
+        // Solo es un selector: la flecha de la toolbar regresa a la pantalla que lo abrió.
+        // La derecha queda libre, así que ahí va CREAR para registrar un ejercicio nuevo.
+        MainActivity activity = (MainActivity) requireActivity();
+        activity.mostrarToolbarSecundaria(
                 getString(R.string.tvToolbarTituloSeleccionarEjercicio),
                 true,
                 null
         );
+        activity.mostrarAccionSecundariaToolbar(getString(R.string.btnCrearEjercicio));
+        activity.setAccionSecundariaToolbar(this::abrirCrearEjercicio);
+    }
+
+    /**
+     * Abre la pantalla de crear ejercicio. Se navega con retroceso, así que al guardar el
+     * ejercicio el usuario vuelve aquí, al selector, con el buscador y el filtro como estaban.
+     */
+    private void abrirCrearEjercicio() {
+        ((MainActivity) requireActivity()).mostrarCrearEjercicio();
+    }
+
+    /**
+     * Vuelve a escribir la búsqueda y a remarcar el chip que estaban activos. Al ir a crear
+     * un ejercicio y volver, las vistas se recrean pero el filtro sigue guardado en el
+     * fragment, así que hay que volver a reflejarlo o la lista saldría filtrada sin que
+     * se vea por qué.
+     */
+    private void restaurarFiltrosEnVista() {
+        if (!textoBusqueda.isEmpty()) {
+            etBuscarEjercicio.setText(textoBusqueda);
+        }
+
+        if (GRUPO_PECHO.equals(grupoMuscularSeleccionado)) {
+            seleccionarChip(tvChipPecho, GRUPO_PECHO);
+        } else if (GRUPO_ESPALDA.equals(grupoMuscularSeleccionado)) {
+            seleccionarChip(tvChipEspalda, GRUPO_ESPALDA);
+        } else if (GRUPO_PIERNA.equals(grupoMuscularSeleccionado)) {
+            seleccionarChip(tvChipPierna, GRUPO_PIERNA);
+        } else {
+            seleccionarChip(tvChipTodos, null);
+        }
     }
 
     private List<Ejercicio> crearListaEjercicios() {

@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -21,21 +20,17 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import ue.edu.co.fittrackandroid.R;
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
 
 /**
- * Pantalla de perfil: foto, datos personales, últimos entrenamientos y cierre de sesión.
- * El nombre y la foto se guardan localmente con SharedPreferences porque todavía
- * no existe una fuente de datos real.
+ * Pantalla de perfil: foto, datos personales, lista de ejercicios de la rutina y cierre
+ * de sesión. El nombre y la foto se guardan localmente con SharedPreferences porque
+ * todavía no existe una fuente de datos real.
  */
 public class PerfilFragment extends Fragment {
 
@@ -50,10 +45,8 @@ public class PerfilFragment extends Fragment {
     private Button btnCambiarFoto;
     private EditText etNombrePerfil;
     private Button btnGuardarNombre;
+    private Button btnNuevoEjercicio;
     private Button btnCerrarSesion;
-    private RecyclerView rvUltimosEntrenamientos;
-    private TextView tvCantidadUltimosEntrenamientos;
-    private TextView tvSinEntrenamientos;
 
     public PerfilFragment() {
         // Required empty public constructor
@@ -76,7 +69,6 @@ public class PerfilFragment extends Fragment {
 
         inicializarVistas(view);
         cargarDatosPerfil();
-        configurarUltimosEntrenamientos();
         configurarAcciones();
 
         return view;
@@ -96,10 +88,8 @@ public class PerfilFragment extends Fragment {
         btnCambiarFoto = view.findViewById(R.id.btnCambiarFoto);
         etNombrePerfil = view.findViewById(R.id.etNombrePerfil);
         btnGuardarNombre = view.findViewById(R.id.btnGuardarNombre);
+        btnNuevoEjercicio = view.findViewById(R.id.btnNuevoEjercicio);
         btnCerrarSesion = view.findViewById(R.id.btnCerrarSesion);
-        rvUltimosEntrenamientos = view.findViewById(R.id.rvUltimosEntrenamientos);
-        tvCantidadUltimosEntrenamientos = view.findViewById(R.id.tvCantidadUltimosEntrenamientos);
-        tvSinEntrenamientos = view.findViewById(R.id.tvSinEntrenamientos);
     }
 
     /** Muestra el nombre guardado e intenta restaurar la foto elegida anteriormente. */
@@ -112,52 +102,19 @@ public class PerfilFragment extends Fragment {
         restaurarFotoPerfil();
     }
 
-    /** Arma la lista con los tres entrenamientos más recientes y ajusta el estado vacío. */
-    private void configurarUltimosEntrenamientos() {
-        List<UltimoEntrenamiento> entrenamientos = crearEntrenamientosDeEjemplo();
-
-        rvUltimosEntrenamientos.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvUltimosEntrenamientos.setAdapter(new UltimoEntrenamientoAdapter(entrenamientos));
-
-        boolean hayEntrenamientos = !entrenamientos.isEmpty();
-        rvUltimosEntrenamientos.setVisibility(hayEntrenamientos ? View.VISIBLE : View.GONE);
-        tvSinEntrenamientos.setVisibility(hayEntrenamientos ? View.GONE : View.VISIBLE);
-        tvCantidadUltimosEntrenamientos.setText(
-                getString(R.string.tvCantidadUltimosEntrenamientos, entrenamientos.size()));
-    }
-
-    /**
-     * Crea los entrenamientos de demostración, del más reciente al más antiguo.
-     * TODO: Reemplazar por los entrenamientos realmente registrados.
-     */
-    private List<UltimoEntrenamiento> crearEntrenamientosDeEjemplo() {
-        List<UltimoEntrenamiento> listaEntrenamientos = new ArrayList<>();
-
-        listaEntrenamientos.add(new UltimoEntrenamiento(
-                getString(R.string.tvNombreUltimoEntrenamiento1),
-                getString(R.string.tvFechaUltimoEntrenamiento1),
-                Integer.parseInt(getString(R.string.duracionUltimoEntrenamiento1))));
-
-        listaEntrenamientos.add(new UltimoEntrenamiento(
-                getString(R.string.tvNombreUltimoEntrenamiento2),
-                getString(R.string.tvFechaUltimoEntrenamiento2),
-                Integer.parseInt(getString(R.string.duracionUltimoEntrenamiento2))));
-
-        listaEntrenamientos.add(new UltimoEntrenamiento(
-                getString(R.string.tvNombreUltimoEntrenamiento3),
-                getString(R.string.tvFechaUltimoEntrenamiento3),
-                Integer.parseInt(getString(R.string.duracionUltimoEntrenamiento3))));
-
-        return listaEntrenamientos;
-    }
-
     /** Conecta los botones y la foto con las acciones de la pantalla. */
     private void configurarAcciones() {
         imgFotoPerfil.setOnClickListener(v -> abrirSelectorImagen());
         btnIconoCambiarFoto.setOnClickListener(v -> abrirSelectorImagen());
         btnCambiarFoto.setOnClickListener(v -> abrirSelectorImagen());
         btnGuardarNombre.setOnClickListener(v -> guardarNombre());
+        btnNuevoEjercicio.setOnClickListener(v -> abrirCrearEjercicio());
         btnCerrarSesion.setOnClickListener(v -> confirmarCierreSesion());
+    }
+
+    /** Abre la pantalla de crear un ejercicio nuevo. */
+    private void abrirCrearEjercicio() {
+        ((MainActivity) requireActivity()).mostrarCrearEjercicio();
     }
 
     /** Abre el selector de imágenes del sistema, filtrando solo por imágenes. */

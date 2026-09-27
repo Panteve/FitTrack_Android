@@ -1,7 +1,8 @@
-package ue.edu.co.fittrackandroid.perfil;
+package ue.edu.co.fittrackandroid;
 
 /**
- * Modelo de un entrenamiento reciente, tal como se muestra en la fila de la lista del perfil.
+ * Modelo de un entrenamiento reciente, tal como se muestra en la fila de la lista
+ * de últimos entrenamientos de la pantalla de inicio.
  */
 public class UltimoEntrenamiento {
 

@@ -46,6 +46,25 @@
             android:visibility="gone"
             app:tint="@color/colorOnPrimary" />
 
+        <!-- Segunda acción, opcional: se dibuja a la izquierda de la principal y solo
+             aparece en pantallas que necesitan dos acciones (Crear rutina). -->
+        <Button
+            android:id="@+id/btnAccionToolbarSecundario"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="@dimen/spacing_sm"
+            android:background="@drawable/bg_button_neutral"
+            android:letterSpacing="0.05"
+            android:maxLines="1"
+            android:minWidth="0dp"
+            android:paddingHorizontal="@dimen/spacing_sm"
+            android:textAllCaps="true"
+            android:textColor="@color/colorTextStrong"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
         <Button
             android:id="@+id/btnAccionToolbar"
             android:layout_width="wrap_content"
@@ -54,11 +73,12 @@
             android:layout_marginEnd="@dimen/spacing_xs"
             android:background="@drawable/bg_button_neutral"
             android:letterSpacing="0.05"
+            android:maxLines="1"
             android:minWidth="0dp"
-            android:paddingHorizontal="@dimen/spacing_md"
+            android:paddingHorizontal="@dimen/spacing_sm"
             android:textAllCaps="true"
             android:textColor="@color/colorTextStrong"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textStyle="bold"
             android:visibility="gone" />
     </FrameLayout>
@@ -70,6 +90,88 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center_vertical" />
+
+    <!-- Isla del entrenamiento minimizado: una sola fila (flecha hacia arriba, estado y
+         tiempo, papelera) que ocupa espacio justo encima de la navegación inferior. -->
+    <LinearLayout
+        android:id="@+id/layoutIslaEntrenamiento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_md"
+        android:layout_marginBottom="@dimen/spacing_sm"
+        android:background="@drawable/bg_card"
+        android:elevation="@dimen/elevation_card"
+        android:gravity="center_vertical"
+        android:minHeight="44dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/spacing_xs"
+        android:paddingVertical="@dimen/spacing_xs"
+        android:visibility="gone">
+
+        <!-- Flecha hacia arriba: vuelve a abrir el entrenamiento minimizado. -->
+        <ImageButton
+            android:id="@+id/btnAbrirEntrenamiento"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/cdAbrirEntrenamiento"
+            android:padding="9dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_expand_less"
+            app:tint="@color/colorPrimary" />
+
+        <!-- Zona central pulsable: "ENTRENAMIENTO ACTIVO / 00:18:34" en una única línea. -->
+        <LinearLayout
+            android:id="@+id/layoutInfoEntrenamientoMinimizado"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvEntrenamientoActivoMinimizado"
+                style="@style/FitTrack.Text.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/tvEntrenamientoActivoMinimizado"
+                android:textColor="@color/colorPrimary" />
+
+            <TextView
+                android:id="@+id/tvSeparadorEntrenamientoMinimizado"
+                style="@style/FitTrack.Text.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/spacing_xs"
+                android:maxLines="1"
+                android:text="@string/tvSeparadorEntrenamientoMinimizado" />
+
+            <TextView
+                android:id="@+id/tvTiempoEntrenamientoMinimizado"
+                style="@style/FitTrack.Text.Metric"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/tvTiempoEntrenamientoMinimizado"
+                android:textSize="@dimen/text_size_subtitle" />
+        </LinearLayout>
+
+        <!-- Papelera: pide confirmación y descarta la sesión. -->
+        <ImageButton
+            android:id="@+id/btnDescartarEntrenamientoMinimizado"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/cdDescartarEntrenamientoMinimizado"
+            android:padding="9dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/colorErrorText" />
+    </LinearLayout>
 
     <!-- Barra de navegación inferior -->
     <com.google.android.material.bottomnavigation.BottomNavigationView

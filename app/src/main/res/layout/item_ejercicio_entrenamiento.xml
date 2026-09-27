@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tarjeta de un ejercicio del entrenamiento en curso: nombre, opción para quitarlo,
+     cabecera de columnas y una fila por cada serie. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardEjercicioEntrenamiento"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_sm"
+    android:background="@drawable/bg_card"
+    android:elevation="@dimen/elevation_card"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_md">
+
+    <!-- Cabecera de la tarjeta: nombre del ejercicio y opción para quitarlo -->
+    <LinearLayout
+        android:id="@+id/layoutCabeceraEjercicioEntrenamiento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvNombreEjercicioEntrenamiento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tvNombreEjercicioEntrenamiento"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvGrupoMuscularEjercicioEntrenamiento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/tvGrupoMuscularEjercicioEntrenamiento"
+                android:textColor="@color/colorTextTertiary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnQuitarEjercicioEntrenamiento"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/cdQuitarEjercicioEntrenamiento"
+            android:padding="9dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/colorErrorText" />
+    </LinearLayout>
+
+    <!-- Cabecera de las columnas: los espacios del número y del check mantienen las
+         etiquetas alineadas con los campos de la serie. -->
+    <LinearLayout
+        android:id="@+id/layoutCabeceraSeriesEntrenamiento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:orientation="horizontal">
+
+        <View
+            android:id="@+id/viewEspacioNumeroSerieEntrenamiento"
+            android:layout_width="@dimen/badge_number_size"
+            android:layout_height="1dp"
+            android:layout_marginEnd="@dimen/spacing_sm" />
+
+        <TextView
+            android:id="@+id/tvCabeceraPesoEntrenamiento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.2"
+            android:gravity="center"
+            android:text="@string/tvCabeceraPesoEntrenamiento"
+            android:textColor="@color/colorTextTertiary"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvCabeceraRepeticionesEntrenamiento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:layout_weight="0.8"
+            android:gravity="center"
+            android:text="@string/tvCabeceraRepeticionesEntrenamiento"
+            android:textColor="@color/colorTextTertiary"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/viewEspacioCheckSerieEntrenamiento"
+            android:layout_width="@dimen/check_serie_width"
+            android:layout_height="1dp"
+            android:layout_marginStart="@dimen/spacing_sm" />
+    </LinearLayout>
+
+    <!-- Las filas de series se inflan desde EntrenamientoEjercicioAdapter. -->
+    <LinearLayout
+        android:id="@+id/layoutSeriesEntrenamiento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:orientation="vertical" />
+
+    <Button
+        android:id="@+id/btnAgregarSerieEntrenamiento"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_height_standard"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:background="@drawable/bg_button_confirm"
+        android:drawableStart="@drawable/ic_add"
+        android:drawablePadding="@dimen/spacing_sm"
+        android:letterSpacing="0.05"
+        android:text="@string/btnAgregarSerieEntrenamiento"
+        android:textAllCaps="true"
+        android:textColor="@color/colorOnConfirm"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        app:drawableTint="@color/colorOnConfirm" />
+</LinearLayout>

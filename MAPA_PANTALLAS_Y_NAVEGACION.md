@@ -1,0 +1,443 @@
+# Mapa de pantallas y navegación de FitTrack
+
+## Propósito de este documento
+
+Este archivo explica, en lenguaje sencillo, cómo está organizada actualmente la aplicación, qué hace cada pantalla, cómo se llega a ella y qué ocurre al usar sus botones o volver atrás.
+
+La información se obtuvo revisando el código actual del repositorio. Los archivos `PLAN_*.md` se describen al final por separado: un plan expresa una intención o especificación, pero no demuestra por sí solo que una función esté implementada.
+
+## Cómo está organizada la aplicación
+
+FitTrack utiliza una sola Activity: `MainActivity`. Puede imaginarse como el marco fijo de la aplicación. Dentro de ese marco se reemplaza el Fragment visible cada vez que el usuario cambia de pantalla.
+
+`MainActivity` es responsable de:
+
+- Mostrar u ocultar la toolbar superior.
+- Mostrar u ocultar la navegación inferior.
+- Alojar el Fragment actual en `fragmentContainer`.
+- Cambiar entre las pestañas principales Inicio, Rutinas y Perfil.
+- Abrir pantallas secundarias y guardarlas en la pila de retroceso.
+- Administrar la flecha de volver de la toolbar.
+- Cerrar la sesión y regresar al login.
+
+Archivos relacionados:
+
+- Java: `app/src/main/java/ue/edu/co/fittrackandroid/hoy/MainActivity.java`
+- Layout: `app/src/main/res/layout/activity_main.xml`
+- Menú inferior: `app/src/main/res/menu/bottom_navigation_menu.xml`
+
+La toolbar y la navegación inferior no se dibujan nuevamente dentro de cada Fragment. Ambas pertenecen a `MainActivity`.
+
+## Flujo general actual
+
+```text
+Abrir aplicación
+       |
+       v
+LoginFragment
+       |
+       | Iniciar sesión (simulado)
+       v
+HomeFragment / Inicio
+       |
+       +----------------------+----------------------+
+       |                      |                      |
+       v                      v                      v
+   Inicio                RutinasFragment        PerfilFragment
+       |                      |                      |
+       | Nuevo ejercicio      | Nueva rutina        | Cambiar foto
+       v                      v                      | Guardar nombre
+CrearEjercicioFragment   CrearRutinaFragment         | Cerrar sesión
+                              |                      v
+                              | Agregar ejercicio   LoginFragment
+                              v
+                       EjerciciosFragment
+                              |
+                              | Elegir ejercicio
+                              v
+                       CrearRutinaFragment
+```
+
+El entrenamiento activo todavía no aparece en este flujo porque no existe como código de la aplicación. Actualmente, los botones que deberían iniciar un entrenamiento solo muestran un mensaje temporal.
+
+## Navegación inferior
+
+La barra inferior tiene tres destinos principales:
+
+| Opción | Pantalla que abre | Comportamiento |
+|---|---|---|
+| Inicio | `HomeFragment` | Limpia las pantallas secundarias abiertas y muestra Inicio. |
+| Rutinas | `RutinasFragment` | Limpia las pantallas secundarias abiertas y muestra Rutinas. |
+| Perfil | `PerfilFragment` | Limpia las pantallas secundarias abiertas y muestra Perfil. |
+
+Estas tres pantallas se consideran pantallas raíz. Cuando se selecciona una opción inferior, `MainActivity` elimina la pila de pantallas secundarias antes de hacer el cambio.
+
+## Comportamiento del botón Atrás
+
+Hay dos clases de regreso:
+
+1. En una pantalla secundaria, como Crear ejercicio, Crear rutina o Seleccionar ejercicio, la flecha de la toolbar llama al retroceso de `MainActivity`. Se elimina el Fragment superior de la pila y reaparece la pantalla anterior.
+2. En una pantalla raíz, si no hay ninguna pantalla secundaria en la pila, el botón Atrás se entrega al comportamiento normal de Android. Normalmente esto significa salir o dejar la aplicación en segundo plano.
+
+Casos concretos:
+
+- Crear ejercicio → Atrás → Inicio.
+- Crear rutina → Atrás → Rutinas.
+- Selector de ejercicios → Atrás → Crear rutina, conservando la instancia anterior mientras permanezca en la pila.
+- Selector de ejercicios → elegir un ejercicio → el selector devuelve el ejercicio y regresa automáticamente a Crear rutina.
+- Login no se abre usando la pila de retroceso. Al estar en Login y pulsar Atrás, se aplica el comportamiento normal de Android.
+- Cerrar sesión limpia las pantallas secundarias y reemplaza la pantalla actual por Login.
+
+## Pantallas implementadas
+
+### 1. Login
+
+Responsabilidad:
+
+- Recibir correo y contraseña.
+- Permitir mostrar u ocultar la contraseña.
+- Entrar a la aplicación mediante un inicio de sesión actualmente simulado.
+
+Cómo se abre:
+
+- Al iniciar la aplicación, porque `verificarSesionActiva()` devuelve siempre `false` actualmente.
+- Al confirmar “Cerrar sesión” desde Perfil.
+
+Acciones:
+
+- **Iniciar sesión:** desactiva brevemente el botón, muestra un estado de carga y abre Inicio. No valida realmente las credenciales.
+- **Icono del ojo:** alterna entre contraseña visible y oculta.
+- **Recuperar contraseña:** solo muestra el mensaje “próximamente”.
+- **Crear cuenta:** solo muestra el mensaje “próximamente”.
+
+Elementos globales:
+
+- La toolbar y la navegación inferior permanecen ocultas.
+
+Archivos relacionados:
+
+- Java: `app/src/main/java/ue/edu/co/fittrackandroid/login/LoginFragment.java`
+- Layout: `app/src/main/res/layout/fragment_login.xml`
+
+Pendiente o provisional:
+
+- No hay autenticación real.
+- No se guarda una sesión al iniciar.
+- No hay recuperación de contraseña ni registro.
+
+### 2. Inicio / Hoy
+
+Responsabilidad:
+
+- Mostrar la fecha actual.
+- Presentar el resumen visual del día definido en el layout.
+- Mostrar la acción para iniciar un entrenamiento.
+- Mostrar los tres entrenamientos recientes de demostración.
+
+Cómo se abre:
+
+- Después del login simulado.
+- Desde la opción Inicio de la navegación inferior.
+
+Acciones:
+
+- **Iniciar entrenamiento:** desactiva el botón durante unos instantes y abre `EntrenamientoActivoFragment`.
+- **Lista de últimos entrenamientos:** es informativa, sin navegación.
+
+Al volver desde Crear ejercicio:
+
+- Inicio restaura la toolbar principal, con el título general y sin flecha ni acción derecha.
+
+Archivos relacionados:
+
+- Java: `app/src/main/java/ue/edu/co/fittrackandroid/HomeFragment.java`
+- Layout: `app/src/main/res/layout/fragment_home.xml`
+- Modelo: `app/src/main/java/ue/edu/co/fittrackandroid/UltimoEntrenamiento.java`
+- Adapter: `app/src/main/java/ue/edu/co/fittrackandroid/UltimoEntrenamientoAdapter.java`
+- Layout de fila: `app/src/main/res/layout/item_ultimo_entrenamiento.xml`
+
+Pendiente o provisional:
+
+- El inicio del entrenamiento es una simulación visual.
+- La pantalla de entrenamiento activo aún no está conectada.
+
+### 3. Crear ejercicio
+
+Responsabilidad:
+
+- Recibir el nombre de un ejercicio.
+- Mostrar campos visuales para grupo muscular, tipo de equipo, peso y repeticiones.
+- Mostrar una opción futura para multimedia.
+
+Cómo se abre:
+
+- Desde el botón Nuevo ejercicio de Inicio.
+
+Toolbar:
+
+- Título “Crear ejercicio”.
+- Flecha de volver.
+- Acción “Guardar”.
+
+Acciones:
+
+- **Guardar:** exige que el nombre no esté vacío. Si es válido, muestra “Ejercicio guardado” y regresa a Inicio.
+- **Multimedia:** solo muestra un mensaje “próximamente”.
+- **Grupo muscular, tipo de equipo, peso y repeticiones:** cada campo solo muestra un mensaje “próximamente”.
+- **Atrás:** regresa a Inicio sin guardar.
+
+Archivos relacionados:
+
+- Java: `app/src/main/java/ue/edu/co/fittrackandroid/ejercicios/CrearEjercicioFragment.java`
+- Layout: `app/src/main/res/layout/fragment_crear_ejercicio.xml`
+
+Pendiente o provisional:
+
+- El ejercicio no se guarda en una base de datos ni se agrega a la lista del selector.
+- Los campos distintos del nombre aún no permiten seleccionar valores.
+- La multimedia aún no se carga.
+
+### 4. Rutinas
+
+Responsabilidad:
+
+- Mostrar una lista de planes de entrenamiento.
+- Mostrar los ejercicios incluidos dentro de cada tarjeta de rutina.
+- Dar acceso a la creación de una rutina nueva.
+- Ofrecer una acción futura para iniciar una rutina vacía.
+
+Cómo se abre:
+
+- Desde la opción Rutinas de la navegación inferior.
+
+Acciones generales:
+
+- **Nueva rutina:** abre `CrearRutinaFragment` como pantalla secundaria.
+- **Empezar rutina vacía:** solo muestra un mensaje “próximamente”.
+
+Acciones de cada tarjeta:
+
+- **Menú de opciones:** solo muestra un Toast con el nombre de la rutina.
+- **Ver detalles:** solo muestra un Toast; no abre otra pantalla.
+- **Iniciar:** solo muestra un Toast; no comienza todavía un entrenamiento.
+
+Datos actuales:
+
+- Las tres rutinas y sus ejercicios son datos de demostración construidos en memoria.
+- No se leen rutinas guardadas por el usuario.
+
+Archivos relacionados:
+
+- Java de pantalla: `app/src/main/java/ue/edu/co/fittrackandroid/rutinas/RutinasFragment.java`
+- Layout de pantalla: `app/src/main/res/layout/fragment_rutinas.xml`
+- Adapter de rutinas: `app/src/main/java/ue/edu/co/fittrackandroid/rutinas/RutinaAdapter.java`
+- Layout de tarjeta: `app/src/main/res/layout/item_rutina.xml`
+- Adapter de ejercicios internos: `app/src/main/java/ue/edu/co/fittrackandroid/rutinas/RutinaEjercicioAdapter.java`
+- Layout de ejercicio interno: `app/src/main/res/layout/item_rutina_ejercicio.xml`
+- Modelos: `Rutina.java` y `EjercicioRutina.java` dentro de la carpeta `rutinas`.
+
+### 5. Crear rutina
+
+Responsabilidad:
+
+- Recibir el nombre de una rutina.
+- Permitir agregar ejercicios mediante el selector.
+- Crear una primera serie para cada ejercicio agregado.
+- Permitir agregar más series.
+- Recibir peso objetivo y repeticiones por serie.
+
+Cómo se abre:
+
+- Desde Nueva rutina en `RutinasFragment`.
+
+Toolbar:
+
+- Título “Crear rutina”.
+- Flecha de volver.
+- Acción “Guardar”.
+
+Estados visuales:
+
+- Sin ejercicios: muestra un estado vacío y el botón para agregar el primero.
+- Con ejercicios: muestra el RecyclerView y un botón Agregar ejercicio después de la lista.
+
+Acciones:
+
+- **Agregar ejercicio:** abre `EjerciciosFragment`.
+- **Agregar serie:** añade una serie nueva únicamente al ejercicio correspondiente.
+- **Guardar:** valida el nombre, que exista al menos un ejercicio y que los valores escritos tengan un formato válido. Después muestra un Toast y regresa a Rutinas.
+- **Atrás:** regresa a Rutinas sin persistir la rutina.
+
+Importante sobre los datos:
+
+- La rutina creada solo vive en memoria mientras la instancia del Fragment permanezca en la pila.
+- El mensaje de guardado no representa almacenamiento real.
+- El mismo ejercicio puede añadirse más de una vez.
+- Peso y repeticiones pueden quedar vacíos; si se escriben, deben ser valores válidos.
+
+Archivos relacionados:
+
+- Java de pantalla: `app/src/main/java/ue/edu/co/fittrackandroid/rutinas/CrearRutinaFragment.java`
+- Layout de pantalla: `app/src/main/res/layout/fragment_crear_rutina.xml`
+- Adapter editable: `app/src/main/java/ue/edu/co/fittrackandroid/rutinas/CrearRutinaEjercicioAdapter.java`
+- Layout de ejercicio: `app/src/main/res/layout/item_ejercicio_crear_rutina.xml`
+- Layout de serie: `app/src/main/res/layout/item_serie_rutina.xml`
+- Modelos: `EjercicioRutinaEditable.java` y `SerieRutina.java` dentro de la carpeta `rutinas`.
+
+### 6. Selector de ejercicios
+
+Responsabilidad:
+
+- Mostrar los ejercicios disponibles.
+- Buscar por texto.
+- Filtrar por Todos, Pecho, Espalda o Pierna.
+- Devolver el ejercicio seleccionado a la pantalla que abrió el selector.
+
+Cómo se abre actualmente:
+
+- Desde Agregar ejercicio en `CrearRutinaFragment`.
+
+Toolbar:
+
+- Título “Seleccionar ejercicio”.
+- Flecha de volver.
+- Sin acción derecha.
+
+Acciones:
+
+- **Escribir en el buscador:** filtra la lista por nombre.
+- **Elegir un grupo muscular:** combina ese filtro con el texto del buscador.
+- **Tocar un ejercicio:** envía su nombre y grupo muscular mediante `FragmentResult`, regresa a Crear rutina y lo añade al final.
+- **Atrás:** regresa a Crear rutina sin añadir nada.
+
+Datos actuales:
+
+- La lista contiene seis ejercicios de ejemplo definidos en el propio Fragment.
+- Los ejercicios creados desde Crear ejercicio no aparecen aquí.
+
+Archivos relacionados:
+
+- Java de pantalla: `app/src/main/java/ue/edu/co/fittrackandroid/ejercicios/EjerciciosFragment.java`
+- Layout de pantalla: `app/src/main/res/layout/fragment_ejercicios.xml`
+- Adapter: `app/src/main/java/ue/edu/co/fittrackandroid/ejercicios/EjercicioAdapter.java`
+- Layout de fila: `app/src/main/res/layout/item_ejercicio.xml`
+- Modelo: `app/src/main/java/ue/edu/co/fittrackandroid/ejercicios/Ejercicio.java`
+
+### 7. Perfil
+
+Responsabilidad:
+
+- Mostrar y cambiar la foto de perfil.
+- Mostrar y editar el nombre.
+- Mostrar el correo definido en la interfaz.
+- Mostrar la lista de ejercicios de la rutina.
+- Cerrar sesión.
+
+Cómo se abre:
+
+- Desde la opción Perfil de la navegación inferior.
+
+Acciones:
+
+- **Foto, icono de cámara o Cambiar foto:** abre el selector de documentos de Android para elegir una imagen.
+- **Guardar nombre:** valida que no esté vacío y lo guarda localmente en `SharedPreferences`.
+- **Nuevo ejercicio:** abre `CrearEjercicioFragment` como pantalla secundaria.
+- **Cerrar sesión:** muestra un diálogo de confirmación. Al aceptar, limpia las preferencias de sesión, limpia la pila secundaria y abre Login.
+
+Persistencia actual:
+
+- El nombre y el URI de la foto se guardan localmente en preferencias propias del perfil.
+- Cerrar sesión conserva el nombre y la foto, porque solo limpia las preferencias llamadas `sesion`.
+- Si la imagen guardada deja de estar disponible, se vuelve a mostrar el avatar predeterminado.
+- La lista de ejercicios es informativa y está definida directamente en el layout.
+
+Archivos relacionados:
+
+- Java de pantalla: `app/src/main/java/ue/edu/co/fittrackandroid/perfil/PerfilFragment.java`
+- Layout de pantalla: `app/src/main/res/layout/fragment_perfil.xml`
+- Modelo: `app/src/main/java/ue/edu/co/fittrackandroid/perfil/UltimoEntrenamiento.java`
+
+Pendiente o provisional:
+
+- El nombre y el correo no provienen de un usuario autenticado real.
+- Los entrenamientos recientes deben reemplazarse por registros reales.
+- El cierre de sesión deberá eliminar tokens o credenciales cuando exista autenticación.
+
+## Funciones provisionales y TODO principales
+
+| Área | Estado actual | Trabajo pendiente |
+|---|---|---|
+| Sesión | Siempre se inicia mostrando Login. | Verificar y guardar una sesión real. |
+| Login | Cualquier intento termina abriendo Inicio después de la espera. | Validar credenciales y manejar errores reales. |
+| Registro y recuperación | Mensajes “próximamente”. | Crear sus flujos. |
+| Crear ejercicio | Solo valida el nombre y regresa. | Guardar el ejercicio y habilitar el resto de campos. |
+| Lista de ejercicios | Seis registros fijos. | Leer ejercicios guardados. |
+| Rutinas | Tres planes fijos. | Leer y guardar rutinas reales. |
+| Crear rutina | Valida y muestra confirmación, pero no persiste. | Guardar la rutina y recuperar su información. |
+| Detalle y opciones de rutina | Solo Toasts. | Crear las acciones o pantallas correspondientes. |
+| Iniciar entrenamiento | Solo Toasts o una animación breve. | Abrir y gestionar un entrenamiento activo. |
+| Perfil | Nombre y foto locales; historial de ejemplo. | Integrar datos del usuario y entrenamientos reales. |
+
+## Funcionalidades planificadas en documentos separados
+
+Los siguientes archivos son especificaciones de trabajo. Deben compararse siempre con el código antes de asumir que una función existe:
+
+### `PLAN_ENTRENAMIENTO_ACTIVO.md`
+
+Describe la pantalla `EntrenamientoActivoFragment` con duración, volumen, series, ejercicios editables, temporizador de descanso y acciones para terminar o descartar. Esa pantalla, sus modelos, su adapter y sus layouts ya existen en `app/src/main`. El documento sigue siendo una especificación de trabajo y no debe usarse como prueba de funcionamiento.
+
+### `PLAN_CREAR_RUTINA.md`
+
+Describe la pantalla para crear una rutina y el selector de ejercicios. Gran parte de esa especificación ya tiene clases y layouts correspondientes en el código actual, pero el archivo sigue siendo un documento de planificación y no debe usarse como prueba de funcionamiento. En particular, el guardado definitivo continúa pendiente.
+
+### `PLAN_OPEN_CODE_RUTINAS_FRAGMENT.md`
+
+Describe la composición visual y funcional esperada para la lista de rutinas. Existen `RutinasFragment`, sus tarjetas y sus datos de demostración, pero varias acciones de las tarjetas y el comienzo del entrenamiento continúan como mensajes temporales.
+
+## Entrenamiento activo al navegar
+
+`MainActivity` es la dueña de la sesión en curso (`EntrenamientoEnCurso`), por lo que esta sobrevive a que su pantalla se destruya al abrir el selector de ejercicios o al minimizar.
+
+Decisiones ya implementadas:
+
+- El entrenamiento **sigue activo en memoria** al visitar otra pestaña o al abrir una pantalla secundaria.
+- Se minimiza con el chevron hacia abajo de la toolbar o el botón físico de retroceso; no se pierde lo registrado.
+- Se recupera desde la **isla compacta** sobre la navegación inferior, que muestra el tiempo transcurrido.
+- Se puede **descartar** desde la papelera de la isla, con confirmación.
+- Al cerrar sesión, la sesión en curso se descarta obligatoriamente.
+
+Acciones que requieren confirmación previa:
+
+- `mostrarCrearRutina()` y `mostrarEntrenamientoActivo()` pasan por `pedirConfirmacionSiHayEntrenamientoEnCurso()`.
+- Si hay entrenamiento en curso, el diálogo ofrece tres salidas: **Descartar** (borra la sesión y continúa con la acción), **Reanudar** (vuelve a la pantalla del entrenamiento actual) y **Cancelar** (no hace nada).
+- `mostrarSelectorEjercicios()` no se intercepta, porque la usa el propio entrenamiento en curso para agregar ejercicios.
+
+Pendiente:
+
+- La sesión **no sobrevive** a la muerte del proceso ni al cierre de la aplicación: vive solo en memoria. No hay un `ViewModel` ni `onSaveInstanceState` que la respalden.
+
+
+## Resumen de responsabilidades
+
+```text
+MainActivity
+├── Toolbar superior
+├── Contenedor donde aparece cada Fragment
+├── Navegación inferior
+├── Pila de retroceso de pantallas secundarias
+└── Cambio entre Login, Inicio, Rutinas, Perfil y pantallas secundarias
+
+Fragments raíz
+├── HomeFragment
+├── RutinasFragment
+└── PerfilFragment
+
+Fragments secundarios
+├── CrearEjercicioFragment
+├── CrearRutinaFragment
+└── EjerciciosFragment
+
+Adapters
+├── Dibujan las listas y tarjetas
+└── No son pantallas independientes
+```

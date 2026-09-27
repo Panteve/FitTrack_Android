@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pantalla del entrenamiento en curso: el contenido se desplaza y el panel de
+     descanso queda fijo en la parte inferior, fuera del ScrollView. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutEntrenamientoActivo"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:id="@+id/svEntrenamientoActivo"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/layoutContenidoEntrenamientoActivo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <!-- Resumen: duración, volumen y series completadas sobre totales -->
+            <LinearLayout
+                android:id="@+id/layoutResumenEntrenamiento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:background="@drawable/bg_card"
+                android:baselineAligned="false"
+                android:elevation="@dimen/elevation_card"
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:id="@+id/layoutMetricaDuracion"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelDuracionEntrenamiento"
+                        style="@style/FitTrack.Text.Label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tvLabelDuracionEntrenamiento" />
+
+                    <TextView
+                        android:id="@+id/tvDuracionEntrenamiento"
+                        style="@style/FitTrack.Text.Metric"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:maxLines="1"
+                        android:text="@string/tvDuracionEntrenamiento"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewSeparadorResumenVolumen"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="@dimen/spacing_sm"
+                    android:background="@color/colorDivider" />
+
+                <LinearLayout
+                    android:id="@+id/layoutMetricaVolumen"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelVolumenEntrenamiento"
+                        style="@style/FitTrack.Text.Label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tvLabelVolumenEntrenamiento" />
+
+                    <TextView
+                        android:id="@+id/tvVolumenEntrenamiento"
+                        style="@style/FitTrack.Text.Metric"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:maxLines="1"
+                        android:text="@string/tvVolumenEntrenamiento"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewSeparadorResumenSeries"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="@dimen/spacing_sm"
+                    android:background="@color/colorDivider" />
+
+                <LinearLayout
+                    android:id="@+id/layoutMetricaSeries"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelSeriesEntrenamiento"
+                        style="@style/FitTrack.Text.Label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tvLabelSeriesEntrenamiento" />
+
+                    <TextView
+                        android:id="@+id/tvSeriesEntrenamiento"
+                        style="@style/FitTrack.Text.Metric"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:maxLines="1"
+                        android:text="@string/tvSeriesEntrenamiento"
+                        android:textSize="18sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvTituloEjerciciosEntrenamiento"
+                style="@style/FitTrack.Text.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tvTituloEjerciciosEntrenamiento" />
+
+            <!-- El desplazamiento lo maneja svEntrenamientoActivo, por eso el RecyclerView
+                 se ajusta a su contenido y no hace scroll propio. -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvEjerciciosEntrenamiento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never" />
+
+            <Button
+                android:id="@+id/btnAgregarEjercicioEntrenamiento"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height_standard"
+                android:background="@drawable/bg_button_primary"
+                android:drawableStart="@drawable/ic_add"
+                android:drawablePadding="@dimen/spacing_sm"
+                android:elevation="@dimen/elevation_button"
+                android:letterSpacing="0.05"
+                android:text="@string/btnAgregarEjercicioEntrenamiento"
+                android:textAllCaps="true"
+                android:textColor="@color/colorOnPrimary"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:drawableTint="@color/colorOnPrimary" />
+
+            <Button
+                android:id="@+id/btnDescartarEntrenamiento"
+                style="@style/FitTrack.Button.Danger"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height_standard"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:text="@string/btnDescartarEntrenamiento" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Panel de descanso: aparece al completar una serie y siempre queda fijo abajo.
+         El margen inferior lo separa del borde de la pantalla; el espacio de la barra de
+         navegación del sistema lo agrega EntrenamientoActivoFragment. -->
+    <LinearLayout
+        android:id="@+id/layoutDescansoEntrenamiento"
+        style="@style/FitTrack.Container.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_sm"
+        android:background="@color/colorSurface"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvTituloDescansoEntrenamiento"
+            style="@style/FitTrack.Text.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/tvTituloDescansoEntrenamiento"
+            android:textColor="@color/colorPrimary" />
+
+        <LinearLayout
+            android:id="@+id/layoutControlesDescanso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:baselineAligned="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnRestarDescanso"
+                style="@style/FitTrack.Button.Compact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:text="@string/btnRestarDescanso"
+                android:textAllCaps="false" />
+
+            <TextView
+                android:id="@+id/tvTiempoDescanso"
+                style="@style/FitTrack.Text.Metric"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="@string/tvTiempoDescanso"
+                android:textColor="@color/colorPrimary" />
+
+            <Button
+                android:id="@+id/btnSumarDescanso"
+                style="@style/FitTrack.Button.Compact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:text="@string/btnSumarDescanso"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btnOmitirDescanso"
+                style="@style/FitTrack.Button.Compact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:text="@string/btnOmitirDescanso"
+                android:textAllCaps="false" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
