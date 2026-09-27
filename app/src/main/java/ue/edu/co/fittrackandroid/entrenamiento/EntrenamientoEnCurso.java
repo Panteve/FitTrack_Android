@@ -21,7 +21,12 @@ import java.util.Locale;
  */
 public class EntrenamientoEnCurso {
 
+    // TODO: Agregar un identificador persistente de la sesión y el identificador de la
+    // rutina de origen, si existe, para poder recuperar y guardar el entrenamiento correcto.
+
     /** Instante en que empezó el entrenamiento, en milisegundos de reloj del sistema. */
+    // TODO: Al persistir la sesión, guardar también una referencia de tiempo que permita
+    // reconstruir la duración correctamente después de reiniciar el dispositivo.
     private final long instanteInicio;
 
     /** Momento real en que empezó el entrenamiento, para mostrar el día y la hora. */

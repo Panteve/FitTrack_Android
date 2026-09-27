@@ -17,13 +17,16 @@ import ue.edu.co.fittrackandroid.R;
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
 
 /**
- * Fragment para crear un ejercicio (datos hardcodeados, sin lógica de negocio todavía).
+ * Fragment para completar y guardar los datos de un ejercicio creado por el usuario.
  */
 public class CrearEjercicioFragment extends Fragment {
 
     private ImageButton btnMultimediaEjercicio;
     private EditText etNombreEjercicio;
     private TextView tvErrorNombreEjercicio;
+
+    // TODO: Guardar y restaurar el borrador completo si el Fragment se recrea, incluyendo
+    // el nombre, la multimedia y los valores seleccionados en los campos secundarios.
 
     public CrearEjercicioFragment() {
         // Required empty public constructor
@@ -43,9 +46,13 @@ public class CrearEjercicioFragment extends Fragment {
         View layoutCampoPeso = view.findViewById(R.id.layoutCampoPeso);
         View layoutCampoRepeticiones = view.findViewById(R.id.layoutCampoRepeticiones);
 
+        // TODO: Abrir el selector de imágenes o videos, validar el archivo elegido, mostrar
+        // una vista previa y conservar su referencia como parte del borrador.
         btnMultimediaEjercicio.setOnClickListener(v ->
                 Toast.makeText(requireContext(), "Agregar multimedia próximamente", Toast.LENGTH_SHORT).show());
 
+        // TODO: Reemplazar estos mensajes por selectores que guarden y muestren el grupo
+        // muscular, tipo de equipo, peso sugerido y repeticiones sugeridas.
         layoutCampoGrupoMuscular.setOnClickListener(v -> seleccionarCampo("Grupo muscular"));
         layoutCampoTipoEquipo.setOnClickListener(v -> seleccionarCampo("Tipo de equipo"));
         layoutCampoPeso.setOnClickListener(v -> seleccionarCampo("Peso"));
@@ -72,13 +79,22 @@ public class CrearEjercicioFragment extends Fragment {
         String nombre = etNombreEjercicio.getText().toString().trim();
 
         if (nombre.isEmpty()) {
-            // TODO: Guardar realmente contra la base de datos
             tvErrorNombreEjercicio.setVisibility(View.VISIBLE);
             etNombreEjercicio.setBackgroundResource(R.drawable.bg_input_error);
             Toast.makeText(requireContext(), "Ingresa el nombre del ejercicio", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // TODO: Definir cuáles campos secundarios son obligatorios y validar sus valores
+        // antes de intentar guardar. También se debe comprobar si el usuario ya creó un
+        // ejercicio con el mismo nombre.
+
+        // TODO: Subir primero la multimedia, si existe, y guardar el ejercicio con todos sus
+        // datos en la base de datos o backend asociado al usuario autenticado.
+
+        // TODO: Deshabilitar temporalmente la acción de guardar, manejar éxito y error por
+        // separado, y regresar solamente cuando se confirme el guardado. Si falla, conservar
+        // el borrador para permitir otro intento.
         Toast.makeText(requireContext(), "Ejercicio guardado", Toast.LENGTH_SHORT).show();
         ((MainActivity) requireActivity()).regresar();
     }

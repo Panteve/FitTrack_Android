@@ -7,6 +7,7 @@ import java.util.List;
  */
 public class Rutina {
 
+    // TODO: Agregar un identificador persistente para consultar, editar o eliminar la rutina.
     private final String nombre;
     private final String resumen;
     private final List<EjercicioRutina> ejercicios;

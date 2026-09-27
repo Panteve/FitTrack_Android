@@ -45,6 +45,8 @@ public class EntrenamientoActivoFragment extends Fragment
         implements EntrenamientoEjercicioAdapter.EscuchaEntrenamiento  {
 
     /** Tiempo base de cada descanso entre series: tres minutos. */
+    // TODO: Obtener esta duración desde la configuración del usuario o de la rutina,
+    // en lugar de usar siempre un valor fijo para todos los ejercicios.
     private static final int SEGUNDOS_DESCANSO_BASE = 180;
 
     /** Pasos de ajuste del temporizador de descanso. */
@@ -96,8 +98,8 @@ public class EntrenamientoActivoFragment extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = (MainActivity) requireActivity();
-        // La sesión no se guarda en disco todavía: si el proceso muere, hay que empezar de nuevo.
-        // TODO: Recuperar el entrenamiento al recrear el proceso cuando exista la persistencia.
+        // TODO: Recuperar el entrenamiento activo desde el almacenamiento si MainActivity no
+        // conserva la referencia, incluyendo ejercicios, series, descanso y tiempo transcurrido.
         entrenamiento = activity.obtenerEntrenamientoEnCurso();
         registrarResultadoEjercicio();
     }
@@ -236,6 +238,9 @@ public class EntrenamientoActivoFragment extends Fragment
                             EjerciciosFragment.RESULT_NOMBRE_EJERCICIO);
                     String grupoMuscular = resultado.getString(
                             EjerciciosFragment.RESULT_GRUPO_MUSCULAR);
+
+                    // TODO: Recibir también el identificador persistente del ejercicio para
+                    // guardar la relación correcta dentro del entrenamiento y su historial.
                     agregarEjercicioSeleccionado(nombreEjercicio, grupoMuscular);
                 });
     }
@@ -331,6 +336,9 @@ public class EntrenamientoActivoFragment extends Fragment
         entrenamiento.setInstanteFinDescanso(
                 SystemClock.elapsedRealtime() + SEGUNDOS_DESCANSO_BASE * 1000L);
 
+        // TODO: Persistir el instante de finalización del descanso para poder restaurar la
+        // cuenta regresiva si Android cierra el proceso mientras está activa.
+
         tvTiempoDescanso.setText(EntrenamientoEnCurso.formatearTiempo(SEGUNDOS_DESCANSO_BASE));
         layoutDescansoEntrenamiento.setVisibility(View.VISIBLE);
 
@@ -410,6 +418,8 @@ public class EntrenamientoActivoFragment extends Fragment
     // ------------------------------------------------------------------ Ejercicios y series
 
     private void abrirSelectorEjercicios() {
+        // TODO: El selector debe cargar desde la base de datos los ejercicios disponibles
+        // para el usuario antes de permitir que se agreguen al entrenamiento activo.
         activity.mostrarSelectorEjercicios();
     }
 
@@ -424,6 +434,8 @@ public class EntrenamientoActivoFragment extends Fragment
         // Cada ejercicio entra con su primera serie, igual que en la creación de rutinas.
         adapter.agregarEjercicio(new EjercicioEntrenamiento(nombreEjercicio, grupoMuscular));
         recalcularResumen();
+
+        // TODO: Persistir el ejercicio agregado dentro del entrenamiento activo.
     }
 
     @Override
@@ -432,6 +444,8 @@ public class EntrenamientoActivoFragment extends Fragment
         entrenamiento.getEjercicios().get(posicionEjercicio).agregarSerie();
         adapter.actualizarEjercicio(posicionEjercicio);
         recalcularResumen();
+
+        // TODO: Persistir el cambio en el borrador del entrenamiento activo.
     }
 
     @Override
@@ -443,6 +457,8 @@ public class EntrenamientoActivoFragment extends Fragment
     public void onEstadoSerieCambiado(int posicionEjercicio, int posicionSerie, boolean completada) {
         recalcularResumen();
 
+        // TODO: Persistir el nuevo estado de la serie para recuperarlo si se cierra el proceso.
+
         // El descanso solo arranca al completar una serie, nunca al desmarcarlo.
         if (completada) {
             iniciarDescanso();
@@ -452,6 +468,9 @@ public class EntrenamientoActivoFragment extends Fragment
     @Override
     public void onDatosSerieCambiados() {
         recalcularResumen();
+
+        // TODO: Guardar los cambios de peso y repeticiones con una espera corta para no
+        // escribir en el almacenamiento por cada tecla pulsada.
     }
 
     // ------------------------------------------------------------------ Diálogos
@@ -476,6 +495,8 @@ public class EntrenamientoActivoFragment extends Fragment
         // Quitar el ejercicio borra también sus series, y con ellas su volumen.
         adapter.quitarEjercicio(posicionEjercicio);
         recalcularResumen();
+
+        // TODO: Eliminar también el ejercicio del borrador persistido de la sesión.
     }
 
     /** Pide confirmación antes de terminar, y solo si hay al menos una serie completada. */
@@ -508,8 +529,10 @@ public class EntrenamientoActivoFragment extends Fragment
         ResumenEntrenamiento resumen = crearResumenFinal();
 
         detenerActualizacionesVisuales();
-        // TODO: Agregar el entrenamiento a los últimos entrenamientos de Inicio y al
-        //       historial cuando exista la capa de persistencia.
+
+        // TODO: Guardar el entrenamiento terminado y sus series en el historial antes de
+        // eliminar la sesión activa. Solo se debe abrir el resumen cuando el guardado termine
+        // correctamente; si falla, conservar la sesión para permitir otro intento.
         activity.mostrarResumenEntrenamiento(resumen);
     }
 
@@ -573,12 +596,17 @@ public class EntrenamientoActivoFragment extends Fragment
 
     private void descartarEntrenamiento() {
         detenerActualizacionesVisuales();
+
+        // TODO: Eliminar el borrador persistido del entrenamiento al confirmar el descarte.
         activity.cerrarEntrenamientoEnCurso();
     }
 
     /** El chevron hacia abajo solo minimiza: no termina ni descarta la sesión. */
     private void minimizarEntrenamiento() {
         detenerActualizacionesVisuales();
+
+        // TODO: Confirmar que el estado más reciente quedó persistido antes de abandonar
+        // la pantalla, para que minimizar no dependa solo de la memoria de MainActivity.
         activity.minimizarEntrenamiento();
     }
 }

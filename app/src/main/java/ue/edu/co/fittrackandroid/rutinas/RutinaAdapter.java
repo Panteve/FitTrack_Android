@@ -86,8 +86,14 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
             rvEjercicios.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
             rvEjercicios.setAdapter(new RutinaEjercicioAdapter(rutina.getEjercicios()));
 
+            // TODO: Reemplazar este mensaje por un menú con las acciones disponibles para
+            // la rutina, como editar y eliminar. La eliminación debe pedir confirmación,
+            // actualizar el almacenamiento y notificar el cambio a RutinasFragment.
             imgMenu.setOnClickListener(v -> Toast.makeText(v.getContext(),
                     "Opciones de: " + rutina.getNombre(), Toast.LENGTH_SHORT).show());
+
+            // TODO: Crear RutinaDetalleFragment y solicitar la navegación mediante un
+            // callback, entregando el identificador de la rutina seleccionada.
             btnVerDetalles.setOnClickListener(v -> Toast.makeText(v.getContext(),
                     "Ver detalles: " + rutina.getNombre(), Toast.LENGTH_SHORT).show());
             btnIniciar.setOnClickListener(v -> listenerIniciarRutina.onIniciarRutina(rutina));

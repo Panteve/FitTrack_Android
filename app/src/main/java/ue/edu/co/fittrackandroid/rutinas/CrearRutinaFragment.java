@@ -112,11 +112,16 @@ public class CrearRutinaFragment extends Fragment
                             EjerciciosFragment.RESULT_NOMBRE_EJERCICIO);
                     String grupoMuscular = resultado.getString(
                             EjerciciosFragment.RESULT_GRUPO_MUSCULAR);
+
+                    // TODO: Recibir también el identificador del ejercicio para guardar la
+                    // relación real y no depender solamente de su nombre visible.
                     agregarEjercicioSeleccionado(nombreEjercicio, grupoMuscular);
                 });
     }
 
     private void abrirSelectorEjercicios() {
+        // TODO: El selector debe consultar en la base de datos los ejercicios disponibles
+        // para el usuario, incluidos los que haya creado, antes de mostrar la lista.
         ((MainActivity) requireActivity()).mostrarSelectorEjercicios();
     }
 
@@ -125,8 +130,8 @@ public class CrearRutinaFragment extends Fragment
      * El mismo ejercicio se puede agregar varias veces, por ejemplo con series diferentes.
      */
     private void agregarEjercicioSeleccionado(String nombreEjercicio, String grupoMuscular) {
-        // El resultado solo se procesa con la vista ya creada: esta pantalla todavía no
-        // conserva los datos al recrearse, eso llegará con la persistencia real.
+        // TODO: Validar el identificador y los datos completos recibidos del selector, y
+        // mostrar un error si el ejercicio fue eliminado antes de agregarlo a la rutina.
         if (nombreEjercicio == null || adapter == null) {
             return;
         }
@@ -178,7 +183,18 @@ public class CrearRutinaFragment extends Fragment
             return;
         }
 
-        // TODO: Guardar la rutina realmente (base de datos o backend) cuando exista esa capa.
+        // TODO: Comprobar en la base de datos si el usuario ya tiene una rutina con el mismo
+        // nombre y mostrar un error claro si no se permiten nombres duplicados.
+
+        // TODO: Convertir los datos editables al modelo persistente y guardar la rutina,
+        // asociada al usuario autenticado, con los identificadores de sus ejercicios y todas
+        // sus series en la base de datos o backend.
+
+        // TODO: Deshabilitar temporalmente la acción de guardar para evitar duplicados y
+        // manejar por separado el resultado exitoso y los errores de almacenamiento.
+
+        // TODO: Mostrar el mensaje y regresar solamente después de confirmar que el guardado
+        // terminó correctamente.
         Toast.makeText(requireContext(), "Rutina guardada", Toast.LENGTH_SHORT).show();
         ((MainActivity) requireActivity()).regresar();
     }

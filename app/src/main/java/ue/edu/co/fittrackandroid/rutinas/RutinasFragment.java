@@ -42,6 +42,8 @@ public class RutinasFragment extends Fragment {
         tvCantidadPlanes = view.findViewById(R.id.tvCantidadPlanes);
         RecyclerView rvPlanes = view.findViewById(R.id.rvPlanes);
 
+        // TODO: Consultar las rutinas guardadas del usuario y contemplar los estados de
+        // carga, lista vacía y error. Actualmente siempre se muestran datos de ejemplo.
         planes = crearListaPlanes();
 
         rvPlanes.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -52,6 +54,8 @@ public class RutinasFragment extends Fragment {
         btnNuevaRutina.setOnClickListener(v ->
                 ((MainActivity) requireActivity()).mostrarCrearRutina());
 
+        // TODO: Iniciar un entrenamiento sin rutina y permitir agregar ejercicios durante
+        // la sesión, en lugar de mostrar solamente este mensaje temporal.
         btnEmpezarRutinaVacia.setOnClickListener(v ->
                 Toast.makeText(requireContext(), "Empezar rutina vacía próximamente", Toast.LENGTH_SHORT).show());
 
@@ -63,6 +67,9 @@ public class RutinasFragment extends Fragment {
         super.onResume();
         // Al volver desde Ejercicios o Crear ejercicio, la toolbar debe quedar como la principal.
         ((MainActivity) requireActivity()).mostrarToolbarPrincipal();
+
+        // TODO: Volver a consultar las rutinas cuando exista persistencia, para que una
+        // rutina recién creada, editada o eliminada aparezca sin reiniciar la aplicación.
     }
 
     /**
@@ -76,8 +83,8 @@ public class RutinasFragment extends Fragment {
             nombresEjercicios.add(ejercicio.getNombre());
         }
 
-        // TODO: Cargar las cantidades y objetivos de cada serie cuando el modelo de rutinas
-        //       deje de guardarlos como texto de presentación.
+        // TODO: Enviar también las series, pesos y repeticiones de la rutina. Actualmente
+        // solo se conservan los nombres porque EjercicioRutina guarda las series como texto.
         ((MainActivity) requireActivity()).mostrarEntrenamientoActivo(
                 rutina.getNombre(),
                 nombresEjercicios.toArray(new String[0]));

@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class EjercicioEntrenamiento {
 
+    // TODO: Guardar el identificador persistente del ejercicio para no depender de su nombre
+    // al registrar el historial o recuperar una sesión interrumpida.
     private final String nombre;
     private final String grupoMuscular;
     private final List<SerieEntrenamiento> series = new ArrayList<>();

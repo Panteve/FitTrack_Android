@@ -25,6 +25,9 @@ import ue.edu.co.fittrackandroid.R;
 public class CrearRutinaEjercicioAdapter
         extends RecyclerView.Adapter<CrearRutinaEjercicioAdapter.EjercicioEditableViewHolder> {
 
+    // TODO: Agregar acciones para quitar un ejercicio seleccionado y eliminar una serie
+    // agregada por error, actualizando tanto el modelo como las posiciones visibles.
+
     /**
      * Callback que avisa cuando el usuario pide una serie nueva para un ejercicio.
      */

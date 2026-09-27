@@ -28,6 +28,9 @@ import ue.edu.co.fittrackandroid.R;
 public class EntrenamientoEjercicioAdapter
         extends RecyclerView.Adapter<EntrenamientoEjercicioAdapter.EjercicioViewHolder> {
 
+    // TODO: Agregar una acción para eliminar una serie individual agregada por error,
+    // manteniendo por lo menos una serie por ejercicio y actualizando el resumen.
+
     /**
      * Callbacks que el fragment necesita para mantener el resumen y la lista al día.
      */

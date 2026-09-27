@@ -47,6 +47,7 @@ public class EjerciciosFragment extends Fragment {
     private TextView tvChipEspalda;
     private TextView tvChipPierna;
 
+    // TODO: Guardar y restaurar estos filtros si el Fragment o el proceso se recrean.
     // Estado actual de los filtros: el buscador y el chip seleccionado se combinan.
     private String textoBusqueda = "";
     private String grupoMuscularSeleccionado = null;
@@ -68,6 +69,9 @@ public class EjerciciosFragment extends Fragment {
         tvChipEspalda = view.findViewById(R.id.tvChipEspalda);
         tvChipPierna = view.findViewById(R.id.tvChipPierna);
 
+        // TODO: Consultar en la base de datos todos los ejercicios disponibles para el
+        // usuario, incluidos los que haya creado, y contemplar los estados de carga, lista
+        // vacía, búsqueda sin resultados y error de almacenamiento.
         adapter = new EjercicioAdapter(crearListaEjercicios(), this::seleccionarEjercicio);
         rvEjercicios.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvEjercicios.setAdapter(adapter);
@@ -111,6 +115,9 @@ public class EjerciciosFragment extends Fragment {
         );
         activity.mostrarAccionSecundariaToolbar(getString(R.string.btnCrearEjercicio));
         activity.setAccionSecundariaToolbar(this::abrirCrearEjercicio);
+
+        // TODO: Volver a consultar la lista cuando el usuario regrese de crear un ejercicio,
+        // para que el nuevo registro aparezca inmediatamente en el selector.
     }
 
     /**
@@ -145,7 +152,8 @@ public class EjerciciosFragment extends Fragment {
 
     private List<Ejercicio> crearListaEjercicios() {
         List<Ejercicio> lista = new ArrayList<>();
-        // TODO: Reemplazar esta lista de ejemplo por los ejercicios guardados (base de datos / backend)
+        // TODO: Reemplazar esta lista de ejemplo por los ejercicios disponibles para el
+        // usuario, leídos desde la base de datos o backend de su cuenta.
         lista.add(new Ejercicio(
                 getString(R.string.tvNombreEjercicioLista1),
                 GRUPO_PECHO));
@@ -173,6 +181,9 @@ public class EjerciciosFragment extends Fragment {
      */
     private void seleccionarEjercicio(Ejercicio ejercicio) {
         Bundle datosEjercicio = new Bundle();
+
+        // TODO: Devolver también el identificador persistente del ejercicio para que la
+        // rutina guarde la relación correcta aunque su nombre cambie posteriormente.
         datosEjercicio.putString(RESULT_NOMBRE_EJERCICIO, ejercicio.getNombre());
         datosEjercicio.putString(RESULT_GRUPO_MUSCULAR, ejercicio.getGrupoMuscular());
 
@@ -181,6 +192,8 @@ public class EjerciciosFragment extends Fragment {
     }
 
     private void seleccionarChip(TextView seleccionado, String grupoMuscular) {
+        // TODO: Generar los filtros a partir de los grupos musculares disponibles. Actualmente
+        // solo se pueden filtrar Pecho, Espalda y Pierna aunque el usuario cree otros grupos.
         List<TextView> listaChips = Arrays.asList(tvChipTodos, tvChipPecho, tvChipEspalda, tvChipPierna);
 
         for (TextView chip : listaChips) {

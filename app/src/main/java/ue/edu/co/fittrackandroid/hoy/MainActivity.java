@@ -376,11 +376,13 @@ public class MainActivity extends AppCompatActivity {
                 SystemClock.elapsedRealtime(), System.currentTimeMillis());
 
         for (String nombreEjercicio : nombresEjercicios) {
-            // Cada ejercicio arranca con una serie editable; los objetivos de la rutina
-            // todavía no están guardados como datos estructurados.
-            // TODO: Cargar las cantidades y objetivos de cada serie de la rutina real.
+            // TODO: Crear cada ejercicio con su identificador, grupo muscular y series reales,
+            // incluyendo los pesos y repeticiones objetivo definidos en la rutina.
             entrenamientoEnCurso.agregarEjercicio(new EjercicioEntrenamiento(nombreEjercicio, ""));
         }
+
+        // TODO: Persistir inmediatamente la nueva sesión para poder recuperarla si Android
+        // cierra el proceso antes de que el usuario complete la primera serie.
     }
 
     /** @return la sesión de entrenamiento en curso, o null si no hay ninguna. */

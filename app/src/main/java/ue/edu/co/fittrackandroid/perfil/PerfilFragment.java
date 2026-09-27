@@ -28,7 +28,7 @@ import ue.edu.co.fittrackandroid.R;
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
 
 /**
- * Pantalla de perfil: foto, datos personales, lista de ejercicios de la rutina y cierre
+ * Pantalla de perfil: foto, datos personales, ejercicios creados por el usuario y cierre
  * de sesión. El nombre y la foto se guardan localmente con SharedPreferences porque
  * todavía no existe una fuente de datos real.
  */
@@ -68,6 +68,10 @@ public class PerfilFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_perfil, container, false);
 
         inicializarVistas(view);
+
+        // TODO: Reemplazar los cuatro ejercicios definidos de forma fija en el layout por
+        // los ejercicios creados por el usuario. Debe contemplar carga, estado vacío, error
+        // y el guardado del nuevo orden cuando se habilite la acción de reordenar.
         cargarDatosPerfil();
         configurarAcciones();
 
@@ -79,6 +83,10 @@ public class PerfilFragment extends Fragment {
         super.onResume();
         // El perfil es una pestaña raíz: la toolbar debe verse siempre como la principal.
         ((MainActivity) requireActivity()).mostrarToolbarPrincipal();
+
+        // TODO: Volver a consultar el perfil y los ejercicios creados por el usuario cuando
+        // exista una fuente de datos real, para reflejar cambios hechos desde otras pantallas
+        // o dispositivos.
     }
 
     /** Busca las vistas de la pantalla y las guarda en los campos. */
@@ -94,7 +102,11 @@ public class PerfilFragment extends Fragment {
 
     /** Muestra el nombre guardado e intenta restaurar la foto elegida anteriormente. */
     private void cargarDatosPerfil() {
-        // TODO: Usar el nombre del usuario autenticado cuando exista una sesión real.
+        // TODO: Consultar el nombre, correo y foto del usuario autenticado. El correo que se
+        // muestra actualmente está definido de forma fija en fragment_perfil.xml.
+
+        // TODO: Dejar de compartir estas preferencias entre todas las cuentas del dispositivo.
+        // Los datos locales deben asociarse al identificador del usuario o venir del backend.
         String nombreUsuario = obtenerPreferencias()
                 .getString(CLAVE_NOMBRE_USUARIO, getString(R.string.tvNombreInicialPerfil));
         etNombrePerfil.setText(nombreUsuario);
@@ -132,12 +144,17 @@ public class PerfilFragment extends Fragment {
             return;
         }
 
+        // TODO: Validar el tipo y tamaño de la imagen, subirla al almacenamiento definido
+        // para el perfil y manejar los estados de carga, éxito y error.
+
         // Se pide permiso persistente para poder volver a leer la imagen al abrir el perfil.
         try {
             requireContext().getContentResolver().takePersistableUriPermission(
                     uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         } catch (SecurityException e) {
             // Algunos proveedores no lo entregan; la foto se podrá ver mientras la app siga abierta.
+            // TODO: Informar al usuario o copiar la imagen al almacenamiento interno para no
+            // conservar una URI que dejará de estar disponible al reiniciar la aplicación.
         }
 
         obtenerPreferencias().edit().putString(CLAVE_URI_FOTO_PERFIL, uri.toString()).apply();
@@ -187,7 +204,12 @@ public class PerfilFragment extends Fragment {
             return;
         }
 
+        // TODO: Actualizar el nombre en la fuente de datos del usuario y guardar localmente
+        // solo después de confirmar el resultado. Mientras se guarda, deshabilitar el botón
+        // para evitar solicitudes duplicadas y conservar el texto si ocurre un error.
         obtenerPreferencias().edit().putString(CLAVE_NOMBRE_USUARIO, nombreUsuario).apply();
+
+        // TODO: Actualizar también el saludo de Home con el nuevo nombre.
         etNombrePerfil.setError(null);
         Toast.makeText(requireContext(), "Nombre guardado", Toast.LENGTH_SHORT).show();
     }
