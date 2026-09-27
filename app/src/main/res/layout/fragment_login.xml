@@ -181,16 +181,6 @@
                 android:textSize="12sp"
                 android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/tvRecuperarClave"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:fontFamily="sans-serif-medium"
-                android:gravity="end|center_vertical"
-                android:text="@string/tvRecuperarClave"
-                android:textColor="@color/colorPrimary"
-                android:textSize="12sp" />
-
             <Button
                 android:id="@+id/btnIniciarSesion"
                 android:layout_width="match_parent"

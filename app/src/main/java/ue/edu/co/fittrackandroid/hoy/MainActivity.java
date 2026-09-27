@@ -30,7 +30,9 @@ import ue.edu.co.fittrackandroid.entrenamiento.EntrenamientoActivoFragment;
 import ue.edu.co.fittrackandroid.entrenamiento.EntrenamientoEnCurso;
 import ue.edu.co.fittrackandroid.entrenamiento.ResumenEntrenamiento;
 import ue.edu.co.fittrackandroid.entrenamiento.ResumenEntrenamientoFragment;
+import ue.edu.co.fittrackandroid.login.CrearCuentaFragment;
 import ue.edu.co.fittrackandroid.login.LoginFragment;
+import ue.edu.co.fittrackandroid.perfil.CambiarContrasenaFragment;
 import ue.edu.co.fittrackandroid.perfil.PerfilFragment;
 import ue.edu.co.fittrackandroid.rutinas.CrearRutinaFragment;
 import ue.edu.co.fittrackandroid.rutinas.RutinasFragment;
@@ -185,6 +187,8 @@ public class MainActivity extends AppCompatActivity {
 
     /** Muestra el fragment de Home (pantalla principal "Hoy"). */
     public void mostrarHome() {
+        // Inicio es una raíz: se descarta cualquier pantalla secundaria abierta.
+        limpiarBackStack();
         layoutToolbar.setVisibility(View.VISIBLE);
         mostrarNavegacionInferior();
         getSupportFragmentManager().beginTransaction()
@@ -195,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
 
     /** Muestra el fragment de Login SIN toolbar ni bottom nav. */
     public void mostrarLogin() {
+        limpiarBackStack();
         layoutToolbar.setVisibility(View.GONE);
         bottomNavigation.setVisibility(View.GONE);
         ocultarIslaEntrenamiento();
@@ -321,6 +326,14 @@ public class MainActivity extends AppCompatActivity {
     /** Oculta la navegación inferior, por ejemplo durante un entrenamiento en curso. */
     public void ocultarNavegacionInferior() {
         bottomNavigation.setVisibility(View.GONE);
+    }
+
+    /**
+     * Oculta la barra de herramientas, por ejemplo en el login, que se muestra sin barra
+     * y la necesita ocultar de nuevo cuando se vuelve desde una pantalla secundaria.
+     */
+    public void ocultarToolbar() {
+        layoutToolbar.setVisibility(View.GONE);
     }
 
     /** Muestra la navegación inferior. */
@@ -582,6 +595,16 @@ public class MainActivity extends AppCompatActivity {
     /** Navega a la pantalla de crear ejercicio (con retroceso). */
     public void mostrarCrearEjercicio() {
         cargarFragmentConBackStack(new CrearEjercicioFragment());
+    }
+
+    /** Navega a la pantalla de crear una cuenta nueva (con retroceso). */
+    public void mostrarCrearCuenta() {
+        cargarFragmentConBackStack(new CrearCuentaFragment());
+    }
+
+    /** Navega a la pantalla de cambiar la contraseña (con retroceso). */
+    public void mostrarCambiarContrasena() {
+        cargarFragmentConBackStack(new CambiarContrasenaFragment());
     }
 
     /** Retrocede a la pantalla anterior si hay una en la pila. */

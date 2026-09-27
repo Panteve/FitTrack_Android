@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutCrearCuenta"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <ScrollView
+        android:id="@+id/svCrearCuenta"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/layoutContenidoCrearCuenta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <TextView
+                android:id="@+id/tvSubtituloCrearCuenta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:gravity="center"
+                android:letterSpacing="0.08"
+                android:text="@string/tvSubtituloCrearCuenta"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <!-- Campos del registro con el mismo acabado del formulario de acceso -->
+            <LinearLayout
+                android:id="@+id/cardFormularioCrearCuenta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:background="@drawable/bg_card"
+                android:elevation="@dimen/elevation_card"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <!-- Campo nombre -->
+                <TextView
+                    android:id="@+id/tvLabelNombreUsuario"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tvLabelNombreUsuario"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etNombreUsuario"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height_standard"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:autofillHints="name"
+                    android:background="@drawable/bg_input"
+                    android:hint="@string/etNombreUsuario_hint"
+                    android:inputType="textPersonName|textCapWords"
+                    android:maxLines="1"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    android:singleLine="true"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextStrong"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvErrorNombreUsuario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="@string/tvErrorNombreUsuario"
+                    android:textColor="@color/colorError"
+                    android:textSize="11sp"
+                    android:visibility="gone" />
+
+                <!-- Campo correo -->
+                <TextView
+                    android:id="@+id/tvLabelCorreo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:text="@string/tvLabelCorreo"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etCorreo"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height_standard"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:autofillHints="emailAddress"
+                    android:background="@drawable/bg_input"
+                    android:drawableStart="@drawable/ic_mail"
+                    android:drawablePadding="@dimen/spacing_sm"
+                    android:hint="@string/etCorreo_hint"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    app:drawableTint="@color/colorTextTertiary"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextStrong"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvErrorCorreo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="@string/tvErrorCorreo"
+                    android:textColor="@color/colorError"
+                    android:textSize="11sp"
+                    android:visibility="gone" />
+
+                <!-- Campo contraseña -->
+                <TextView
+                    android:id="@+id/tvLabelContrasena"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:text="@string/tvLabelContrasena"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etContrasenaRegistro"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height_standard"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:autofillHints="newPassword"
+                    android:background="@drawable/bg_input"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:drawablePadding="@dimen/spacing_sm"
+                    android:hint="@string/etContrasenaRegistro_hint"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    app:drawableTint="@color/colorTextTertiary"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextStrong"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvErrorContrasenaRegistro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="@string/tvErrorContrasenaRegistro"
+                    android:textColor="@color/colorError"
+                    android:textSize="11sp"
+                    android:visibility="gone" />
+
+                <!-- Campo repetir contraseña -->
+                <TextView
+                    android:id="@+id/tvLabelRepetirContrasena"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:text="@string/tvLabelRepetirContrasena"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etRepetirContrasena"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height_standard"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:autofillHints="newPassword"
+                    android:background="@drawable/bg_input"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:drawablePadding="@dimen/spacing_sm"
+                    android:hint="@string/etRepetirContrasena_hint"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    app:drawableTint="@color/colorTextTertiary"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextStrong"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvErrorRepetirContrasena"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="@string/tvErrorRepetirContrasena"
+                    android:textColor="@color/colorError"
+                    android:textSize="11sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/spacing_xxl" />
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

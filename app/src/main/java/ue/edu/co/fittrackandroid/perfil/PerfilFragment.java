@@ -28,9 +28,9 @@ import ue.edu.co.fittrackandroid.R;
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
 
 /**
- * Pantalla de perfil: foto, datos personales, ejercicios creados por el usuario y cierre
- * de sesión. El nombre y la foto se guardan localmente con SharedPreferences porque
- * todavía no existe una fuente de datos real.
+ * Pantalla de perfil: foto, datos personales, ejercicios creados por el usuario, cambio de
+ * contraseña, cambio de cuenta y cierre de sesión. El nombre y la foto se guardan localmente
+ * con SharedPreferences porque todavía no existe una fuente de datos real.
  */
 public class PerfilFragment extends Fragment {
 
@@ -46,6 +46,8 @@ public class PerfilFragment extends Fragment {
     private EditText etNombrePerfil;
     private Button btnGuardarNombre;
     private Button btnNuevoEjercicio;
+    private Button btnCambiarContrasena;
+    private Button btnCambiarCuenta;
     private Button btnCerrarSesion;
 
     public PerfilFragment() {
@@ -97,6 +99,8 @@ public class PerfilFragment extends Fragment {
         etNombrePerfil = view.findViewById(R.id.etNombrePerfil);
         btnGuardarNombre = view.findViewById(R.id.btnGuardarNombre);
         btnNuevoEjercicio = view.findViewById(R.id.btnNuevoEjercicio);
+        btnCambiarContrasena = view.findViewById(R.id.btnCambiarContrasena);
+        btnCambiarCuenta = view.findViewById(R.id.btnCambiarCuenta);
         btnCerrarSesion = view.findViewById(R.id.btnCerrarSesion);
     }
 
@@ -121,12 +125,19 @@ public class PerfilFragment extends Fragment {
         btnCambiarFoto.setOnClickListener(v -> abrirSelectorImagen());
         btnGuardarNombre.setOnClickListener(v -> guardarNombre());
         btnNuevoEjercicio.setOnClickListener(v -> abrirCrearEjercicio());
+        btnCambiarContrasena.setOnClickListener(v -> abrirCambiarContrasena());
+        btnCambiarCuenta.setOnClickListener(v -> confirmarCambioCuenta());
         btnCerrarSesion.setOnClickListener(v -> confirmarCierreSesion());
     }
 
     /** Abre la pantalla de crear un ejercicio nuevo. */
     private void abrirCrearEjercicio() {
         ((MainActivity) requireActivity()).mostrarCrearEjercicio();
+    }
+
+    /** Abre la pantalla de cambiar la contraseña de la cuenta. */
+    private void abrirCambiarContrasena() {
+        ((MainActivity) requireActivity()).mostrarCambiarContrasena();
     }
 
     /** Abre el selector de imágenes del sistema, filtrando solo por imágenes. */
@@ -222,6 +233,17 @@ public class PerfilFragment extends Fragment {
                 .setPositiveButton(R.string.btnConfirmarCerrarSesion,
                         (dialogo, cual) -> ((MainActivity) requireActivity()).cerrarSesion())
                 .setNegativeButton(R.string.btnCancelarCerrarSesion, null)
+                .show();
+    }
+
+    /** Pide confirmación antes de volver al acceso para entrar con otra cuenta. */
+    private void confirmarCambioCuenta() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.tvTituloCambiarCuenta)
+                .setMessage(R.string.tvMensajeCambiarCuenta)
+                .setPositiveButton(R.string.btnConfirmarCambiarCuenta,
+                        (dialogo, cual) -> ((MainActivity) requireActivity()).mostrarLogin())
+                .setNegativeButton(R.string.btnCancelarCambiarCuenta, null)
                 .show();
     }
 

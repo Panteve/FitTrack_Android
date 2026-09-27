@@ -14,12 +14,23 @@
     <string name="etContrasena_hint">••••••••</string>
     <string name="tvErrorContrasena">Ingresa tu contraseña</string>
     <string name="tvErrorCredenciales">Correo o contraseña incorrectos</string>
-    <string name="tvRecuperarClave">¿Olvidaste tu contraseña?</string>
     <string name="btnIniciarSesion">INICIAR SESIÓN</string>
     <string name="btnIniciarSesion_loading">INICIANDO SESIÓN…</string>
     <string name="tvSeparador">— O —</string>
     <string name="btnCrearCuenta">CREAR CUENTA</string>
     <string name="tvVersion">v1.0 • Proyecto universitario</string>
+
+    <!-- CrearCuentaFragment -->
+    <string name="tvToolbarTituloCrearCuenta">Crear cuenta</string>
+    <string name="tvSubtituloCrearCuenta">REGISTRO DE USUARIO</string>
+    <string name="tvLabelNombreUsuario">NOMBRE</string>
+    <string name="etNombreUsuario_hint">Tu nombre</string>
+    <string name="tvErrorNombreUsuario">Ingresa tu nombre</string>
+    <string name="etContrasenaRegistro_hint">Mínimo 6 caracteres</string>
+    <string name="tvErrorContrasenaRegistro">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="tvLabelRepetirContrasena">REPETIR CONTRASEÑA</string>
+    <string name="etRepetirContrasena_hint">••••••••</string>
+    <string name="tvErrorRepetirContrasena">Verifica que las contraseñas coincidan</string>
 
     <!-- MainActivity (Hoy) -->
     <string name="tvToolbarTituloMain">FitTrack</string>
@@ -227,7 +238,26 @@
     <string name="tvMensajeCerrarSesion">¿Seguro que quieres salir de FitTrack? Tus rutinas y tu nombre se guardarán.</string>
     <string name="btnConfirmarCerrarSesion">CERRAR SESIÓN</string>
     <string name="btnCancelarCerrarSesion">CANCELAR</string>
+    <string name="tvLabelCuenta">CUENTA</string>
+    <string name="btnCambiarContrasena">CAMBIAR CONTRASEÑA</string>
+    <string name="btnCambiarCuenta">CAMBIAR CUENTA</string>
+    <string name="tvTituloCambiarCuenta">Cambiar de cuenta</string>
+    <string name="tvMensajeCambiarCuenta">¿Quieres entrar con otra cuenta? Volverás a la pantalla de acceso.</string>
+    <string name="btnConfirmarCambiarCuenta">CAMBIAR CUENTA</string>
+    <string name="btnCancelarCambiarCuenta">CANCELAR</string>
     <string name="tvNombreInicialPerfil">Alex Ramírez</string>
+
+    <!-- CambiarContrasenaFragment -->
+    <string name="tvToolbarTituloCambiarContrasena">Cambiar contraseña</string>
+    <string name="tvLabelContrasenaActual">CONTRASEÑA ACTUAL</string>
+    <string name="etContrasenaActual_hint">••••••••</string>
+    <string name="tvErrorContrasenaActual">Ingresa tu contraseña actual</string>
+    <string name="tvLabelNuevaContrasena">NUEVA CONTRASEÑA</string>
+    <string name="etNuevaContrasena_hint">Mínimo 6 caracteres</string>
+    <string name="tvErrorNuevaContrasena">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="tvLabelRepetirNuevaContrasena">REPETIR NUEVA CONTRASEÑA</string>
+    <string name="etRepetirNuevaContrasena_hint">••••••••</string>
+    <string name="tvErrorRepetirNuevaContrasena">Verifica que las contraseñas coincidan</string>
 
     <!-- EntrenamientoActivoFragment: toolbar e isla del entrenamiento minimizado -->
     <string name="tvToolbarTituloEntrenamientoActivo">Entrenamiento activo</string>
