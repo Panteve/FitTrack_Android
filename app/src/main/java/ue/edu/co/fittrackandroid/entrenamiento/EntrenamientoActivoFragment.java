@@ -30,6 +30,9 @@ import java.util.Locale;
 import ue.edu.co.fittrackandroid.R;
 import ue.edu.co.fittrackandroid.ejercicios.EjerciciosFragment;
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
+import ue.edu.co.fittrackandroid.resumen.EjercicioResumen;
+import ue.edu.co.fittrackandroid.resumen.ResumenEntrenamiento;
+import ue.edu.co.fittrackandroid.resumen.SerieResumen;
 
 /**
  * Pantalla del entrenamiento en curso.

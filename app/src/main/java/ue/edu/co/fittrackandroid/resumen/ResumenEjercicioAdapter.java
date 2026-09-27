@@ -1,4 +1,4 @@
-package ue.edu.co.fittrackandroid.entrenamiento;
+package ue.edu.co.fittrackandroid.resumen;
 
 import android.view.LayoutInflater;
 import android.view.View;

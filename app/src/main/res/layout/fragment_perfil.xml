@@ -443,14 +443,6 @@
             android:layout_marginTop="@dimen/spacing_md"
             android:text="@string/btnCambiarContrasena" />
 
-        <Button
-            android:id="@+id/btnCambiarCuenta"
-            style="@style/FitTrack.Button.Secondary"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height_standard"
-            android:layout_marginTop="@dimen/spacing_sm"
-            android:text="@string/btnCambiarCuenta" />
-
         <!-- Cierre de sesión -->
         <Button
             android:id="@+id/btnCerrarSesion"

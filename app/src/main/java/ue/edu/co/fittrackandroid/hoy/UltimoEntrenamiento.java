@@ -1,6 +1,6 @@
-package ue.edu.co.fittrackandroid;
+package ue.edu.co.fittrackandroid.hoy;
 
-import ue.edu.co.fittrackandroid.entrenamiento.ResumenEntrenamiento;
+import ue.edu.co.fittrackandroid.resumen.ResumenEntrenamiento;
 
 /**
  * Modelo de un entrenamiento reciente, tal como se muestra en la fila de la lista

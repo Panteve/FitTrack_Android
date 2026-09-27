@@ -1,4 +1,4 @@
-package ue.edu.co.fittrackandroid;
+package ue.edu.co.fittrackandroid.hoy;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,10 +18,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import ue.edu.co.fittrackandroid.entrenamiento.EjercicioResumen;
-import ue.edu.co.fittrackandroid.entrenamiento.ResumenEntrenamiento;
-import ue.edu.co.fittrackandroid.entrenamiento.SerieResumen;
-import ue.edu.co.fittrackandroid.hoy.MainActivity;
+import ue.edu.co.fittrackandroid.R;
+import ue.edu.co.fittrackandroid.resumen.EjercicioResumen;
+import ue.edu.co.fittrackandroid.resumen.ResumenEntrenamiento;
+import ue.edu.co.fittrackandroid.resumen.SerieResumen;
 
 /**
  * Fragment para la pantalla principal (Hoy).

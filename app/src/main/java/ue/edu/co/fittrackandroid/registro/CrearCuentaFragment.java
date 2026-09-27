@@ -1,4 +1,4 @@
-package ue.edu.co.fittrackandroid.login;
+package ue.edu.co.fittrackandroid.registro;
 
 import android.os.Bundle;
 import android.text.Editable;

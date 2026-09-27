@@ -1,4 +1,4 @@
-package ue.edu.co.fittrackandroid;
+package ue.edu.co.fittrackandroid.hoy;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+
+import ue.edu.co.fittrackandroid.R;
 
 /**
  * Adapter de la lista de entrainamientos recientes de la pantalla de inicio.

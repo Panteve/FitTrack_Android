@@ -1,4 +1,4 @@
-package ue.edu.co.fittrackandroid.entrenamiento;
+package ue.edu.co.fittrackandroid.resumen;
 
 /**
  * Modelo de una serie ya realizada dentro de un entrenamiento terminado.

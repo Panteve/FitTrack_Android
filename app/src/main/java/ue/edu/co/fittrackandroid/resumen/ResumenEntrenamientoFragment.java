@@ -1,4 +1,4 @@
-package ue.edu.co.fittrackandroid.entrenamiento;
+package ue.edu.co.fittrackandroid.resumen;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 
 import ue.edu.co.fittrackandroid.R;
+import ue.edu.co.fittrackandroid.entrenamiento.EntrenamientoEnCurso;
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
 
 /**

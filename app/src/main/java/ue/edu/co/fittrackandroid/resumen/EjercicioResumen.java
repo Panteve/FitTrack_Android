@@ -1,4 +1,4 @@
-package ue.edu.co.fittrackandroid.entrenamiento;
+package ue.edu.co.fittrackandroid.resumen;
 
 import java.util.ArrayList;
 import java.util.List;

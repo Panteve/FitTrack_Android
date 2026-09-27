@@ -21,19 +21,18 @@ import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import ue.edu.co.fittrackandroid.HomeFragment;
 import ue.edu.co.fittrackandroid.R;
 import ue.edu.co.fittrackandroid.ejercicios.CrearEjercicioFragment;
 import ue.edu.co.fittrackandroid.ejercicios.EjerciciosFragment;
 import ue.edu.co.fittrackandroid.entrenamiento.EjercicioEntrenamiento;
 import ue.edu.co.fittrackandroid.entrenamiento.EntrenamientoActivoFragment;
 import ue.edu.co.fittrackandroid.entrenamiento.EntrenamientoEnCurso;
-import ue.edu.co.fittrackandroid.entrenamiento.ResumenEntrenamiento;
-import ue.edu.co.fittrackandroid.entrenamiento.ResumenEntrenamientoFragment;
-import ue.edu.co.fittrackandroid.login.CrearCuentaFragment;
 import ue.edu.co.fittrackandroid.login.LoginFragment;
 import ue.edu.co.fittrackandroid.perfil.CambiarContrasenaFragment;
 import ue.edu.co.fittrackandroid.perfil.PerfilFragment;
+import ue.edu.co.fittrackandroid.registro.CrearCuentaFragment;
+import ue.edu.co.fittrackandroid.resumen.ResumenEntrenamiento;
+import ue.edu.co.fittrackandroid.resumen.ResumenEntrenamientoFragment;
 import ue.edu.co.fittrackandroid.rutinas.CrearRutinaFragment;
 import ue.edu.co.fittrackandroid.rutinas.RutinasFragment;
 

@@ -240,11 +240,6 @@
     <string name="btnCancelarCerrarSesion">CANCELAR</string>
     <string name="tvLabelCuenta">CUENTA</string>
     <string name="btnCambiarContrasena">CAMBIAR CONTRASEÑA</string>
-    <string name="btnCambiarCuenta">CAMBIAR CUENTA</string>
-    <string name="tvTituloCambiarCuenta">Cambiar de cuenta</string>
-    <string name="tvMensajeCambiarCuenta">¿Quieres entrar con otra cuenta? Volverás a la pantalla de acceso.</string>
-    <string name="btnConfirmarCambiarCuenta">CAMBIAR CUENTA</string>
-    <string name="btnCancelarCambiarCuenta">CANCELAR</string>
     <string name="tvNombreInicialPerfil">Alex Ramírez</string>
 
     <!-- CambiarContrasenaFragment -->
@@ -377,4 +372,6 @@
     <string name="tvGrupoMuscularEjemploTriceps">Tríceps</string>
     <string name="tvGrupoMuscularEjemploEspalda">Espalda</string>
     <string name="tvGrupoMuscularEjemploBiceps">Bíceps</string>
+    <string name="error_correo_vacio">Correo vacio</string>
+    <string name="error_contrasena_vacia">Contraseña vacia</string>
 </resources>

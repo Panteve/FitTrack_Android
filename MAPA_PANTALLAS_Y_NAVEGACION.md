@@ -56,7 +56,6 @@ HomeFragment / Inicio
        | Nuevo ejercicio      | Nueva rutina        | Cambiar foto
        v                      v                      | Guardar nombre
 CrearEjercicioFragment   CrearRutinaFragment         | Cambiar contraseña
-                               |                      | Cambiar cuenta
                                | Agregar ejercicio   | Cerrar sesión
                                v                      v
                         EjerciciosFragment      LoginFragment
@@ -98,7 +97,6 @@ Casos concretos:
 - Login no se abre usando la pila de retroceso. Al estar en Login y pulsar Atrás, se aplica el comportamiento normal de Android.
 - Inicio, Login y las pestañas inferiores son raíces: al abrirlos se limpia la pila de pantallas secundarias.
 - Cerrar sesión limpia las pantallas secundarias y reemplaza la pantalla actual por Login.
-- Cambiar cuenta limpia las pantallas secundarias y abre Login, pero conserva los datos de la sesión y el nombre del perfil.
 
 ## Pantallas implementadas
 
@@ -115,7 +113,6 @@ Cómo se abre:
 
 - Al iniciar la aplicación, porque `verificarSesionActiva()` devuelve siempre `false` actualmente.
 - Al confirmar “Cerrar sesión” desde Perfil.
-- Al confirmar “Cambiar cuenta” desde Perfil.
 
 Acciones:
 
@@ -164,10 +161,10 @@ Al volver desde Crear ejercicio:
 
 Archivos relacionados:
 
-- Java: `app/src/main/java/ue/edu/co/fittrackandroid/HomeFragment.java`
+- Java: `app/src/main/java/ue/edu/co/fittrackandroid/hoy/HomeFragment.java`
 - Layout: `app/src/main/res/layout/fragment_home.xml`
-- Modelo: `app/src/main/java/ue/edu/co/fittrackandroid/UltimoEntrenamiento.java`
-- Adapter: `app/src/main/java/ue/edu/co/fittrackandroid/UltimoEntrenamientoAdapter.java`
+- Modelo: `app/src/main/java/ue/edu/co/fittrackandroid/hoy/UltimoEntrenamiento.java`
+- Adapter: `app/src/main/java/ue/edu/co/fittrackandroid/hoy/UltimoEntrenamientoAdapter.java`
 - Layout de fila: `app/src/main/res/layout/item_ultimo_entrenamiento.xml`
 
 Pendiente o provisional:
@@ -346,7 +343,6 @@ Responsabilidad:
 - Mostrar el correo definido en la interfaz.
 - Mostrar la lista de ejercicios de la rutina.
 - Cambiar la contraseña de la cuenta.
-- Volver al acceso para entrar con otra cuenta.
 - Cerrar sesión.
 
 Cómo se abre:
@@ -359,7 +355,6 @@ Acciones:
 - **Guardar nombre:** valida que no esté vacío y lo guarda localmente en `SharedPreferences`.
 - **Nuevo ejercicio:** abre `CrearEjercicioFragment` como pantalla secundaria.
 - **Cambiar contraseña:** abre `CambiarContrasenaFragment` como pantalla secundaria.
-- **Cambiar cuenta:** muestra un diálogo de confirmación. Al aceptar, limpia la pila secundaria y abre Login, sin borrar los datos de la sesión ni el nombre del perfil.
 - **Cerrar sesión:** muestra un diálogo de confirmación. Al aceptar, limpia las preferencias de sesión, limpia la pila secundaria y abre Login.
 
 Persistencia actual:
@@ -373,7 +368,7 @@ Archivos relacionados:
 
 - Java de pantalla: `app/src/main/java/ue/edu/co/fittrackandroid/perfil/PerfilFragment.java`
 - Layout de pantalla: `app/src/main/res/layout/fragment_perfil.xml`
-- Modelo: `app/src/main/java/ue/edu/co/fittrackandroid/perfil/UltimoEntrenamiento.java`
+- Modelo: `app/src/main/java/ue/edu/co/fittrackandroid/hoy/UltimoEntrenamiento.java`
 
 Pendiente o provisional:
 
@@ -403,7 +398,7 @@ Elementos globales:
 
 Archivos relacionados:
 
-- Java de pantalla: `app/src/main/java/ue/edu/co/fittrackandroid/login/CrearCuentaFragment.java`
+- Java de pantalla: `app/src/main/java/ue/edu/co/fittrackandroid/registro/CrearCuentaFragment.java`
 - Layout de pantalla: `app/src/main/res/layout/fragment_crear_cuenta.xml`
 
 Pendiente o provisional:
@@ -447,7 +442,6 @@ Pendiente o provisional:
 | Login | Cualquier intento termina abriendo Inicio después de la espera. | Validar credenciales y manejar errores reales. |
 | Registro | Valida los datos en pantalla y abre Inicio. | Enviar el registro al backend y guardar la sesión. |
 | Cambio de contraseña | Valida los tres campos y vuelve al perfil. | Verificar la contraseña actual y actualizarla en el backend. |
-| Cambio de cuenta | Pide confirmación y abre Login. | Autenticar la cuenta nueva y separarla de los datos de la anterior. |
 | Crear ejercicio | Solo valida el nombre y regresa. | Guardar el ejercicio y habilitar el resto de campos. |
 | Lista de ejercicios | Seis registros fijos. | Leer ejercicios guardados. |
 | Rutinas | Tres planes fijos. | Leer y guardar rutinas reales. |

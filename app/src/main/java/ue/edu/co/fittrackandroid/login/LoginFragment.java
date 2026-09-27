@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -28,7 +29,7 @@ public class LoginFragment extends Fragment {
     private Button btnIniciarSesion;
     private TextView tvErrorCorreo;
     private TextView tvErrorContrasena;
-
+    private Button btnCrearCuenta;
     private boolean contrasenaVisible = false;
 
     public LoginFragment() {
@@ -40,23 +41,24 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
+        initObjects(view);
+        limpiarErrorAlEscribir(etCorreo, tvErrorCorreo);
+        limpiarErrorAlEscribir(etContrasena, tvErrorContrasena);
+        btnIniciarSesion.setOnClickListener(v -> iniciarSesion());
+        btnOjoContrasena.setOnClickListener(v -> alternarVisibilidadContrasena());
+        btnCrearCuenta.setOnClickListener(v -> abrirCrearCuenta());
+
+        return view;
+    }
+
+    private void initObjects(View view) {
         etCorreo = view.findViewById(R.id.etCorreo);
         etContrasena = view.findViewById(R.id.etContrasena);
         btnOjoContrasena = view.findViewById(R.id.btnOjoContrasena);
         btnIniciarSesion = view.findViewById(R.id.btnIniciarSesion);
         tvErrorCorreo = view.findViewById(R.id.tvErrorCorreo);
         tvErrorContrasena = view.findViewById(R.id.tvErrorContrasena);
-        Button btnCrearCuenta = view.findViewById(R.id.btnCrearCuenta);
-
-        limpiarErrorAlEscribir(etCorreo, tvErrorCorreo);
-        limpiarErrorAlEscribir(etContrasena, tvErrorContrasena);
-
-        btnIniciarSesion.setOnClickListener(v -> iniciarSesion());
-        btnOjoContrasena.setOnClickListener(v -> alternarVisibilidadContrasena());
-
-        btnCrearCuenta.setOnClickListener(v -> abrirCrearCuenta());
-
-        return view;
+        btnCrearCuenta = view.findViewById(R.id.btnCrearCuenta);
     }
 
     @Override
@@ -73,9 +75,23 @@ public class LoginFragment extends Fragment {
     }
 
     private void iniciarSesion() {
-        // TODO: Validar que el correo tenga un formato correcto y que la contraseña no esté vacía.
-        // Los errores deben mostrarse en tvErrorCorreo y tvErrorContrasena antes de continuar.
         mostrarCargando(true);
+        String correo = etCorreo.getText().toString().trim();
+        String contrasena = etContrasena.getText().toString().trim();
+
+        if (correo.isEmpty()) {
+            Toast.makeText(requireContext(), R.string.error_correo_vacio, Toast.LENGTH_SHORT).show();
+            tvErrorCorreo.setVisibility(View.VISIBLE);
+            mostrarCargando(false);
+            return;
+        }
+
+        if (contrasena.isEmpty()) {
+            Toast.makeText(requireContext(), R.string.error_contrasena_vacia, Toast.LENGTH_SHORT).show();
+            tvErrorContrasena.setVisibility(View.VISIBLE);
+            mostrarCargando(false);
+            return;
+        }
 
         // TODO: Reemplazar esta espera simulada por la autenticación real contra el backend
         // o la base de datos. Las credenciales no deben quedar hardcodeadas en la aplicación.

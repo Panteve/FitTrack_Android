@@ -29,8 +29,8 @@ import ue.edu.co.fittrackandroid.hoy.MainActivity;
 
 /**
  * Pantalla de perfil: foto, datos personales, ejercicios creados por el usuario, cambio de
- * contraseña, cambio de cuenta y cierre de sesión. El nombre y la foto se guardan localmente
- * con SharedPreferences porque todavía no existe una fuente de datos real.
+ * contraseña y cierre de sesión. El nombre y la foto se guardan localmente con
+ * SharedPreferences porque todavía no existe una fuente de datos real.
  */
 public class PerfilFragment extends Fragment {
 
@@ -47,7 +47,6 @@ public class PerfilFragment extends Fragment {
     private Button btnGuardarNombre;
     private Button btnNuevoEjercicio;
     private Button btnCambiarContrasena;
-    private Button btnCambiarCuenta;
     private Button btnCerrarSesion;
 
     public PerfilFragment() {
@@ -100,7 +99,6 @@ public class PerfilFragment extends Fragment {
         btnGuardarNombre = view.findViewById(R.id.btnGuardarNombre);
         btnNuevoEjercicio = view.findViewById(R.id.btnNuevoEjercicio);
         btnCambiarContrasena = view.findViewById(R.id.btnCambiarContrasena);
-        btnCambiarCuenta = view.findViewById(R.id.btnCambiarCuenta);
         btnCerrarSesion = view.findViewById(R.id.btnCerrarSesion);
     }
 
@@ -126,7 +124,6 @@ public class PerfilFragment extends Fragment {
         btnGuardarNombre.setOnClickListener(v -> guardarNombre());
         btnNuevoEjercicio.setOnClickListener(v -> abrirCrearEjercicio());
         btnCambiarContrasena.setOnClickListener(v -> abrirCambiarContrasena());
-        btnCambiarCuenta.setOnClickListener(v -> confirmarCambioCuenta());
         btnCerrarSesion.setOnClickListener(v -> confirmarCierreSesion());
     }
 
@@ -233,17 +230,6 @@ public class PerfilFragment extends Fragment {
                 .setPositiveButton(R.string.btnConfirmarCerrarSesion,
                         (dialogo, cual) -> ((MainActivity) requireActivity()).cerrarSesion())
                 .setNegativeButton(R.string.btnCancelarCerrarSesion, null)
-                .show();
-    }
-
-    /** Pide confirmación antes de volver al acceso para entrar con otra cuenta. */
-    private void confirmarCambioCuenta() {
-        new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.tvTituloCambiarCuenta)
-                .setMessage(R.string.tvMensajeCambiarCuenta)
-                .setPositiveButton(R.string.btnConfirmarCambiarCuenta,
-                        (dialogo, cual) -> ((MainActivity) requireActivity()).mostrarLogin())
-                .setNegativeButton(R.string.btnCancelarCambiarCuenta, null)
                 .show();
     }
 
