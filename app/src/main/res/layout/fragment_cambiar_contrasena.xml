@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutCambiarContrasena"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <ScrollView
+        android:id="@+id/svCambiarContrasena"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/layoutContenidoCambiarContrasena"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <!-- Campos de la contraseña con el mismo acabado del formulario de acceso -->
+            <LinearLayout
+                android:id="@+id/cardFormularioCambiarContrasena"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:background="@drawable/bg_card"
+                android:elevation="@dimen/elevation_card"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <!-- Campo contraseña actual -->
+                <TextView
+                    android:id="@+id/tvLabelContrasenaActual"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tvLabelContrasenaActual"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etContrasenaActual"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height_standard"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:autofillHints="password"
+                    android:background="@drawable/bg_input"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:drawablePadding="@dimen/spacing_sm"
+                    android:hint="@string/etContrasenaActual_hint"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    app:drawableTint="@color/colorTextTertiary"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextStrong"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvErrorContrasenaActual"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="@string/tvErrorContrasenaActual"
+                    android:textColor="@color/colorError"
+                    android:textSize="11sp"
+                    android:visibility="gone" />
+
+                <!-- Campo nueva contraseña -->
+                <TextView
+                    android:id="@+id/tvLabelNuevaContrasena"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:text="@string/tvLabelNuevaContrasena"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etNuevaContrasena"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height_standard"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:autofillHints="newPassword"
+                    android:background="@drawable/bg_input"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:drawablePadding="@dimen/spacing_sm"
+                    android:hint="@string/etNuevaContrasena_hint"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    app:drawableTint="@color/colorTextTertiary"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextStrong"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvErrorNuevaContrasena"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="@string/tvErrorNuevaContrasena"
+                    android:textColor="@color/colorError"
+                    android:textSize="11sp"
+                    android:visibility="gone" />
+
+                <!-- Campo repetir nueva contraseña -->
+                <TextView
+                    android:id="@+id/tvLabelRepetirNuevaContrasena"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:text="@string/tvLabelRepetirNuevaContrasena"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etRepetirNuevaContrasena"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height_standard"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:autofillHints="newPassword"
+                    android:background="@drawable/bg_input"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:drawablePadding="@dimen/spacing_sm"
+                    android:hint="@string/etRepetirNuevaContrasena_hint"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    app:drawableTint="@color/colorTextTertiary"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextStrong"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvErrorRepetirNuevaContrasena"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="@string/tvErrorRepetirNuevaContrasena"
+                    android:textColor="@color/colorError"
+                    android:textSize="11sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/spacing_xxl" />
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

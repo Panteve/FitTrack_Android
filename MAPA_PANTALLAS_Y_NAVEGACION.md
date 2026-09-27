@@ -36,6 +36,14 @@ Abrir aplicación
        v
 LoginFragment
        |
+       | Crear cuenta
+       v
+CrearCuentaFragment
+       |
+       | Atrás
+       v
+LoginFragment
+       |
        | Iniciar sesión (simulado)
        v
 HomeFragment / Inicio
@@ -43,19 +51,19 @@ HomeFragment / Inicio
        +----------------------+----------------------+
        |                      |                      |
        v                      v                      v
-   Inicio                RutinasFragment        PerfilFragment
+    Inicio                RutinasFragment        PerfilFragment
        |                      |                      |
        | Nuevo ejercicio      | Nueva rutina        | Cambiar foto
        v                      v                      | Guardar nombre
-CrearEjercicioFragment   CrearRutinaFragment         | Cerrar sesión
-                              |                      v
-                              | Agregar ejercicio   LoginFragment
-                              v
-                       EjerciciosFragment
-                              |
-                              | Elegir ejercicio
-                              v
-                       CrearRutinaFragment
+CrearEjercicioFragment   CrearRutinaFragment         | Cambiar contraseña
+                               |                      | Cambiar cuenta
+                               | Agregar ejercicio   | Cerrar sesión
+                               v                      v
+                        EjerciciosFragment      LoginFragment
+                               |
+                               | Elegir ejercicio
+                               v
+                        CrearRutinaFragment
 ```
 
 El entrenamiento activo todavía no aparece en este flujo porque no existe como código de la aplicación. Actualmente, los botones que deberían iniciar un entrenamiento solo muestran un mensaje temporal.
@@ -85,8 +93,12 @@ Casos concretos:
 - Crear rutina → Atrás → Rutinas.
 - Selector de ejercicios → Atrás → Crear rutina, conservando la instancia anterior mientras permanezca en la pila.
 - Selector de ejercicios → elegir un ejercicio → el selector devuelve el ejercicio y regresa automáticamente a Crear rutina.
+- Crear cuenta → Atrás → Login, que vuelve a mostrarse sin toolbar.
+- Cambiar contraseña → Atrás → Perfil.
 - Login no se abre usando la pila de retroceso. Al estar en Login y pulsar Atrás, se aplica el comportamiento normal de Android.
+- Inicio, Login y las pestañas inferiores son raíces: al abrirlos se limpia la pila de pantallas secundarias.
 - Cerrar sesión limpia las pantallas secundarias y reemplaza la pantalla actual por Login.
+- Cambiar cuenta limpia las pantallas secundarias y abre Login, pero conserva los datos de la sesión y el nombre del perfil.
 
 ## Pantallas implementadas
 
@@ -97,22 +109,23 @@ Responsabilidad:
 - Recibir correo y contraseña.
 - Permitir mostrar u ocultar la contraseña.
 - Entrar a la aplicación mediante un inicio de sesión actualmente simulado.
+- Abrir el registro de una cuenta nueva.
 
 Cómo se abre:
 
 - Al iniciar la aplicación, porque `verificarSesionActiva()` devuelve siempre `false` actualmente.
 - Al confirmar “Cerrar sesión” desde Perfil.
+- Al confirmar “Cambiar cuenta” desde Perfil.
 
 Acciones:
 
 - **Iniciar sesión:** desactiva brevemente el botón, muestra un estado de carga y abre Inicio. No valida realmente las credenciales.
 - **Icono del ojo:** alterna entre contraseña visible y oculta.
-- **Recuperar contraseña:** solo muestra el mensaje “próximamente”.
-- **Crear cuenta:** solo muestra el mensaje “próximamente”.
+- **Crear cuenta:** abre `CrearCuentaFragment` como pantalla secundaria.
 
 Elementos globales:
 
-- La toolbar y la navegación inferior permanecen ocultas.
+- La toolbar y la navegación inferior permanecen ocultas. Al volver del registro, `LoginFragment` vuelve a ocultarlas.
 
 Archivos relacionados:
 
@@ -123,7 +136,8 @@ Pendiente o provisional:
 
 - No hay autenticación real.
 - No se guarda una sesión al iniciar.
-- No hay recuperación de contraseña ni registro.
+- El registro no envía los datos a ningún backend.
+- La recuperación de contraseña ya no existe en el login: se cambió por la opción “Cambiar contraseña” del perfil.
 
 ### 2. Inicio / Hoy
 
@@ -331,6 +345,8 @@ Responsabilidad:
 - Mostrar y editar el nombre.
 - Mostrar el correo definido en la interfaz.
 - Mostrar la lista de ejercicios de la rutina.
+- Cambiar la contraseña de la cuenta.
+- Volver al acceso para entrar con otra cuenta.
 - Cerrar sesión.
 
 Cómo se abre:
@@ -342,6 +358,8 @@ Acciones:
 - **Foto, icono de cámara o Cambiar foto:** abre el selector de documentos de Android para elegir una imagen.
 - **Guardar nombre:** valida que no esté vacío y lo guarda localmente en `SharedPreferences`.
 - **Nuevo ejercicio:** abre `CrearEjercicioFragment` como pantalla secundaria.
+- **Cambiar contraseña:** abre `CambiarContrasenaFragment` como pantalla secundaria.
+- **Cambiar cuenta:** muestra un diálogo de confirmación. Al aceptar, limpia la pila secundaria y abre Login, sin borrar los datos de la sesión ni el nombre del perfil.
 - **Cerrar sesión:** muestra un diálogo de confirmación. Al aceptar, limpia las preferencias de sesión, limpia la pila secundaria y abre Login.
 
 Persistencia actual:
@@ -363,13 +381,73 @@ Pendiente o provisional:
 - Los entrenamientos recientes deben reemplazarse por registros reales.
 - El cierre de sesión deberá eliminar tokens o credenciales cuando exista autenticación.
 
+### 8. Crear cuenta
+
+Responsabilidad:
+
+- Recibir los datos de una cuenta nueva: nombre, correo, contraseña y su confirmación.
+
+Cómo se abre:
+
+- Con el botón “Crear cuenta” del login, como pantalla secundaria.
+
+Acciones:
+
+- **Atrás:** vuelve al login, que oculta de nuevo la toolbar.
+- **Guardar:** valida nombre, correo, contraseña y confirmación. Si todo está correcto muestra un mensaje y abre Inicio.
+
+Elementos globales:
+
+- Toolbar secundaria con título “Crear cuenta”, flecha de retroceso y acción “Guardar”.
+- La navegación inferior permanece oculta.
+
+Archivos relacionados:
+
+- Java de pantalla: `app/src/main/java/ue/edu/co/fittrackandroid/login/CrearCuentaFragment.java`
+- Layout de pantalla: `app/src/main/res/layout/fragment_crear_cuenta.xml`
+
+Pendiente o provisional:
+
+- Los datos se validan en pantalla pero no se envían a ningún backend ni se guarda la contraseña.
+
+### 9. Cambiar contraseña
+
+Responsabilidad:
+
+- Recibir la contraseña actual, la nueva y la confirmación de la nueva.
+
+Cómo se abre:
+
+- Con el botón “Cambiar contraseña” del perfil, como pantalla secundaria.
+
+Acciones:
+
+- **Atrás:** vuelve al perfil.
+- **Guardar:** valida los tres campos. Si todo está correcto muestra un mensaje y regresa al perfil.
+
+Elementos globales:
+
+- Toolbar secundaria con título “Cambiar contraseña”, flecha de retroceso y acción “Guardar”.
+- La navegación inferior permanece visible porque la abre el perfil.
+
+Archivos relacionados:
+
+- Java de pantalla: `app/src/main/java/ue/edu/co/fittrackandroid/perfil/CambiarContrasenaFragment.java`
+- Layout de pantalla: `app/src/main/res/layout/fragment_cambiar_contrasena.xml`
+
+Pendiente o provisional:
+
+- La contraseña actual no se verifica contra ninguna fuente de datos y la nueva no se guarda.
+
 ## Funciones provisionales y TODO principales
 
 | Área | Estado actual | Trabajo pendiente |
 |---|---|---|
 | Sesión | Siempre se inicia mostrando Login. | Verificar y guardar una sesión real. |
 | Login | Cualquier intento termina abriendo Inicio después de la espera. | Validar credenciales y manejar errores reales. |
-| Registro y recuperación | Mensajes “próximamente”. | Crear sus flujos. |
+| Registro | Valida los datos en pantalla y abre Inicio. | Enviar el registro al backend y guardar la sesión. |
+| Cambio de contraseña | Valida los tres campos y vuelve al perfil. | Verificar la contraseña actual y actualizarla en el backend. |
+| Cambio de cuenta | Pide confirmación y abre Login. | Autenticar la cuenta nueva y separarla de los datos de la anterior. |
 | Crear ejercicio | Solo valida el nombre y regresa. | Guardar el ejercicio y habilitar el resto de campos. |
 | Lista de ejercicios | Seis registros fijos. | Leer ejercicios guardados. |
 | Rutinas | Tres planes fijos. | Leer y guardar rutinas reales. |
@@ -435,6 +513,8 @@ Fragments raíz
 Fragments secundarios
 ├── CrearEjercicioFragment
 ├── CrearRutinaFragment
+├── CrearCuentaFragment
+├── CambiarContrasenaFragment
 └── EjerciciosFragment
 
 Adapters

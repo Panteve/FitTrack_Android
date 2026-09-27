@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -47,7 +46,6 @@ public class LoginFragment extends Fragment {
         btnIniciarSesion = view.findViewById(R.id.btnIniciarSesion);
         tvErrorCorreo = view.findViewById(R.id.tvErrorCorreo);
         tvErrorContrasena = view.findViewById(R.id.tvErrorContrasena);
-        TextView tvRecuperarClave = view.findViewById(R.id.tvRecuperarClave);
         Button btnCrearCuenta = view.findViewById(R.id.btnCrearCuenta);
 
         limpiarErrorAlEscribir(etCorreo, tvErrorCorreo);
@@ -56,15 +54,22 @@ public class LoginFragment extends Fragment {
         btnIniciarSesion.setOnClickListener(v -> iniciarSesion());
         btnOjoContrasena.setOnClickListener(v -> alternarVisibilidadContrasena());
 
-        // TODO: Implementar el flujo para recuperar la contraseña mediante el correo del usuario.
-        tvRecuperarClave.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Recuperación de contraseña próximamente", Toast.LENGTH_SHORT).show());
-
-        // TODO: Crear CrearCuentaFragment y navegar hacia él mediante MainActivity.
-        btnCrearCuenta.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Registro próximamente", Toast.LENGTH_SHORT).show());
+        btnCrearCuenta.setOnClickListener(v -> abrirCrearCuenta());
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // El login se muestra sin barra de herramientas y debe ocultarla también cuando se
+        // vuelve desde la pantalla de registro.
+        ((MainActivity) requireActivity()).ocultarToolbar();
+    }
+
+    /** Abre la pantalla de registro de una cuenta nueva. */
+    private void abrirCrearCuenta() {
+        ((MainActivity) requireActivity()).mostrarCrearCuenta();
     }
 
     private void iniciarSesion() {
