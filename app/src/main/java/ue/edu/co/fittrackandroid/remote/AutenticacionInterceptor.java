@@ -9,17 +9,17 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class AutenticacionInterceptor implements Interceptor {
-    private final TokenManager tokenManager;
+    private final SesionManager sesionManager;
 
-    public AutenticacionInterceptor(TokenManager tokenManager) {
-        this.tokenManager = tokenManager;
+    public AutenticacionInterceptor(SesionManager sesionManager) {
+        this.sesionManager = sesionManager;
     }
 
     @NonNull
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
         Request solicitudOriginal = chain.request();
-        String token = tokenManager.obtenerAccessToken();
+        String token = sesionManager.obtenerAccessToken();
 
         if (token == null || token.isEmpty()) {
             return chain.proceed(solicitudOriginal);

@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
 import ue.edu.co.fittrackandroid.R;
-import ue.edu.co.fittrackandroid.remote.TokenManager;
+import ue.edu.co.fittrackandroid.remote.SesionManager;
 import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 
 import retrofit2.Call;
@@ -39,7 +39,7 @@ public class LoginFragment extends Fragment {
     private TextView tvErrorContrasena;
     private TextView tvErrorCredenciales;
     private Button btnCrearCuenta;
-    private TokenManager tokenManager;
+    private SesionManager sesionManager;
     private LoginRepository loginRepository;
     private Call<LoginResponse> currentCall;
 
@@ -124,10 +124,12 @@ public class LoginFragment extends Fragment {
                 mostrarCargando(false);
 
                 if (response.isSuccessful() && response.body() != null) {
-                    tokenManager =
-                            new TokenManager(requireContext());
-                    tokenManager.guardarTokens(
+                    sesionManager = new SesionManager(requireContext());
+                    sesionManager.guardarTokens(
                             response.body().getToken()
+                    );
+                    sesionManager.guardarNombre(
+                            response.body().getNombre()
                     );
                     ((MainActivity) requireActivity()).mostrarHome();
                     return;

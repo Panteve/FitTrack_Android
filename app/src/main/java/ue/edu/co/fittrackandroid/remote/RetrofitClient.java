@@ -17,11 +17,11 @@ public final class RetrofitClient {
 
     public static Retrofit getInstance(Context context) {
         if (retrofit == null) {
-            TokenManager tokenManager =
-                    new TokenManager(context);
+            SesionManager sesionManager =
+                    new SesionManager(context);
 
             AutenticacionInterceptor autenticacionInterceptor =
-                    new AutenticacionInterceptor(tokenManager);
+                    new AutenticacionInterceptor(sesionManager);
 
             HttpLoggingInterceptor interceptorRegistro =
                     new HttpLoggingInterceptor();

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 import ue.edu.co.fittrackandroid.R;
+import ue.edu.co.fittrackandroid.remote.SesionManager;
 import ue.edu.co.fittrackandroid.resumen.EjercicioResumen;
 import ue.edu.co.fittrackandroid.resumen.ResumenEntrenamiento;
 import ue.edu.co.fittrackandroid.resumen.SerieResumen;
@@ -33,6 +34,9 @@ public class HomeFragment extends Fragment {
     private RecyclerView rvUltimosEntrenamientos;
     private TextView tvCantidadUltimosEntrenamientos;
     private TextView tvSinEntrenamientos;
+    private TextView tvBienvenida;
+    private TextView tvFecha;
+    private SesionManager sesionManager;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -43,13 +47,8 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        TextView tvFecha = view.findViewById(R.id.tvFecha);
-        btnIniciarEntrenamiento = view.findViewById(R.id.btnIniciarEntrenamiento);
-        rvUltimosEntrenamientos = view.findViewById(R.id.rvUltimosEntrenamientos);
-        tvCantidadUltimosEntrenamientos = view.findViewById(R.id.tvCantidadUltimosEntrenamientos);
-        tvSinEntrenamientos = view.findViewById(R.id.tvSinEntrenamientos);
+        initObjects(view);
 
-        tvFecha.setText(getString(R.string.tvFecha, formatearFechaHoy()));
 
         // TODO: Mostrar en tvBienvenida el nombre del usuario de la sesión activa.
 
@@ -66,6 +65,20 @@ public class HomeFragment extends Fragment {
         configurarUltimosEntrenamientos();
 
         return view;
+    }
+
+    private void initObjects(View view) {
+        btnIniciarEntrenamiento = view.findViewById(R.id.btnIniciarEntrenamiento);
+        rvUltimosEntrenamientos = view.findViewById(R.id.rvUltimosEntrenamientos);
+        tvCantidadUltimosEntrenamientos = view.findViewById(R.id.tvCantidadUltimosEntrenamientos);
+        tvSinEntrenamientos = view.findViewById(R.id.tvSinEntrenamientos);
+        tvFecha = view.findViewById(R.id.tvFecha);
+        tvBienvenida = view.findViewById(R.id.tvBienvenida);
+        sesionManager = new SesionManager(requireContext());
+
+        tvFecha.setText(getString(R.string.tvFecha, formatearFechaHoy()));
+        tvBienvenida.setText(sesionManager.obtenerNombre());
+
     }
 
     @Override

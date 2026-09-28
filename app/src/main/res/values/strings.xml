@@ -52,7 +52,7 @@
     <string name="cdBuscar">Buscar</string>
     <string name="cdOpciones">Opciones</string>
     <string name="tvFecha">Fecha: %1$s</string>
-    <string name="tvBienvenida">Bienvenido: Alex (Usuario)</string>
+    <string name="tvBienvenida">Bienvenido: Sin nombre</string>
 
     <string name="tvTituloRegistroSemanal">REGISTRO SEMANAL</string>
     <string name="tvDiaLunes">LUN</string>
