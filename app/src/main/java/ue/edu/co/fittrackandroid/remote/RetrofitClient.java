@@ -1,5 +1,7 @@
 package ue.edu.co.fittrackandroid.remote;
 
+import android.content.Context;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -13,19 +15,34 @@ public final class RetrofitClient {
     private RetrofitClient() {
     }
 
-    public static Retrofit getInstance() {
+    public static Retrofit getInstance(Context context) {
         if (retrofit == null) {
-            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+            TokenManager tokenManager =
+                    new TokenManager(context);
+
+            AutenticacionInterceptor autenticacionInterceptor =
+                    new AutenticacionInterceptor(tokenManager);
+
+            HttpLoggingInterceptor interceptorRegistro =
+                    new HttpLoggingInterceptor();
+
+            interceptorRegistro.setLevel(
+                    HttpLoggingInterceptor.Level.BASIC
+            );
+
+            interceptorRegistro.redactHeader("Authorization");
 
             OkHttpClient clienteHttp = new OkHttpClient.Builder()
-                    .addInterceptor(logging)
+                    .addInterceptor(autenticacionInterceptor)
+                    .addInterceptor(interceptorRegistro)
                     .build();
 
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(clienteHttp)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(
+                            GsonConverterFactory.create()
+                    )
                     .build();
         }
 

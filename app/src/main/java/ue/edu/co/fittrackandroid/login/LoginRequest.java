@@ -1,27 +1,27 @@
 package ue.edu.co.fittrackandroid.login;
 
 public class LoginRequest {
-    private String email;
-    private String password;
+    private String correo;
+    private String contrasena;
 
-    public LoginRequest(String email, String password) {
-        this.email = email;
-        this.password = password;
+    public LoginRequest(String correo, String contrasena) {
+        this.correo = correo;
+        this.contrasena = contrasena;
     }
 
-    public String getEmail() {
-        return email;
+    public String getCorreo() {
+        return correo;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setCorreo(String correo) {
+        this.correo = correo;
     }
 
-    public String getPassword() {
-        return password;
+    public String getContrasena() {
+        return contrasena;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 }

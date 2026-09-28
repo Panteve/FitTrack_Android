@@ -60,7 +60,7 @@ public class LoginFragment extends Fragment {
         btnIniciarSesion.setOnClickListener(v -> iniciarSesion());
         btnOjoContrasena.setOnClickListener(v -> alternarVisibilidadContrasena());
         btnCrearCuenta.setOnClickListener(v -> abrirCrearCuenta());
-        repository = new LoginRepository();
+        repository = new LoginRepository(requireContext());
         return view;
     }
 
@@ -130,6 +130,7 @@ public class LoginFragment extends Fragment {
                             response.body().getToken()
                     );
                     ((MainActivity) requireActivity()).mostrarHome();
+                    return;
                 }
 
                 int codigoRespuesta = response.code();
