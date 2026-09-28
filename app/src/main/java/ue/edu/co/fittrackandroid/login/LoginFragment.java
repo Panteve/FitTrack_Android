@@ -40,7 +40,7 @@ public class LoginFragment extends Fragment {
     private TextView tvErrorCredenciales;
     private Button btnCrearCuenta;
     private TokenManager tokenManager;
-    private LoginRepository repository;
+    private LoginRepository loginRepository;
     private Call<LoginResponse> currentCall;
 
     private boolean contrasenaVisible = false;
@@ -60,7 +60,7 @@ public class LoginFragment extends Fragment {
         btnIniciarSesion.setOnClickListener(v -> iniciarSesion());
         btnOjoContrasena.setOnClickListener(v -> alternarVisibilidadContrasena());
         btnCrearCuenta.setOnClickListener(v -> abrirCrearCuenta());
-        repository = new LoginRepository(requireContext());
+        loginRepository = new LoginRepository(requireContext());
         return view;
     }
 
@@ -114,7 +114,7 @@ public class LoginFragment extends Fragment {
         }
 
         LoginRequest loginRequest =  new LoginRequest(correo, contrasena);
-        currentCall = repository.loginUser(loginRequest);
+        currentCall = loginRepository.loginUser(loginRequest);
         currentCall.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(
