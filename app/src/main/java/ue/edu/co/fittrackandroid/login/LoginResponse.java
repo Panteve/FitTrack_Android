@@ -2,11 +2,11 @@ package ue.edu.co.fittrackandroid.login;
 
 public class LoginResponse {
     private String token;
-    private String message;
+    private String nombre;
 
-    public LoginResponse(String token, String message) {
+    public LoginResponse(String token, String nombre) {
         this.token = token;
-        this.message = message;
+        this.nombre = nombre;
     }
 
     public String getToken() {
@@ -17,11 +17,11 @@ public class LoginResponse {
         this.token = token;
     }
 
-    public String getMessage() {
-        return message;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 }
