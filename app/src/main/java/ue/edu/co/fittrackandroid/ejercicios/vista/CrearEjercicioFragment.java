@@ -123,7 +123,9 @@ public class CrearEjercicioFragment extends Fragment {
     private void inicializarDatos() {
         ejercicioRepository = new EjercicioRepository(requireContext());
 
-        ArrayAdapter<String> adapterGrupoMuscular = ArrayAdapter.createFromResource(
+        // createFromResource devuelve un ArrayAdapter<CharSequence> porque las opciones
+        // se leen del arreglo de recursos.
+        ArrayAdapter<CharSequence> adapterGrupoMuscular = ArrayAdapter.createFromResource(
                 requireContext(),
                 R.array.spGrupoMuscular_opciones,
                 android.R.layout.simple_spinner_item
@@ -258,7 +260,8 @@ public class CrearEjercicioFragment extends Fragment {
 
     /** @return el grupo muscular elegido, escrito como lo espera el backend. */
     private String obtenerGrupoMuscularSeleccionado() {
-        return (String) spGrupoMuscular.getSelectedItem();
+        CharSequence grupoMuscular = (CharSequence) spGrupoMuscular.getSelectedItem();
+        return grupoMuscular.toString();
     }
 
     /**
