@@ -2,6 +2,12 @@ package ue.edu.co.fittrackandroid.entrenamiento.modelo;
 
 public class SerieEntrenamiento {
 
+    /**
+     * Identificador de la fila que guarda esta serie en Room; cero mientras todavía no se ha
+     * escrito en la base de datos.
+     */
+    private long idBorrador = 0;
+
     private double peso = 0.0;
     private int repeticiones = 0;
     private int numeroSerie = 0;
@@ -53,6 +59,19 @@ public class SerieEntrenamiento {
 
     public void setCompletada(boolean completada) {
         this.completada = completada;
+    }
+
+    /**
+     * @return el identificador de la fila que guarda la serie en la base de datos local,
+     *         o cero si todavía no se ha guardado.
+     */
+    public long getIdBorrador() {
+        return idBorrador;
+    }
+
+    /** @param idBorrador identificador que Room asignó a esta serie. */
+    public void setIdBorrador(long idBorrador) {
+        this.idBorrador = idBorrador;
     }
 
     /**

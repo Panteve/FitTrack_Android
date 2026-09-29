@@ -21,6 +21,8 @@ import ue.edu.co.fittrackandroid.login.modelo.LoginRequest;
 import ue.edu.co.fittrackandroid.login.modelo.LoginResponse;
 import ue.edu.co.fittrackandroid.MainActivity;
 import ue.edu.co.fittrackandroid.R;
+import ue.edu.co.fittrackandroid.perfil.datos.DescargadorFotoPerfil;
+import ue.edu.co.fittrackandroid.perfil.datos.FotoPerfilLocal;
 import ue.edu.co.fittrackandroid.remote.SesionManager;
 import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 
@@ -126,15 +128,33 @@ public class LoginFragment extends Fragment {
             ) {
                 mostrarCargando(false);
 
-                if (response.isSuccessful() && response.body() != null) {
+                LoginResponse loginResponse = response.body();
+                if (response.isSuccessful()
+                        && loginResponse != null
+                        && loginResponse.getToken() != null
+                        && !loginResponse.getToken().isEmpty()
+                        && loginResponse.getUsuarioId() != null
+                        && loginResponse.getUsuarioId() > 0) {
                     sesionManager = new SesionManager(requireContext());
-                    sesionManager.guardarTokens(
-                            response.body().getToken()
-                    );
+                    sesionManager.guardarTokens(loginResponse.getToken());
                     sesionManager.guardarInfoPersonal(
-                            response.body().getNombre(),
+                            loginResponse.getUsuarioId(),
+                            loginResponse.getNombre(),
                             correo
                     );
+
+                    FotoPerfilLocal fotoPerfilLocal = new FotoPerfilLocal(requireContext());
+                    String fotoPerfilUrl = loginResponse.getFotoPerfilUrl();
+                    if (fotoPerfilUrl == null || fotoPerfilUrl.trim().isEmpty()) {
+                        fotoPerfilLocal.eliminar(loginResponse.getUsuarioId());
+                    } else {
+                        DescargadorFotoPerfil.descargar(
+                                fotoPerfilUrl,
+                                loginResponse.getUsuarioId(),
+                                fotoPerfilLocal
+                        );
+                    }
+
                     ((MainActivity) requireActivity()).mostrarHome();
                     return;
                 }

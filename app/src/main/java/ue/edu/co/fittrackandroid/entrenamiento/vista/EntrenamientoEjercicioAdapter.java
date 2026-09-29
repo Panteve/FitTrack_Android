@@ -50,8 +50,8 @@ public class EntrenamientoEjercicioAdapter
         /** Una serie cambió su estado de completada o de no completada. */
         void onEstadoSerieCambiado(int posicionEjercicio, int posicionSerie, boolean completada);
 
-        /** El usuario cambió el peso o las repeticiones de alguna serie. */
-        void onDatosSerieCambiados();
+        /** El usuario cambió el peso o las repeticiones de alguna serie del ejercicio. */
+        void onDatosSerieCambiados(EjercicioEntrenamiento ejercicio);
     }
 
     private final List<EjercicioEntrenamiento> listaEjercicios;
@@ -207,7 +207,7 @@ public class EntrenamientoEjercicioAdapter
                 public void afterTextChanged(Editable texto) {
                     serie.setPeso(convertirPeso(texto.toString()));
                     etPeso.setError(null);
-                    escucha.onDatosSerieCambiados();
+                    escucha.onDatosSerieCambiados(ejercicio);
                 }
             });
         }
@@ -227,7 +227,7 @@ public class EntrenamientoEjercicioAdapter
                 public void afterTextChanged(Editable texto) {
                     serie.setRepeticiones(convertirRepeticiones(texto.toString()));
                     etRepeticiones.setError(null);
-                    escucha.onDatosSerieCambiados();
+                    escucha.onDatosSerieCambiados(ejercicio);
                 }
             });
         }

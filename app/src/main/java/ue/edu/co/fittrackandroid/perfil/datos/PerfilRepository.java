@@ -2,9 +2,11 @@ package ue.edu.co.fittrackandroid.perfil.datos;
 
 import android.content.Context;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import ue.edu.co.fittrackandroid.perfil.modelo.CambiarContrasenaRequest;
 import ue.edu.co.fittrackandroid.perfil.modelo.CambiarNombreRequest;
+import ue.edu.co.fittrackandroid.perfil.modelo.FotoPerfilResponse;
 import ue.edu.co.fittrackandroid.remote.RetrofitClient;
 
 /**
@@ -39,5 +41,24 @@ public class PerfilRepository {
      */
     public Call<Void> cambiarContrasena(CambiarContrasenaRequest cambiarContrasenaRequest) {
         return perfilApiService.cambiarContrasena(cambiarContrasenaRequest);
+    }
+
+    /**
+     * Prepara la subida o el reemplazo de la foto de perfil.
+     *
+     * @param foto parte multipart ya validada
+     * @return llamada que devuelve la ubicación temporal de la foto
+     */
+    public Call<FotoPerfilResponse> guardarFoto(MultipartBody.Part foto) {
+        return perfilApiService.guardarFoto(foto);
+    }
+
+    /**
+     * Prepara la eliminación de la foto del usuario autenticado.
+     *
+     * @return llamada sin contenido de respuesta
+     */
+    public Call<Void> quitarFoto() {
+        return perfilApiService.quitarFoto();
     }
 }

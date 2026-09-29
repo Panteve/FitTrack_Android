@@ -9,6 +9,12 @@ import java.util.List;
  */
 public class EjercicioEntrenamiento {
 
+    /**
+     * Identificador de la fila que guarda este ejercicio en Room; cero mientras todavía no se
+     * ha escrito en la base de datos.
+     */
+    private long idBorrador = 0;
+
     private final String nombre;
     private final String grupoMuscular;
     private final Long rutinaEjercicioId;
@@ -45,6 +51,19 @@ public class EjercicioEntrenamiento {
     /** @return el identificador del bloque de ejercicio dentro de la rutina. */
     public Long getRutinaEjercicioId() {
         return rutinaEjercicioId;
+    }
+
+    /**
+     * @return el identificador de la fila que guarda el ejercicio en la base de datos local,
+     *         o cero si todavía no se ha guardado.
+     */
+    public long getIdBorrador() {
+        return idBorrador;
+    }
+
+    /** @param idBorrador identificador que Room asignó a este ejercicio. */
+    public void setIdBorrador(long idBorrador) {
+        this.idBorrador = idBorrador;
     }
 
     /** @return las series editables del ejercicio. */

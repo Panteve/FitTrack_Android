@@ -33,6 +33,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import ue.edu.co.fittrackandroid.entrenamiento.datos.EntrenamientoRepository;
+import ue.edu.co.fittrackandroid.entrenamiento.datos.local.EntrenamientoBorradorRepository;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EjercicioEntrenamiento;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoCrearRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoDetalleResponse;
@@ -70,12 +71,29 @@ public class EntrenamientoActivoFragment extends Fragment
     /** Cada cuánto se refrescan los dos relojes de la pantalla. */
     private static final long INTERVALO_RELOJ_MS = 1000;
 
+    /**
+     * Espera antes de guardar el peso y las repeticiones, para no escribir en la base de
+     * datos por cada tecla que el usuario pulse.
+     */
+    private static final long ESPERA_GUARDADO_SERIES_MS = 400;
+
     private MainActivity activity;
     private EntrenamientoEnCurso entrenamiento;
     private EntrenamientoEjercicioAdapter adapter;
     private EntrenamientoRepository entrenamientoRepository;
+    private EntrenamientoBorradorRepository borradorRepository;
     private Call<EntrenamientoDetalleResponse> currentCall;
     private boolean guardandoEntrenamiento;
+
+    /**
+     * Se pone en true cuando el entrenamiento ya se guardó en el backend o el usuario lo
+     * descartó. A partir de ese momento MainActivity ya borró el borrador local, así que la
+     * pantalla no debe volver a escribir en él.
+     */
+    private boolean borradorResuelto;
+
+    /** Ejercicios cuyas series cambiaron y que aún no se han escrito en el borrador. */
+    private final List<EjercicioEntrenamiento> ejerciciosPorGuardar = new ArrayList<>();
 
     private TextView tvDuracionEntrenamiento;
     private TextView tvVolumenEntrenamiento;
@@ -107,6 +125,14 @@ public class EntrenamientoActivoFragment extends Fragment
         }
     };
 
+    /** Escribe las series que el usuario editó, una vez que dejó de escribir. */
+    private final Runnable runnableGuardarSeries = new Runnable() {
+        @Override
+        public void run() {
+            guardarSeriesPendientes();
+        }
+    };
+
     public EntrenamientoActivoFragment() {
         // Required empty public constructor
     }
@@ -115,10 +141,12 @@ public class EntrenamientoActivoFragment extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = (MainActivity) requireActivity();
-        // TODO: Recuperar el entrenamiento activo desde el almacenamiento si MainActivity no
-        // conserva la referencia, incluyendo ejercicios, series, descanso y tiempo transcurrido.
+        // La sesión la conserva MainActivity. Si el proceso se cerró, MainActivity la recuperó
+        // del borrador local de Room antes de abrir esta pantalla, con sus ejercicios, sus
+        // series, el descanso y el tiempo transcurrido.
         entrenamiento = activity.obtenerEntrenamientoEnCurso();
         entrenamientoRepository = new EntrenamientoRepository(requireContext());
+        borradorRepository = new EntrenamientoBorradorRepository(requireContext());
     }
 
     @Override
@@ -165,6 +193,9 @@ public class EntrenamientoActivoFragment extends Fragment
     public void onPause() {
         super.onPause();
         detenerActualizacionesVisuales();
+        // Al salir de la pantalla se escribe lo que estaba esperando, para que minimizar el
+        // entrenamiento no dependa solo de lo que MainActivity tiene en memoria.
+        guardarCambiosPendientes();
     }
 
     @Override
@@ -337,8 +368,9 @@ public class EntrenamientoActivoFragment extends Fragment
         entrenamiento.setInstanteFinDescanso(
                 SystemClock.elapsedRealtime() + SEGUNDOS_DESCANSO_BASE * 1000L);
 
-        // TODO: Persistir el instante de finalización del descanso para poder restaurar la
-        // cuenta regresiva si Android cierra el proceso mientras está activa.
+        // El fin del descanso también se guarda, para que la cuenta regresiva se pueda
+        // restaurar aunque Android cierre el proceso mientras está corriendo.
+        guardarDescanso();
 
         tvTiempoDescanso.setText(EntrenamientoEnCurso.formatearTiempo(SEGUNDOS_DESCANSO_BASE));
         layoutDescansoEntrenamiento.setVisibility(View.VISIBLE);
@@ -371,6 +403,7 @@ public class EntrenamientoActivoFragment extends Fragment
 
         entrenamiento.setInstanteFinDescanso(
                 SystemClock.elapsedRealtime() + segundosRestantes * 1000L);
+        guardarDescanso();
         tvTiempoDescanso.setText(EntrenamientoEnCurso.formatearTiempo(segundosRestantes));
     }
 
@@ -412,32 +445,114 @@ public class EntrenamientoActivoFragment extends Fragment
 
     private void detenerDescanso() {
         handler.removeCallbacks(runnableDescanso);
+
+        // La pantalla llama a este método también cuando no había descanso, por ejemplo al
+        // entrar de nuevo a la sesión: solo se guarda cuando de verdad había uno corriendo.
+        boolean habiaDescanso = entrenamiento.getInstanteFinDescanso() > 0;
+
         entrenamiento.detenerDescanso();
         layoutDescansoEntrenamiento.setVisibility(View.GONE);
+
+        if (habiaDescanso) {
+            guardarDescanso();
+        }
+    }
+
+    // ------------------------------------------------------------------ Borrador local
+
+    /**
+     * Guarda el estado del descanso en el borrador local. Aquí también se guardarían las notas
+     * de la sesión cuando la pantalla tenga un campo para escribirlas.
+     */
+    private void guardarDescanso() {
+        if (borradorResuelto) {
+            return;
+        }
+        borradorRepository.guardarDatosEntrenamiento(entrenamiento);
+    }
+
+    /**
+     * Espera a que el usuario termine de escribir antes de guardar el peso y las repeticiones,
+     * para no escribir en la base de datos por cada tecla.
+     *
+     * @param ejercicio ejercicio cuyas series cambiaron.
+     */
+    private void programarGuardadoSeries(EjercicioEntrenamiento ejercicio) {
+        if (!ejerciciosPorGuardar.contains(ejercicio)) {
+            ejerciciosPorGuardar.add(ejercicio);
+        }
+
+        handler.removeCallbacks(runnableGuardarSeries);
+        handler.postDelayed(runnableGuardarSeries, ESPERA_GUARDADO_SERIES_MS);
+    }
+
+    /** Escribe las series de los ejercicios que estaban esperando. */
+    private void guardarSeriesPendientes() {
+        if (borradorResuelto || ejerciciosPorGuardar.isEmpty()) {
+            return;
+        }
+
+        List<EjercicioEntrenamiento> ejercicios = new ArrayList<>(ejerciciosPorGuardar);
+        ejerciciosPorGuardar.clear();
+
+        for (EjercicioEntrenamiento ejercicio : ejercicios) {
+            borradorRepository.guardarSeries(ejercicio);
+        }
+    }
+
+    /**
+     * Escribe sin esperar lo que estaba pendiente. Se usa al salir de la pantalla para que
+     * la última edición del usuario no se pierda al minimizar el entrenamiento.
+     */
+    private void guardarCambiosPendientes() {
+        handler.removeCallbacks(runnableGuardarSeries);
+        guardarSeriesPendientes();
+
+        if (!borradorResuelto) {
+            borradorRepository.guardarDatosEntrenamiento(entrenamiento);
+        }
     }
 
     // ------------------------------------------------------------------ Ejercicios y series
 
     @Override
     public void onAgregarSerie(int posicionEjercicio) {
+        EjercicioEntrenamiento ejercicio = obtenerEjercicio(posicionEjercicio);
+        if (ejercicio == null) {
+            return;
+        }
+
         // La serie nueva solo pertenece a ese ejercicio: ningún otro cambia.
-        entrenamiento.getEjercicios().get(posicionEjercicio).agregarSerie();
+        ejercicio.agregarSerie();
         adapter.actualizarEjercicio(posicionEjercicio);
         recalcularResumen();
 
-        // TODO: Persistir el cambio en el borrador del entrenamiento activo.
+        if (!borradorResuelto) {
+            borradorRepository.guardarSeries(ejercicio);
+        }
     }
 
     @Override
     public void onQuitarEjercicio(int posicionEjercicio) {
-        confirmarQuitarEjercicio(entrenamiento.getEjercicios().get(posicionEjercicio));
+        EjercicioEntrenamiento ejercicio = obtenerEjercicio(posicionEjercicio);
+        if (ejercicio == null) {
+            return;
+        }
+
+        confirmarQuitarEjercicio(ejercicio);
     }
 
     @Override
     public void onEstadoSerieCambiado(int posicionEjercicio, int posicionSerie, boolean completada) {
         recalcularResumen();
 
-        // TODO: Persistir el nuevo estado de la serie para recuperarlo si se cierra el proceso.
+        EjercicioEntrenamiento ejercicio = obtenerEjercicio(posicionEjercicio);
+        SerieEntrenamiento serie = obtenerSerie(ejercicio, posicionSerie);
+        if (serie != null && !borradorResuelto) {
+            // Se guardan todas las series del ejercicio porque el check también conserva
+            // cambios de peso o repeticiones que el usuario hizo sin pasar por el watcher.
+            borradorRepository.guardarSeries(ejercicio);
+        }
 
         // El descanso solo arranca al completar una serie, nunca al desmarcarlo.
         if (completada) {
@@ -446,11 +561,40 @@ public class EntrenamientoActivoFragment extends Fragment
     }
 
     @Override
-    public void onDatosSerieCambiados() {
+    public void onDatosSerieCambiados(EjercicioEntrenamiento ejercicio) {
         recalcularResumen();
 
-        // TODO: Guardar los cambios de peso y repeticiones con una espera corta para no
-        // escribir en el almacenamiento por cada tecla pulsada.
+        if (!borradorResuelto) {
+            programarGuardadoSeries(ejercicio);
+        }
+    }
+
+    /**
+     * @return el ejercicio que está en la posición indicada, o null si la lista ya cambió y
+     *         esa posición ya no corresponde a ningún ejercicio.
+     */
+    private EjercicioEntrenamiento obtenerEjercicio(int posicionEjercicio) {
+        List<EjercicioEntrenamiento> ejercicios = entrenamiento.getEjercicios();
+        if (posicionEjercicio < 0 || posicionEjercicio >= ejercicios.size()) {
+            return null;
+        }
+        return ejercicios.get(posicionEjercicio);
+    }
+
+    /**
+     * @return la serie que está en la posición indicada, o null si en ese lugar ya no hay
+     *         ninguna serie.
+     */
+    private SerieEntrenamiento obtenerSerie(EjercicioEntrenamiento ejercicio, int posicionSerie) {
+        if (ejercicio == null) {
+            return null;
+        }
+
+        List<SerieEntrenamiento> series = ejercicio.getSeries();
+        if (posicionSerie < 0 || posicionSerie >= series.size()) {
+            return null;
+        }
+        return series.get(posicionSerie);
     }
 
     // ------------------------------------------------------------------ Diálogos
@@ -476,7 +620,11 @@ public class EntrenamientoActivoFragment extends Fragment
         adapter.quitarEjercicio(posicionEjercicio);
         recalcularResumen();
 
-        // TODO: Eliminar también el ejercicio del borrador persistido de la sesión.
+        if (!borradorResuelto) {
+            // En el borrador local el ejercicio se elimina con su clave foránea en cascada,
+            // así que sus series desaparecen también.
+            borradorRepository.eliminarEjercicio(ejercicio);
+        }
     }
 
     /** Pide confirmación antes de terminar, y solo si hay al menos una serie completada. */
@@ -511,6 +659,8 @@ public class EntrenamientoActivoFragment extends Fragment
         ResumenEntrenamiento resumen = crearResumenFinal();
         EntrenamientoCrearRequest request = crearSolicitudEntrenamiento();
 
+        // Se escribe lo que estaba pendiente antes de enviar la sesión al backend.
+        guardarCambiosPendientes();
         detenerActualizacionesVisuales();
         mostrarGuardandoEntrenamiento(true);
 
@@ -524,6 +674,10 @@ public class EntrenamientoActivoFragment extends Fragment
                 }
 
                 if (response.isSuccessful() && response.body() != null) {
+                    // El backend ya guardó la sesión, así que el borrador local dejó de hacer
+                    // falta y la pantalla no debe volver a escribir en él.
+                    borradorResuelto = true;
+
                     // El identificador lo crea el backend: es el único válido para consultar
                     // o borrar después el entrenamiento guardado.
                     activity.mostrarResumenEntrenamiento(
@@ -668,9 +822,9 @@ public class EntrenamientoActivoFragment extends Fragment
     }
 
     private void descartarEntrenamiento() {
+        // MainActivity borra el borrador local de esta cuenta al cerrar la sesión.
+        borradorResuelto = true;
         detenerActualizacionesVisuales();
-
-        // TODO: Eliminar el borrador persistido del entrenamiento al confirmar el descarte.
         activity.cerrarEntrenamientoEnCurso();
     }
 
@@ -680,10 +834,10 @@ public class EntrenamientoActivoFragment extends Fragment
             return;
         }
 
+        // Se escribe lo que estaba esperando: si Android cierra el proceso mientras el
+        // entrenamiento está minimizado, la sesión se recupera tal como quedó.
+        guardarCambiosPendientes();
         detenerActualizacionesVisuales();
-
-        // TODO: Confirmar que el estado más reciente quedó persistido antes de abandonar
-        // la pantalla, para que minimizar no dependa solo de la memoria de MainActivity.
         activity.minimizarEntrenamiento();
     }
 }

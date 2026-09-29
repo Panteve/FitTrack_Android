@@ -16,16 +16,20 @@ import java.util.Locale;
  * contadores que se van sumando, así el tiempo no se altera si cambia la hora del dispositivo.
  * Además se guarda el momento real de inicio, con {@link System#currentTimeMillis()}, que es
  * el que se muestra como día y hora en el resumen del entrenamiento terminado.
- * Esta primera versión no guarda nada en disco: si Android cierra el proceso, la sesión se pierde.
+ *
+ * <p>La sesión también se guarda en la base de datos local (Room) mientras está en curso, para
+ * que no se pierda si Android cierra el proceso. Ese borrador se identifica con
+ * {@link #getIdBorrador()}.
  */
 public class EntrenamientoEnCurso {
 
-    // TODO: Agregar un identificador persistente de la sesión para poder recuperar y guardar
-    // el entrenamiento correcto.
+    /**
+     * Identificador de la fila que guarda esta sesión en Room; cero mientras todavía no se ha
+     * escrito en la base de datos.
+     */
+    private long idBorrador = 0;
 
     /** Instante en que empezó el entrenamiento, en milisegundos de reloj del sistema. */
-    // TODO: Al persistir la sesión, guardar también una referencia de tiempo que permita
-    // reconstruir la duración correctamente después de reiniciar el dispositivo.
     private final long instanteInicio;
 
     /** Momento real en que empezó el entrenamiento, para mostrar el día y la hora. */
@@ -67,6 +71,19 @@ public class EntrenamientoEnCurso {
     /** @return el identificador de la rutina que originó el entrenamiento. */
     public Long getIdRutina() {
         return idRutina;
+    }
+
+    /**
+     * @return el identificador de la fila que guarda la sesión en la base de datos local,
+     *         o cero si todavía no se ha guardado.
+     */
+    public long getIdBorrador() {
+        return idBorrador;
+    }
+
+    /** @param idBorrador identificador que Room asignó al borrador de esta sesión. */
+    public void setIdBorrador(long idBorrador) {
+        this.idBorrador = idBorrador;
     }
 
     /** @return las notas opcionales registradas para el entrenamiento. */

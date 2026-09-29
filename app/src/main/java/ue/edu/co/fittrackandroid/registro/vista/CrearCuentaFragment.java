@@ -26,6 +26,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import ue.edu.co.fittrackandroid.MainActivity;
 import ue.edu.co.fittrackandroid.R;
+import ue.edu.co.fittrackandroid.perfil.datos.DescargadorFotoPerfil;
+import ue.edu.co.fittrackandroid.perfil.datos.FotoPerfilLocal;
 import ue.edu.co.fittrackandroid.registro.datos.RegistroRepository;
 import ue.edu.co.fittrackandroid.registro.modelo.RegistroRequest;
 import ue.edu.co.fittrackandroid.registro.modelo.RegistroResponse;
@@ -219,7 +221,9 @@ public class CrearCuentaFragment extends Fragment {
                 if (response.isSuccessful()
                         && registroResponse != null
                         && registroResponse.getToken() != null
-                        && !registroResponse.getToken().isEmpty()) {
+                        && !registroResponse.getToken().isEmpty()
+                        && registroResponse.getUsuarioId() != null
+                        && registroResponse.getUsuarioId() > 0) {
                     procesarCuentaCreada(registroResponse, correo);
                     return;
                 }
@@ -273,7 +277,23 @@ public class CrearCuentaFragment extends Fragment {
      */
     private void procesarCuentaCreada(RegistroResponse registroResponse, String correo) {
         sesionManager.guardarTokens(registroResponse.getToken());
-        sesionManager.guardarInfoPersonal(registroResponse.getNombre(), correo);
+        sesionManager.guardarInfoPersonal(
+                registroResponse.getUsuarioId(),
+                registroResponse.getNombre(),
+                correo
+        );
+
+        FotoPerfilLocal fotoPerfilLocal = new FotoPerfilLocal(requireContext());
+        String fotoPerfilUrl = registroResponse.getFotoPerfilUrl();
+        if (fotoPerfilUrl == null || fotoPerfilUrl.trim().isEmpty()) {
+            fotoPerfilLocal.eliminar(registroResponse.getUsuarioId());
+        } else {
+            DescargadorFotoPerfil.descargar(
+                    fotoPerfilUrl,
+                    registroResponse.getUsuarioId(),
+                    fotoPerfilLocal
+            );
+        }
 
         // El Toast puede llevar el texto directo, según la guía del proyecto.
         Toast.makeText(requireContext(), "Cuenta creada", Toast.LENGTH_SHORT).show();

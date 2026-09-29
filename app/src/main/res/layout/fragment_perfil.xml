@@ -62,8 +62,17 @@
                 style="@style/FitTrack.Button.Compact"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height_compact"
-                android:layout_marginBottom="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_sm"
                 android:text="@string/btnCambiarFoto" />
+
+            <!-- Quita la foto guardada en el backend y vuelve al avatar predeterminado. -->
+            <Button
+                android:id="@+id/btnQuitarFoto"
+                style="@style/FitTrack.Button.Compact"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height_compact"
+                android:layout_marginBottom="@dimen/spacing_md"
+                android:text="@string/btnQuitarFoto" />
 
             <View
                 android:layout_width="match_parent"

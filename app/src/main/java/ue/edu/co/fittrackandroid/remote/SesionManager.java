@@ -11,6 +11,7 @@ public final class SesionManager {
     private static final String ARCHIVO_SESION = "sesion_usuario";
 
     private static final String CLAVE_ACCESS_TOKEN = "access_token";
+    private static final String CLAVE_USUARIO_ID = "usuario_id";
     private static final String CLAVE_NOMBRE = "nombre";
     private static final String CLAVE_CORREO = "correo";
 
@@ -32,8 +33,20 @@ public final class SesionManager {
                 .apply();
     }
 
-    public void guardarInfoPersonal(String nombre, String correo){
+    /**
+     * Guarda los datos necesarios para identificar y mostrar la cuenta activa.
+     *
+     * @param usuarioId identificador confirmado por el backend
+     * @param nombre nombre visible del usuario
+     * @param correo correo usado para iniciar sesión
+     */
+    public void guardarInfoPersonal(Long usuarioId, String nombre, String correo) {
+        if (usuarioId == null || usuarioId <= 0) {
+            throw new IllegalArgumentException("El identificador del usuario no es válido");
+        }
+
         sharedPreferences.edit()
+                .putLong(CLAVE_USUARIO_ID, usuarioId)
                 .putString(CLAVE_NOMBRE, nombre)
                 .putString(CLAVE_CORREO, correo)
                 .apply();
@@ -62,6 +75,14 @@ public final class SesionManager {
                 CLAVE_NOMBRE,
                 "Sin nombre"
         );
+    }
+
+    /**
+     * @return identificador del usuario autenticado, o null si no existe una sesión válida.
+     */
+    public Long obtenerUsuarioId() {
+        long usuarioId = sharedPreferences.getLong(CLAVE_USUARIO_ID, -1L);
+        return usuarioId > 0 ? usuarioId : null;
     }
 
     /**

@@ -130,21 +130,18 @@ usuarios/{usuarioId}/perfil/{uuid}.png
 
 El UUID evita conflictos de caché cuando se reemplaza una imagen.
 
-### DTO de perfil
+### Respuesta del cambio de foto
 
-Crear un DTO sencillo:
+Crear un DTO sencillo para responder después de subir una fotografía:
 
 ```java
-public record PerfilDto(
-        Long id,
-        String nombre,
-        String correo,
+public record FotoPerfilResponse(
         String fotoPerfilUrl
 ) {
 }
 ```
 
-`fotoPerfilUrl` será `null` cuando el usuario no tenga foto.
+La consulta inicial de la foto no utilizará este DTO ni un endpoint separado: la URL vendrá en la respuesta del login.
 
 ### Respuesta del login
 
@@ -158,24 +155,21 @@ String fotoPerfilUrl;
 Después de autenticar:
 
 1. Consultar `fotoPerfilRuta`.
-2. Si existe, generar una URL firmada.
-3. Devolverla junto con token, ID y nombre.
+2. Si existe, generar una URL firmada y asignarla a `fotoPerfilUrl`.
+3. Si no existe, asignar `null` a `fotoPerfilUrl`.
+4. Devolverla junto con token, ID y nombre.
 
 El ID facilita que Android nombre el archivo local sin utilizar el correo.
 
 ### Endpoints
 
-Agregar al controlador de usuario:
+La lectura inicial utilizará el endpoint de login que ya existe. En el controlador de usuario solo se agregarán las operaciones para cambiar o eliminar la foto:
 
 ```text
-GET    /usuarios/me/perfil
+POST   /auth/login               → devuelve fotoPerfilUrl o null
 PUT    /usuarios/me/foto
 DELETE /usuarios/me/foto
 ```
-
-#### `GET /usuarios/me/perfil`
-
-Devuelve `PerfilDto` con una URL firmada nueva. Este endpoint permite renovar la URL si la recibida durante el login ya expiró.
 
 #### `PUT /usuarios/me/foto`
 
@@ -196,7 +190,7 @@ Flujo:
 4. Guardar la ruta nueva en `Usuario`.
 5. Generar la URL firmada nueva.
 6. Intentar eliminar el objeto anterior.
-7. Devolver `PerfilDto` actualizado.
+7. Devolver `FotoPerfilResponse` con la URL nueva.
 
 No debe borrarse primero la foto anterior. Si falla la subida, la cuenta debe conservar la foto existente.
 
@@ -228,12 +222,9 @@ El ID del usuario también puede guardarse en `SesionManager`. La URL firmada no
 Agregar a `PerfilApiService`:
 
 ```java
-@GET("usuarios/me/perfil")
-Call<PerfilResponse> obtenerPerfil();
-
 @Multipart
 @PUT("usuarios/me/foto")
-Call<PerfilResponse> cambiarFoto(
+Call<FotoPerfilResponse> cambiarFoto(
         @Part MultipartBody.Part foto
 );
 
@@ -339,9 +330,10 @@ Al abrir el perfil:
 2. Buscar el archivo con `FotoPerfilLocal`.
 3. Si existe y es válido, mostrarlo.
 4. Si no existe, mostrar `ic_person_teal`.
-5. Consultar `GET /usuarios/me/perfil` para obtener una URL vigente y actualizar la copia en segundo plano cuando sea necesario.
 
 `ImageView.setImageURI()` dejará de depender de la URI del proveedor de documentos. La imagen se cargará desde el archivo interno, cuidando reducir su tamaño al decodificarla para evitar consumir memoria innecesaria.
+
+No se hará una consulta adicional al abrir el perfil. La copia local se originará en la URL recibida durante el login o en una fotografía subida posteriormente por el usuario.
 
 ### Cambio de fotografía
 
@@ -376,7 +368,7 @@ Como alternativa futura se puede conservar una caché por usuario, pero para la 
 
 - Agregar `fotoPerfilRuta` a `Usuario` y PostgreSQL.
 - Compartir el servicio existente de Supabase Storage.
-- Implementar consulta, subida y eliminación de foto de perfil.
+- Implementar subida y eliminación de foto de perfil.
 - Ampliar la respuesta del login.
 
 ### Etapa 2: archivo local Android
@@ -410,9 +402,8 @@ No se crearán pruebas unitarias ni instrumentadas para esta implementación. La
 4. Cambiar foto: debe subir a Supabase y reemplazar la copia local.
 5. Interrumpir una descarga: debe conservarse la foto local anterior.
 6. Cerrar sesión y entrar con otra cuenta: no debe verse la foto anterior.
-7. Recibir una URL firmada vencida: el perfil debe solicitar una URL nueva.
-8. Elegir un archivo que no sea JPEG o PNG: debe rechazarse.
-9. Elegir una imagen mayor a 5 MB: debe rechazarse.
+7. Elegir un archivo que no sea JPEG o PNG: debe rechazarse.
+8. Elegir una imagen mayor a 5 MB: debe rechazarse.
 
 ## Criterios de terminado
 
@@ -427,4 +418,3 @@ No se crearán pruebas unitarias ni instrumentadas para esta implementación. La
 - No se guardan contraseñas ni claves de Supabase en archivos locales.
 - No se agregan pantallas nuevas.
 - No se crean pruebas unitarias ni instrumentadas.
-

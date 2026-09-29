@@ -27,6 +27,7 @@ import java.util.List;
 import ue.edu.co.fittrackandroid.ejercicios.vista.CrearEjercicioFragment;
 import ue.edu.co.fittrackandroid.ejercicios.vista.EjerciciosFragment;
 import ue.edu.co.fittrackandroid.ejercicios.vista.ModificarEjercicioFragment;
+import ue.edu.co.fittrackandroid.entrenamiento.datos.local.EntrenamientoBorradorRepository;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EjercicioEntrenamiento;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoEnCurso;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.SerieEntrenamiento;
@@ -35,6 +36,7 @@ import ue.edu.co.fittrackandroid.hoy.modelo.EjercisioEnRutina;
 import ue.edu.co.fittrackandroid.hoy.modelo.RutinaResponse;
 import ue.edu.co.fittrackandroid.hoy.vista.HomeFragment;
 import ue.edu.co.fittrackandroid.login.vista.LoginFragment;
+import ue.edu.co.fittrackandroid.perfil.datos.FotoPerfilLocal;
 import ue.edu.co.fittrackandroid.perfil.vista.CambiarContrasenaFragment;
 import ue.edu.co.fittrackandroid.perfil.vista.PerfilFragment;
 
@@ -95,6 +97,18 @@ public class MainActivity extends AppCompatActivity {
     /** Reloj de la isla del entrenamiento minimizado. */
     private final Handler handlerIsla = new Handler(Looper.getMainLooper());
 
+    /**
+     * Datos de la sesión del usuario (token, nombre y correo). Se usa sobre todo para
+     * saber a quién pertenece el borrador local del entrenamiento en curso.
+     */
+    private SesionManager sesionManager;
+
+    /** Guarda y recupera el borrador del entrenamiento en curso en la base de datos local. */
+    private EntrenamientoBorradorRepository borradorRepository;
+
+    /** Evita pedir dos veces la misma recuperación del borrador, por ejemplo al iniciar sesión. */
+    private boolean recuperandoBorrador;
+
     /** Refresca el tiempo de la isla una vez por segundo. */
     private final Runnable runnableTiempoIsla = new Runnable() {
         @Override
@@ -123,6 +137,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             mostrarLogin();
+        } else {
+            // Al girar la pantalla se reconstruye la Activity con la pila de fragments
+            // guardada, así que también puede haber un entrenamiento en curso que recuperar.
+            recuperarEntrenamientoEnCursoGuardado();
         }
     }
 
@@ -148,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initObjects() {
+        sesionManager = new SesionManager(this);
+        borradorRepository = new EntrenamientoBorradorRepository(this);
         bottomNavigation = findViewById(R.id.bottomNavigation);
         layoutToolbar = findViewById(R.id.layoutToolbar);
         tvToolbarTituloMain = findViewById(R.id.tvToolbarTituloMain);
@@ -199,6 +219,45 @@ public class MainActivity extends AppCompatActivity {
         } else {
             bottomNavigation.setSelectedItemId(R.id.navigation_inicio);
         }
+
+        // Al entrar de nuevo a la aplicación puede haber un entrenamiento que quedó abierto
+        // antes de que Android cerrara el proceso: se recupera del borrador local.
+        recuperarEntrenamientoEnCursoGuardado();
+    }
+
+    /**
+     * Recupera de la base de datos local el entrenamiento que la cuenta tenía abierto.
+     *
+     * <p>La lectura se hace en segundo plano: cuando llega, si el usuario no alcanzó a
+     * empezar otra sesión, la sesión recuperada vuelve a ser la que MainActivity conserva y
+     * la isla del entrenamiento minimizado vuelve a aparecer. Si no había borrador, no se
+     * hace nada y la aplicación sigue igual.
+     */
+    private void recuperarEntrenamientoEnCursoGuardado() {
+        if (hayEntrenamientoEnCurso() || recuperandoBorrador) {
+            return;
+        }
+
+        recuperandoBorrador = true;
+        borradorRepository.cargarBorradorActivo(
+                sesionManager.obtenerCorreo(),
+                borrador -> {
+                    recuperandoBorrador = false;
+
+                    if (isDestroyed() || borrador == null) {
+                        return;
+                    }
+
+                    // Si el usuario alcanzó a empezar otra sesión mientras se leía el
+                    // borrador, la nueva sesión es la que manda.
+                    if (entrenamientoEnCurso != null) {
+                        return;
+                    }
+
+                    entrenamientoEnCurso = borrador;
+                    refrescarIslaSegunPantallaVisible();
+                }
+        );
     }
 
     /** Muestra el fragment de Login SIN toolbar ni bottom nav. */
@@ -244,13 +303,14 @@ public class MainActivity extends AppCompatActivity {
      * <p>Hace falta porque las pantallas de solo lectura, como el resumen, ocultan la isla.
      * Si el usuario todavía tiene una sesión abierta, al regresar a Inicio la isla debe
      * reaparecer con su cronómetro intacto. La decisión vive aquí para no repetirla en
-     * cada pantalla.
+     * cada pantalla. Tampoco se muestra en el login, que se dibuja sin isla.
      */
     private void refrescarIslaSegunPantallaVisible() {
         Fragment fragmentVisible = getSupportFragmentManager()
                 .findFragmentById(R.id.fragmentContainer);
 
-        if (fragmentVisible instanceof EntrenamientoActivoFragment) {
+        if (fragmentVisible instanceof EntrenamientoActivoFragment
+                || fragmentVisible instanceof LoginFragment) {
             ocultarIslaEntrenamiento();
             return;
         }
@@ -462,8 +522,12 @@ public class MainActivity extends AppCompatActivity {
             entrenamientoEnCurso.agregarEjercicio(ejercicioEntrenamiento);
         }
 
-        // TODO: Persistir inmediatamente la nueva sesión para poder recuperarla si Android
-        // cierra el proceso antes de que el usuario complete la primera serie.
+        // La sesión se guarda de una vez, con sus ejercicios y series, para poder recuperarla
+        // si Android cierra el proceso antes de que el usuario complete la primera serie.
+        borradorRepository.guardarBorradorInicial(
+                sesionManager.obtenerCorreo(),
+                entrenamientoEnCurso
+        );
     }
 
     /** @return la sesión de entrenamiento en curso, o null si no hay ninguna. */
@@ -599,6 +663,22 @@ public class MainActivity extends AppCompatActivity {
      * La usan el descarte de la isla y el cierre completo de la sesión.
      */
     private void descartarEntrenamientoEnCurso() {
+        descartarEntrenamientoEnCurso(sesionManager.obtenerCorreo());
+    }
+
+    /**
+     * Elimina la sesión en curso y con ella el borrador local de la cuenta.
+     *
+     * <p>El borrador se borra por correo, y no por identificador de fila, para que también
+     * desaparezca cuando la sesión ya no está en memoria, como pasa al cerrar sesión. Así el
+     * borrador de una cuenta nunca se confunde con el de otra.
+     *
+     * <p>Lo usan las tres salidas posibles: terminar y guardar en el backend, descartar el
+     * entrenamiento y cerrar sesión.
+     *
+     * @param correoUsuario cuenta cuyo borrador local se borra.
+     */
+    private void descartarEntrenamientoEnCurso(String correoUsuario) {
         ocultarIslaEntrenamiento();
 
         if (entrenamientoEnCurso != null) {
@@ -606,6 +686,8 @@ public class MainActivity extends AppCompatActivity {
             entrenamientoEnCurso.finalizar();
         }
         entrenamientoEnCurso = null;
+
+        borradorRepository.eliminarBorrador(correoUsuario);
     }
 
     /** Muestra la isla con el tiempo del entrenamiento y arranca su reloj. */
@@ -745,10 +827,14 @@ public class MainActivity extends AppCompatActivity {
      * Se borran el token y los demás datos asociados a la sesión autenticada.
      */
     public void cerrarSesion() {
-        SesionManager sesionManager = new SesionManager(this);
+        // El correo se guarda antes de cerrar la sesión porque es lo que identifica el
+        // borrador local que hay que borrar.
+        String correoUsuario = sesionManager.obtenerCorreo();
+        Long usuarioId = sesionManager.obtenerUsuarioId();
+        new FotoPerfilLocal(this).eliminar(usuarioId);
         sesionManager.cerrarSesion();
         // Un entrenamiento en curso no puede sobrevivir al cierre de sesión.
-        descartarEntrenamientoEnCurso();
+        descartarEntrenamientoEnCurso(correoUsuario);
         limpiarResumenEntrenamientoActual();
         limpiarBackStack();
         mostrarLogin();
