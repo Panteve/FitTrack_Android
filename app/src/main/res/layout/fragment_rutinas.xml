@@ -31,20 +31,6 @@
             android:textStyle="bold"
             app:drawableTint="@color/colorOnPrimary" />
 
-        <!-- Acción secundaria -->
-        <Button
-            android:id="@+id/btnEmpezarRutinaVacia"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height_standard"
-            android:layout_marginTop="@dimen/spacing_md"
-            android:background="@drawable/bg_button_neutral"
-            android:letterSpacing="0.05"
-            android:text="@string/btnEmpezarRutinaVacia"
-            android:textAllCaps="true"
-            android:textColor="@color/colorTextStrong"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
         <!-- Cabecera de planes -->
         <LinearLayout
             android:id="@+id/layoutCabeceraPlanes"

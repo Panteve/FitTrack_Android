@@ -33,7 +33,11 @@ public class EntrenamientoEnCurso {
     private final long fechaHoraInicio;
 
     /** Nombre de la rutina que se está entrenando; puede estar vacío si no se conoce. */
-    private final String nombre;
+    private final String nombreRutina;
+
+    private String notas;
+
+    private int idRutina;
 
     /** Ejercicios de la sesión, con sus series y el estado de cada una. */
     private final List<EjercicioEntrenamiento> ejercicios = new ArrayList<>();
@@ -45,14 +49,14 @@ public class EntrenamientoEnCurso {
     private boolean activa = true;
 
     /**
-     * @param nombre         nombre de la rutina que se está entrenando, o vacío si no se conoce.
+     * @param nombreRutina         nombre de la rutina que se está entrenando, o vacío si no se conoce.
      * @param instanteInicio momento en que comenzó el entrenamiento, con
      *                       {@link SystemClock#elapsedRealtime()}.
      * @param fechaHoraInicio momento real en que comenzó el entrenamiento, con
      *                        {@link System#currentTimeMillis()}.
      */
-    public EntrenamientoEnCurso(String nombre, long instanteInicio, long fechaHoraInicio) {
-        this.nombre = nombre;
+    public EntrenamientoEnCurso(String nombreRutina, long instanteInicio, long fechaHoraInicio) {
+        this.nombreRutina = nombreRutina;
         this.instanteInicio = instanteInicio;
         this.fechaHoraInicio = fechaHoraInicio;
     }
@@ -71,8 +75,8 @@ public class EntrenamientoEnCurso {
     /**
      * @return el nombre de la rutina entrenada, o una cadena vacía si no se conoce.
      */
-    public String getNombre() {
-        return nombre;
+    public String getNombreRutina() {
+        return nombreRutina;
     }
 
     public List<EjercicioEntrenamiento> getEjercicios() {

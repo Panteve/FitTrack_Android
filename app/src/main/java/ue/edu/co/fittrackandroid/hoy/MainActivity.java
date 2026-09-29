@@ -21,12 +21,16 @@ import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ue.edu.co.fittrackandroid.R;
 import ue.edu.co.fittrackandroid.ejercicios.CrearEjercicioFragment;
 import ue.edu.co.fittrackandroid.ejercicios.EjerciciosFragment;
 import ue.edu.co.fittrackandroid.entrenamiento.EjercicioEntrenamiento;
 import ue.edu.co.fittrackandroid.entrenamiento.EntrenamientoActivoFragment;
 import ue.edu.co.fittrackandroid.entrenamiento.EntrenamientoEnCurso;
+import ue.edu.co.fittrackandroid.entrenamiento.SerieEntrenamiento;
 import ue.edu.co.fittrackandroid.login.LoginFragment;
 import ue.edu.co.fittrackandroid.perfil.CambiarContrasenaFragment;
 import ue.edu.co.fittrackandroid.perfil.PerfilFragment;
@@ -35,6 +39,7 @@ import ue.edu.co.fittrackandroid.resumen.ResumenEntrenamiento;
 import ue.edu.co.fittrackandroid.resumen.ResumenEntrenamientoFragment;
 import ue.edu.co.fittrackandroid.rutinas.CrearRutinaFragment;
 import ue.edu.co.fittrackandroid.rutinas.RutinasFragment;
+import ue.edu.co.fittrackandroid.utils.SerieRutina;
 
 /**
  * Activity principal (única). Decide qué fragment mostrar según el estado de sesión:
@@ -359,14 +364,11 @@ public class MainActivity extends AppCompatActivity {
      *
      * <p>Solo se entregan datos simples: el nombre de la rutina y los nombres de sus
      * ejercicios, porque los modelos de rutinas no implementan Parcelable ni Serializable.
-     *
-     * @param nombreRutina nombre del plan que se está entrenando.
-     * @param nombresEjercicios nombres de los ejercicios, uno por cada ejercicio de la sesión.
      */
-    public void mostrarEntrenamientoActivo(String nombreRutina, String[] nombresEjercicios) {
+    public void mostrarEntrenamientoActivo(RutinaResponse rutinaResponse) {
         pedirConfirmacionSiHayEntrenamientoEnCurso(() -> {
             if (entrenamientoEnCurso == null) {
-                iniciarEntrenamientoEnCurso(nombreRutina, nombresEjercicios);
+                iniciarEntrenamientoEnCurso(rutinaResponse);
             }
 
             abrirEntrenamientoEnCurso();
@@ -374,23 +376,61 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Crea la sesión de entrenamiento con los ejercicios recibidos. Solo se usa cuando todavía
-     * no hay ninguna: si el usuario ya minimizó una sesión, esa misma se reabre.
+     * Inicia una nueva sesión de entrenamiento a partir de la rutina seleccionada.
      *
-     * @param nombreRutina      nombre de la rutina que se va a entrenar.
-     * @param nombresEjercicios nombres de los ejercicios, uno por cada ejercicio de la sesión.
+     * <p>La rutina llega con la estructura de la API: cada ejercicio guarda su lista de series como
+     * {@link SerieRutina}. La pantalla de entrenamiento activo, en cambio, trabaja con
+     * {@link EjercicioEntrenamiento} y {@link SerieEntrenamiento}. Por eso esta conversión toma la
+     * lista de ejercicios y la transforma a la estructura interna del entrenamiento, manteniendo el
+     * nombre, el identificador y los valores reales de peso y repeticiones cuando existen.</p>
+     *
+     * <p>Si una rutina no trae series definidas, se crea una serie vacía automáticamente para que el
+     * ejercicio pueda abrirse y el usuario pueda completar la primera serie sin errores de UI ni
+     * valores nulos.</p>
      */
-    private void iniciarEntrenamientoEnCurso(String nombreRutina, String[] nombresEjercicios) {
-        // Son dos referencias de tiempo distintas: elElapsedRealtime sirve para medir la
-        // duración aunque cambie la hora del dispositivo, y el currentTimeMillis guarda el
-        // día y la hora reales en que empezó la sesión, que luego muestra el resumen.
-        entrenamientoEnCurso = new EntrenamientoEnCurso(nombreRutina,
-                SystemClock.elapsedRealtime(), System.currentTimeMillis());
+    private void iniciarEntrenamientoEnCurso(RutinaResponse rutinaResponse) {
+        entrenamientoEnCurso = new EntrenamientoEnCurso(
+                rutinaResponse.getNombre(),
+                SystemClock.elapsedRealtime(),
+                System.currentTimeMillis()
+        );
 
-        for (String nombreEjercicio : nombresEjercicios) {
-            // TODO: Crear cada ejercicio con su identificador, grupo muscular y series reales,
-            // incluyendo los pesos y repeticiones objetivo definidos en la rutina.
-            entrenamientoEnCurso.agregarEjercicio(new EjercicioEntrenamiento(nombreEjercicio, ""));
+        if (rutinaResponse.getEjercicios() == null) {
+            return;
+        }
+
+        for (EjercisioEnRutina ejercicio : rutinaResponse.getEjercicios()) {
+            List<SerieEntrenamiento> seriesEntrenamiento = new ArrayList<>();
+
+            if (ejercicio.getSeries() != null) {
+                for (SerieRutina serieRutina : ejercicio.getSeries()) {
+                    int repeticiones = serieRutina.getRepeticionesObjetivo();
+                    double peso = serieRutina.getPesoObjetivo();
+
+                    int numeroSerie = serieRutina.getNumeroSerie();
+                    if (numeroSerie <= 0) {
+                        numeroSerie = seriesEntrenamiento.size() + 1;
+                    }
+
+                    seriesEntrenamiento.add(new SerieEntrenamiento(
+                            numeroSerie,
+                            peso,
+                            repeticiones
+                    ));
+                }
+            }
+
+            EjercicioEntrenamiento ejercicioEntrenamiento = new EjercicioEntrenamiento(
+                    ejercicio.getId(),
+                    ejercicio.getNombre(),
+                    seriesEntrenamiento
+            );
+
+            if (ejercicioEntrenamiento.getSeries().isEmpty()) {
+                ejercicioEntrenamiento.agregarSerie();
+            }
+
+            entrenamientoEnCurso.agregarEjercicio(ejercicioEntrenamiento);
         }
 
         // TODO: Persistir inmediatamente la nueva sesión para poder recuperarla si Android

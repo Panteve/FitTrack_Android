@@ -1,32 +1,50 @@
 package ue.edu.co.fittrackandroid.entrenamiento;
 
-/**
- * Modelo de una serie dentro de un entrenamiento en curso.
- * El peso y las repeticiones se guardan como texto porque el usuario los digita
- * en la pantalla y todavía no se han validado.
- * A diferencia de SerieRutina (usada al crear una rutina), aquí la serie también
- * recuerda si ya fue completada, porque de eso depende el volumen del entrenamiento.
- */
 public class SerieEntrenamiento {
 
-    private String peso = "";
-    private String repeticiones = "";
+    private double peso = 0.0;
+    private int repeticiones = 0;
+    private int numeroSerie = 0;
     private boolean completada = false;
 
-    public String getPeso() {
-        return peso;
+    public SerieEntrenamiento() {
     }
 
-    public void setPeso(String peso) {
+    public SerieEntrenamiento(int numeroSerie, double peso, int repeticiones) {
+        this.numeroSerie = numeroSerie;
         this.peso = peso;
+        this.repeticiones = repeticiones;
     }
 
-    public String getRepeticiones() {
+    public SerieEntrenamiento(boolean completada, double peso, int repeticiones, int numeroSerie) {
+        this.completada = completada;
+        this.peso = peso;
+        this.repeticiones = repeticiones;
+        this.numeroSerie = numeroSerie;
+    }
+
+    public int getNumeroSerie() {
+        return numeroSerie;
+    }
+
+    public void setNumeroSerie(int numeroSerie) {
+        this.numeroSerie = numeroSerie;
+    }
+
+    public int getRepeticiones() {
         return repeticiones;
     }
 
-    public void setRepeticiones(String repeticiones) {
+    public void setRepeticiones(int repeticiones) {
         this.repeticiones = repeticiones;
+    }
+
+    public double getPeso() {
+        return peso;
+    }
+
+    public void setPeso(double peso) {
+        this.peso = peso;
     }
 
     public boolean isCompletada() {
@@ -50,57 +68,18 @@ public class SerieEntrenamiento {
 
     /** @return true si el peso escrito es un número igual o mayor que cero. */
     public boolean esPesoValido() {
-        String numeroPeso = peso.trim();
-        if (numeroPeso.isEmpty()) {
+        if(peso < 0) {
             return false;
         }
-
-        try {
-            // En algunos teclados el separador decimal es la coma.
-            return Double.parseDouble(numeroPeso.replace(',', '.')) >= 0;
-        } catch (NumberFormatException error) {
-            return false;
-        }
+        return true;
     }
 
     /** @return true si las repeticiones escritas son un entero mayor que cero. */
     public boolean sonRepeticionesValidas() {
-        String numeroRepeticiones = repeticiones.trim();
-        if (numeroRepeticiones.isEmpty()) {
+        if(repeticiones <= 0) {
             return false;
         }
-
-        try {
-            return Integer.parseInt(numeroRepeticiones) > 0;
-        } catch (NumberFormatException error) {
-            return false;
-        }
-    }
-
-    /**
-     * Convierte el peso escrito en un número, para poder copiarlo al resumen del
-     * entrenamiento terminado.
-     *
-     * @return el peso como número, o cero si el usuario no escribió un valor válido.
-     */
-    public double obtenerPesoNumerico() {
-        if (!esPesoValido()) {
-            return 0;
-        }
-        return Double.parseDouble(peso.trim().replace(',', '.'));
-    }
-
-    /**
-     * Convierte las repeticiones escritas en un número, para poder copiarlas al resumen
-     * del entrenamiento terminado.
-     *
-     * @return las repeticiones como número, o cero si no son válidas.
-     */
-    public int obtenerRepeticionesNumericas() {
-        if (!sonRepeticionesValidas()) {
-            return 0;
-        }
-        return Integer.parseInt(repeticiones.trim());
+        return true;
     }
 
     /**
@@ -115,6 +94,6 @@ public class SerieEntrenamiento {
             return 0;
         }
 
-        return obtenerPesoNumerico() * obtenerRepeticionesNumericas();
+        return getPeso() * getRepeticiones();
     }
 }

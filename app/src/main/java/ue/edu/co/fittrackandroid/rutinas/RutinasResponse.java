@@ -2,12 +2,7 @@ package ue.edu.co.fittrackandroid.rutinas;
 
 import java.util.List;
 
-/**
- * Modelo de un plan de entrenamiento: nombre, resumen y la lista de sus ejercicios.
- */
-public class Rutina {
-
-    // TODO: Agregar un identificador persistente para consultar, editar o eliminar la rutina.
+public class RutinasResponse {
     private final String id;
     private final String nombre;
     private final String resumen;
@@ -15,7 +10,7 @@ public class Rutina {
     private final String diaSemana;
     private final List<String> ejercicios;
 
-    public Rutina(String descripcion, String id, String nombre, String resumen, String diaSemana, List<String> ejercicios) {
+    public RutinasResponse(String descripcion, String id, String nombre, String resumen, String diaSemana, List<String> ejercicios) {
         this.descripcion = descripcion;
         this.id = id;
         this.nombre = nombre;
@@ -43,4 +38,8 @@ public class Rutina {
     public List<String> getEjercicios() {
         return ejercicios;
     }
+
+
+
+
 }

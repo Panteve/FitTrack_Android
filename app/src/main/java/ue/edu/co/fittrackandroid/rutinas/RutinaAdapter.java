@@ -28,14 +28,14 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
      * Callback que avisa qué plan se quiere iniciar.
      */
     public interface OnIniciarRutinaListener {
-        void onIniciarRutina(Rutina rutina);
+        void onIniciarRutina(RutinasResponse rutina);
     }
 
-    private final List<Rutina> planes;
+    private final List<RutinasResponse> rutinas;
     private final OnIniciarRutinaListener listenerIniciarRutina;
 
-    public RutinaAdapter(List<Rutina> planes, OnIniciarRutinaListener listenerIniciarRutina) {
-        this.planes = planes;
+    public RutinaAdapter(List<RutinasResponse> rutinas, OnIniciarRutinaListener listenerIniciarRutina) {
+        this.rutinas = rutinas;
         this.listenerIniciarRutina = listenerIniciarRutina;
     }
 
@@ -49,12 +49,12 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
 
     @Override
     public void onBindViewHolder(@NonNull RutinaViewHolder holder, int position) {
-        holder.asignar(planes.get(position));
+        holder.asignar(rutinas.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return planes.size();
+        return rutinas.size();
     }
 
     static class RutinaViewHolder extends RecyclerView.ViewHolder {
@@ -79,7 +79,7 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
             btnIniciar = itemView.findViewById(R.id.btnIniciarRutina);
         }
 
-        void asignar(Rutina rutina) {
+        void asignar(RutinasResponse rutina) {
             tvNombre.setText(rutina.getNombre());
             tvResumen.setText(rutina.getResumen());
 

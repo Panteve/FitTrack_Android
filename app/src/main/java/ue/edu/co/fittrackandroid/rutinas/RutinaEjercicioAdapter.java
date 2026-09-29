@@ -16,9 +16,9 @@ import java.util.List;
  */
 public class RutinaEjercicioAdapter extends RecyclerView.Adapter<RutinaEjercicioAdapter.EjercicioRutinaViewHolder> {
 
-    private final List<EjercicioRutina> ejercicios;
+    private final List<String> ejercicios;
 
-    public RutinaEjercicioAdapter(List<EjercicioRutina> ejercicios) {
+    public RutinaEjercicioAdapter(List<String> ejercicios) {
         this.ejercicios = ejercicios;
     }
 
@@ -51,9 +51,9 @@ public class RutinaEjercicioAdapter extends RecyclerView.Adapter<RutinaEjercicio
             tvSeries = itemView.findViewById(R.id.tvSeriesEjercicioRutina);
         }
 
-        void asignar(EjercicioRutina ejercicio) {
-            tvNombre.setText(ejercicio.getNombre());
-            tvSeries.setText(ejercicio.getSeries());
+        void asignar(String ejercicio) {
+            tvNombre.setText(ejercicio);
+            tvSeries.setText("");
         }
     }
 }

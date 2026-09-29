@@ -117,7 +117,6 @@
 
     <!-- RutinasFragment -->
     <string name="btnNuevaRutina">NUEVA RUTINA</string>
-    <string name="btnEmpezarRutinaVacia">EMPEZAR RUTINA VACÍA</string>
 
     <string name="tvTituloPlanes">MIS PLANES DE ENTRENAMIENTO</string>
     <string name="tvCantidadPlanes">%1$d ACTIVOS</string>

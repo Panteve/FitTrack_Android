@@ -22,6 +22,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import ue.edu.co.fittrackandroid.R;
 import ue.edu.co.fittrackandroid.remote.SesionManager;
+import ue.edu.co.fittrackandroid.rutinas.RutinaRepository;
 import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 
 /**
@@ -40,9 +41,12 @@ public class HomeFragment extends Fragment {
     private TextView tvEjerciciosRutina;
     private SesionManager sesionManager;
     private HomeRepository homeRepository;
-
+    private RutinaRepository rutinaRepository;
     private Integer idProximaRutina;
-    private Call<HomeResponse> currentCall;
+    private Call<HomeResponse> currentCallHome;
+    private Call<RutinaResponse> currentCallRutina;
+
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -55,6 +59,7 @@ public class HomeFragment extends Fragment {
 
         initObjects(view);
         homeRepository = new HomeRepository(requireContext());
+        sesionManager = new SesionManager(requireContext());
 
         cargarInfoHome();
         btnIniciarEntrenamiento.setOnClickListener(v -> iniciarEntrenamiento());
@@ -71,7 +76,6 @@ public class HomeFragment extends Fragment {
         tvEjerciciosRutina = view.findViewById(R.id.tvEjerciciosRutina);
         tvFecha = view.findViewById(R.id.tvFecha);
         tvBienvenida = view.findViewById(R.id.tvBienvenida);
-        sesionManager = new SesionManager(requireContext());
 
         tvFecha.setText(getString(R.string.tvFecha, formatearFechaHoy()));
         tvBienvenida.setText(sesionManager.obtenerNombre());
@@ -97,29 +101,43 @@ public class HomeFragment extends Fragment {
         btnIniciarEntrenamiento.setEnabled(false);
         btnIniciarEntrenamiento.setText(R.string.btnIniciarEntrenamiento_loading);
 
-        // TODO: Eliminar esta espera simulada. El botón debe recuperar la rutina asignada
-        // desde el almacenamiento y continuar solamente cuando sus datos estén disponibles.
-        btnIniciarEntrenamiento.postDelayed(() -> {
-            btnIniciarEntrenamiento.setEnabled(true);
-            btnIniciarEntrenamiento.setText(R.string.btnIniciarEntrenamiento);
+        currentCallRutina = rutinaRepository.getRutinaById(idProximaRutina);
+        currentCallRutina.enqueue(new Callback<RutinaResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<RutinaResponse> call, @NonNull Response<RutinaResponse> response) {
+                if (!isAdded()) {
+                    return;
+                }
 
-            // TODO: Reemplazar el nombre y esta lista por los datos de la rutina asignada real.
-            String[] nombresEjercicios = {
-                    getString(R.string.tvNombreEjercicio1),
-                    getString(R.string.tvNombreEjercicio2),
-                    getString(R.string.tvNombreEjercicio3),
-                    getString(R.string.tvNombreEjercicio4)
-            };
+                if (response.isSuccessful() && response.body() != null) {
+                    RutinaResponse rutinaResponse = response.body();
+                    ((MainActivity) requireActivity()).mostrarEntrenamientoActivo(rutinaResponse);
+                } else {
+                    btnIniciarEntrenamiento.setEnabled(true);
+                    btnIniciarEntrenamiento.setText(R.string.btnIniciarEntrenamiento);
+                    ManejadorErroresApi.obtenerToast(requireContext(), response.code()).show();
+                }
+            }
 
-            ((MainActivity) requireActivity()).mostrarEntrenamientoActivo(
-                    getString(R.string.tvNombreRutina), nombresEjercicios);
-        }, 700);
+            @Override
+            public void onFailure(@NonNull Call<RutinaResponse> call, @NonNull Throwable throwable) {
+                if (call.isCanceled() || !isAdded()) {
+                    return;
+                }
+                btnIniciarEntrenamiento.setEnabled(true);
+                btnIniciarEntrenamiento.setText(R.string.btnIniciarEntrenamiento);
+
+                ManejadorErroresApi
+                        .obtenerToast(requireContext(), throwable)
+                        .show();
+            }
+        });
     }
 
     /** Consulta y presenta la información principal del usuario. */
     private void cargarInfoHome() {
-        currentCall = homeRepository.getInfoHome();
-        currentCall.enqueue(new Callback<HomeResponse>() {
+        currentCallHome = homeRepository.getInfoHome();
+        currentCallHome.enqueue(new Callback<HomeResponse>() {
 
             @Override
             public void onResponse(@NonNull Call<HomeResponse> call, @NonNull Response<HomeResponse> response) {
@@ -250,8 +268,11 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        if (currentCall != null) {
-            currentCall.cancel();
+        if (currentCallHome != null) {
+            currentCallHome.cancel();
+        }
+        if (currentCallRutina != null) {
+            currentCallRutina.cancel();
         }
         super.onDestroyView();
     }
