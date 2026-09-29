@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Pantalla de solo lectura con el resultado de un entrenamiento terminado:
+<!-- Pantalla con el resultado de un entrenamiento terminado:
      nombre, fecha y hora, métricas finales, distribución de grupos musculares y
-     los ejercicios con sus series realizadas. Todo el contenido se desplaza aquí,
+     los ejercicios con sus series realizadas. También permite guardar una nota;
+     las acciones de fotografía son provisionales. Todo el contenido se desplaza aquí,
      por eso el RecyclerView de ejercicios no hace scroll propio.
      El ScrollView es el estado exitoso; al abrir un entrenamiento del historial
      se muestran primero el indicador de carga o el mensaje de error. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutResumenEntrenamiento"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -193,6 +195,108 @@
                         android:maxLines="1"
                         android:text="@string/tvSeriesResumenEntrenamiento"
                         android:textSize="18sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Nota editable que se guarda en el entrenamiento ya creado. -->
+            <LinearLayout
+                android:id="@+id/layoutNotaResumenEntrenamiento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:background="@drawable/bg_card"
+                android:elevation="@dimen/elevation_card"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_md">
+
+                <TextView
+                    android:id="@+id/tvLabelNotaResumenEntrenamiento"
+                    style="@style/FitTrack.Text.Label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tvLabelNotaResumenEntrenamiento" />
+
+                <EditText
+                    android:id="@+id/etNotaResumenEntrenamiento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:background="@drawable/bg_input"
+                    android:gravity="top|start"
+                    android:hint="@string/etNotaResumenEntrenamiento_hint"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:maxLength="1000"
+                    android:minHeight="@dimen/note_input_min_height"
+                    android:minLines="3"
+                    android:padding="@dimen/spacing_md"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextTertiary"
+                    android:textSize="@dimen/text_size_body" />
+
+                <Button
+                    android:id="@+id/btnGuardarNotaResumenEntrenamiento"
+                    style="@style/FitTrack.Button.Primary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:enabled="false"
+                    android:text="@string/btnGuardarNotaResumenEntrenamiento" />
+            </LinearLayout>
+
+            <!-- La selección y subida de fotos se implementará en otra etapa. -->
+            <LinearLayout
+                android:id="@+id/layoutFotoResumenEntrenamiento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:background="@drawable/bg_card"
+                android:elevation="@dimen/elevation_card"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_md">
+
+                <TextView
+                    android:id="@+id/tvLabelFotoResumenEntrenamiento"
+                    style="@style/FitTrack.Text.Label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tvLabelFotoResumenEntrenamiento" />
+
+                <ImageView
+                    android:id="@+id/imgFotoResumenEntrenamiento"
+                    android:layout_width="@dimen/workout_photo_preview_size"
+                    android:layout_height="@dimen/workout_photo_preview_size"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:background="@drawable/bg_input"
+                    android:contentDescription="@string/imgFotoResumenEntrenamiento"
+                    android:padding="@dimen/spacing_xl"
+                    android:src="@drawable/ic_camera"
+                    app:tint="@color/colorTextTertiary" />
+
+                <LinearLayout
+                    android:id="@+id/layoutAccionesFotoResumenEntrenamiento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnTomarFotoResumenEntrenamiento"
+                        style="@style/FitTrack.Button.Secondary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/spacing_xs"
+                        android:layout_weight="1"
+                        android:text="@string/btnTomarFotoResumenEntrenamiento" />
+
+                    <Button
+                        android:id="@+id/btnAgregarFotoResumenEntrenamiento"
+                        style="@style/FitTrack.Button.Secondary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:layout_weight="1"
+                        android:text="@string/btnAgregarFotoResumenEntrenamiento" />
                 </LinearLayout>
             </LinearLayout>
 

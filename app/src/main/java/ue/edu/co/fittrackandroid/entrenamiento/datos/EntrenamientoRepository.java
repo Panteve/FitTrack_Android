@@ -23,6 +23,22 @@ public class EntrenamientoRepository {
     }
 
     /**
+     * Prepara la actualización de un entrenamiento guardado.
+     *
+     * @param entrenamientoId identificador del entrenamiento
+     * @param entrenamientoRequest datos completos con la nota actualizada
+     * @return llamada que devuelve el detalle actualizado
+     */
+    public Call<EntrenamientoDetalleResponse> actualizarEntrenamiento(
+            Long entrenamientoId,
+            EntrenamientoCrearRequest entrenamientoRequest) {
+        return entrenamientoApiService.actualizarEntrenamiento(
+                entrenamientoId,
+                entrenamientoRequest
+        );
+    }
+
+    /**
      * Devuelve la llamada para consultar un entrenamiento guardado. El repositorio solo
      * entrega la llamada: ejecutarla con enqueue es responsabilidad de la pantalla.
      *

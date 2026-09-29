@@ -244,6 +244,25 @@
             android:layout_marginTop="@dimen/spacing_sm"
             android:text="@string/btnCerrarSesion" />
 
+        <!-- Borrado de la cuenta: separado del cierre de sesión y en gris, porque es
+             una acción destructiva que todavía no está disponible. -->
+        <Button
+            android:id="@+id/btnBorrarCuenta"
+            style="@style/FitTrack.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height_standard"
+            android:layout_marginTop="@dimen/spacing_xxl"
+            android:text="@string/btnBorrarCuenta" />
+
+        <TextView
+            android:id="@+id/tvAvisoBorrarCuenta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="@string/tvAvisoBorrarCuenta"
+            android:textColor="@color/colorWarningText"
+            android:textSize="@dimen/text_size_caption" />
+
         <Space
             android:layout_width="match_parent"
             android:layout_height="@dimen/spacing_xxl" />

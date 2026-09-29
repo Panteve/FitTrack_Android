@@ -41,8 +41,13 @@
     <string name="tvLabelNombreUsuario">NOMBRE</string>
     <string name="etNombreUsuario_hint">Tu nombre</string>
     <string name="tvErrorNombreUsuario">Ingresa tu nombre</string>
-    <string name="etContrasenaRegistro_hint">Mínimo 6 caracteres</string>
-    <string name="tvErrorContrasenaRegistro">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="tvErrorNombreUsuario_largo">El nombre no puede superar los 255 caracteres</string>
+    <string name="tvErrorCorreo_largo">El correo no puede superar los 255 caracteres</string>
+    <string name="tvErrorCorreo_registrado">Este correo ya está registrado</string>
+    <string name="etContrasenaRegistro_hint">Entre 8 y 72 caracteres</string>
+    <string name="cdOjoContrasenaRegistro">Mostrar u ocultar contraseña</string>
+    <string name="tvErrorContrasenaRegistro">La contraseña debe tener entre 8 y 72 caracteres</string>
+    <string name="tvErrorContrasenaRegistro_larga">La contraseña no puede superar los 72 caracteres</string>
     <string name="tvLabelRepetirContrasena">REPETIR CONTRASEÑA</string>
     <string name="etRepetirContrasena_hint">••••••••</string>
     <string name="tvErrorRepetirContrasena">Verifica que las contraseñas coincidan</string>
@@ -301,15 +306,23 @@
     <string name="btnCancelarCerrarSesion">CANCELAR</string>
     <string name="tvLabelCuenta">CUENTA</string>
     <string name="btnCambiarContrasena">CAMBIAR CONTRASEÑA</string>
+    <string name="btnBorrarCuenta">BORRAR CUENTA</string>
+    <string name="tvAvisoBorrarCuenta">Al borrar tu cuenta se eliminarán tu nombre, tu correo y todos tus ejercicios y rutinas. Esta acción todavía no se puede completar.</string>
+    <string name="tvTituloBorrarCuenta">Borrar cuenta</string>
+    <string name="tvMensajeBorrarCuenta">¿Seguro que quieres borrar tu cuenta? Perderás tus ejercicios y tus rutinas.</string>
+    <string name="btnConfirmarBorrarCuenta">BORRAR CUENTA</string>
+    <string name="btnCancelarBorrarCuenta">CANCELAR</string>
 
     <!-- CambiarContrasenaFragment -->
     <string name="tvToolbarTituloCambiarContrasena">Cambiar contraseña</string>
     <string name="tvLabelContrasenaActual">CONTRASEÑA ACTUAL</string>
     <string name="etContrasenaActual_hint">••••••••</string>
     <string name="tvErrorContrasenaActual">Ingresa tu contraseña actual</string>
+    <string name="tvErrorContrasenaActual_incorrecta">La contraseña actual es incorrecta</string>
     <string name="tvLabelNuevaContrasena">NUEVA CONTRASEÑA</string>
-    <string name="etNuevaContrasena_hint">Mínimo 6 caracteres</string>
-    <string name="tvErrorNuevaContrasena">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="etNuevaContrasena_hint">Entre 8 y 72 caracteres</string>
+    <string name="tvErrorNuevaContrasena">La contraseña debe tener entre 8 y 72 caracteres</string>
+    <string name="tvErrorNuevaContrasena_igual">La nueva contraseña debe ser diferente</string>
     <string name="tvLabelRepetirNuevaContrasena">REPETIR NUEVA CONTRASEÑA</string>
     <string name="etRepetirNuevaContrasena_hint">••••••••</string>
     <string name="tvErrorRepetirNuevaContrasena">Verifica que las contraseñas coincidan</string>
@@ -386,7 +399,7 @@
     <string name="btnConfirmarDescartarEntrenamiento">DESCARTAR</string>
     <string name="btnCancelarDescartarEntrenamiento">CANCELAR</string>
 
-    <!-- ResumenEntrenamientoFragment: pantalla de solo lectura del entrenamiento terminado -->
+    <!-- ResumenEntrenamientoFragment: resultado del entrenamiento terminado -->
     <string name="tvToolbarTituloResumenEntrenamiento">Resumen del entreno</string>
     <string name="tvNombreResumenEntrenamiento">Nombre del entrenamiento</string>
     <!-- Nombre de respaldo cuando el entrenamiento se inició sin nombre de rutina. -->
@@ -398,6 +411,16 @@
     <string name="tvVolumenResumenEntrenamiento">%1$s kg</string>
     <string name="tvLabelSeriesResumenEntrenamiento">SERIES</string>
     <string name="tvSeriesResumenEntrenamiento">%1$d/%2$d</string>
+    <string name="tvLabelNotaResumenEntrenamiento">NOTA O DESCRIPCIÓN</string>
+    <string name="etNotaResumenEntrenamiento_hint">¿Cómo te fue en este entrenamiento?</string>
+    <string name="btnGuardarNotaResumenEntrenamiento">GUARDAR NOTA</string>
+    <string name="btnGuardarNotaResumenEntrenamiento_loading">GUARDANDO…</string>
+    <string name="btnGuardarNotaResumenEntrenamiento_confirmacion">Nota guardada</string>
+    <string name="etNotaResumenEntrenamiento_error_largo">La nota no puede superar los 1000 caracteres</string>
+    <string name="tvLabelFotoResumenEntrenamiento">FOTO DEL ENTRENAMIENTO</string>
+    <string name="imgFotoResumenEntrenamiento">Vista previa de la foto del entrenamiento</string>
+    <string name="btnTomarFotoResumenEntrenamiento">TOMAR FOTO</string>
+    <string name="btnAgregarFotoResumenEntrenamiento">AGREGAR FOTO</string>
     <string name="tvTituloGruposMuscularesResumen">GRUPOS MUSCULARES TRABAJADOS</string>
     <string name="tvTituloEjerciciosResumen">EJERCICIOS REALIZADOS</string>
     <string name="tvResumenSinEjercicios">No se registraron ejercicios en este entrenamiento</string>

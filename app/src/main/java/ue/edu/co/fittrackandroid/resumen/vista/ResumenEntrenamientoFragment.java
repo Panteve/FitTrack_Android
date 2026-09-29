@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -31,8 +32,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import ue.edu.co.fittrackandroid.entrenamiento.datos.EntrenamientoRepository;
+import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoCrearRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoDetalleResponse;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoEnCurso;
+import ue.edu.co.fittrackandroid.entrenamiento.modelo.RegistroSerieRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.RegistroSerieResponse;
 import ue.edu.co.fittrackandroid.MainActivity;
 import ue.edu.co.fittrackandroid.R;
@@ -43,11 +46,13 @@ import ue.edu.co.fittrackandroid.resumen.modelo.SerieResumen;
 import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 
 /**
- * Pantalla de solo lectura con el resultado de un entrenamiento terminado.
+ * Pantalla con el resultado de un entrenamiento terminado.
  *
  * <p>Muestra el nombre del entrenamiento, el día y la hora en que se realizó, las tres
  * métricas finales (duración, volumen y series), la distribución porcentual de los
- * grupos musculares trabajados y los ejercicios con sus series realizadas.
+ * grupos musculares trabajados y los ejercicios con sus series realizadas. También permite
+ * guardar una nota o descripción del entrenamiento. Las acciones de fotografía son
+ * provisionales y todavía no abren la cámara ni la galería.
  *
  * <p>La pantalla se abre al confirmar "Terminar" y también al pulsar un registro de
  * "Últimos entrenamientos" en Inicio. En el primer caso MainActivity ya tiene el resumen
@@ -63,6 +68,8 @@ import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
  */
 public class ResumenEntrenamientoFragment extends Fragment {
 
+    private static final int LONGITUD_MAXIMA_NOTA = 1000;
+
     /**
      * Clave del resultado que avisa que el entrenamiento fue borrado. La escucha
      * HomeFragment, la pantalla que puede tener abierto el historial, para que vuelva a
@@ -74,9 +81,12 @@ public class ResumenEntrenamientoFragment extends Fragment {
     private ResumenEntrenamiento resumen;
     private Long idEntrenamiento;
     private EntrenamientoRepository entrenamientoRepository;
+    private EntrenamientoDetalleResponse detalleEntrenamiento;
     private Call<EntrenamientoDetalleResponse> currentCallDetalle;
+    private Call<EntrenamientoDetalleResponse> currentCallActualizar;
     private Call<Void> currentCallEliminar;
     private boolean eliminandoEntrenamiento;
+    private boolean guardandoNota;
 
     private ProgressBar pbCargaResumenEntrenamiento;
     private TextView tvErrorResumenEntrenamiento;
@@ -89,6 +99,10 @@ public class ResumenEntrenamientoFragment extends Fragment {
     private TextView tvDuracionResumenEntrenamiento;
     private TextView tvVolumenResumenEntrenamiento;
     private TextView tvSeriesResumenEntrenamiento;
+    private EditText etNotaResumenEntrenamiento;
+    private Button btnGuardarNotaResumenEntrenamiento;
+    private Button btnTomarFotoResumenEntrenamiento;
+    private Button btnAgregarFotoResumenEntrenamiento;
     private TextView tvResumenSinEjercicios;
     private LinearLayout layoutGruposMuscularesResumen;
     private RecyclerView rvEjerciciosResumen;
@@ -116,10 +130,14 @@ public class ResumenEntrenamientoFragment extends Fragment {
         inicializarVistas(view);
         btnReintentarResumenEntrenamiento.setOnClickListener(v -> cargarResumenDesdeApi());
         btnBorrarEntrenamiento.setOnClickListener(v -> confirmarBorradoEntrenamiento());
+        btnGuardarNotaResumenEntrenamiento.setOnClickListener(v -> guardarNota());
+        btnTomarFotoResumenEntrenamiento.setOnClickListener(v -> mostrarFotoProximamente());
+        btnAgregarFotoResumenEntrenamiento.setOnClickListener(v -> mostrarFotoProximamente());
 
         if (resumen != null) {
             // El resumen ya venía construido: no hace falta ninguna consulta.
             mostrarResumen();
+            cargarDetalleParaEdicion();
         } else if (idEntrenamiento != null) {
             cargarResumenDesdeApi();
         } else {
@@ -148,6 +166,13 @@ public class ResumenEntrenamientoFragment extends Fragment {
         tvDuracionResumenEntrenamiento = view.findViewById(R.id.tvDuracionResumenEntrenamiento);
         tvVolumenResumenEntrenamiento = view.findViewById(R.id.tvVolumenResumenEntrenamiento);
         tvSeriesResumenEntrenamiento = view.findViewById(R.id.tvSeriesResumenEntrenamiento);
+        etNotaResumenEntrenamiento = view.findViewById(R.id.etNotaResumenEntrenamiento);
+        btnGuardarNotaResumenEntrenamiento = view.findViewById(
+                R.id.btnGuardarNotaResumenEntrenamiento);
+        btnTomarFotoResumenEntrenamiento = view.findViewById(
+                R.id.btnTomarFotoResumenEntrenamiento);
+        btnAgregarFotoResumenEntrenamiento = view.findViewById(
+                R.id.btnAgregarFotoResumenEntrenamiento);
         tvResumenSinEjercicios = view.findViewById(R.id.tvResumenSinEjercicios);
         layoutGruposMuscularesResumen = view.findViewById(R.id.layoutGruposMuscularesResumen);
         rvEjerciciosResumen = view.findViewById(R.id.rvEjerciciosResumen);
@@ -192,9 +217,217 @@ public class ResumenEntrenamientoFragment extends Fragment {
 
         mostrarCabecera();
         mostrarMetricas();
+        mostrarNota();
         mostrarGruposMusculares();
         mostrarEjercicios();
         actualizarBotonBorrar();
+    }
+
+    // ------------------------------------------------------------------ Nota y fotografía
+
+    /**
+     * Muestra la nota recibida y habilita su edición cuando existe el detalle completo.
+     * El resumen recién creado se ve inmediatamente; su detalle se consulta en segundo
+     * plano para disponer de todos los campos que exige la actualización del backend.
+     */
+    private void mostrarNota() {
+        boolean detalleDisponible = detalleEntrenamiento != null;
+        etNotaResumenEntrenamiento.setEnabled(detalleDisponible && !guardandoNota);
+        btnGuardarNotaResumenEntrenamiento.setEnabled(detalleDisponible && !guardandoNota);
+
+        if (!detalleDisponible) {
+            return;
+        }
+
+        String nota = detalleEntrenamiento.getNotas();
+        etNotaResumenEntrenamiento.setText(nota == null ? "" : nota);
+    }
+
+    /**
+     * Consulta en segundo plano el detalle del entrenamiento recién terminado. El resumen
+     * ya está visible, por eso esta petición no reemplaza la pantalla por el estado de carga.
+     */
+    private void cargarDetalleParaEdicion() {
+        if (idEntrenamiento == null || idEntrenamiento <= 0) {
+            return;
+        }
+
+        currentCallDetalle = entrenamientoRepository.getEntrenamientoById(idEntrenamiento);
+        currentCallDetalle.enqueue(new Callback<EntrenamientoDetalleResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<EntrenamientoDetalleResponse> call,
+                                   @NonNull Response<EntrenamientoDetalleResponse> response) {
+                if (!isAdded() || getView() == null) {
+                    return;
+                }
+
+                if (response.isSuccessful() && response.body() != null) {
+                    detalleEntrenamiento = response.body();
+                    mostrarNota();
+                    return;
+                }
+
+                ManejadorErroresApi.obtenerToast(requireContext(), response.code()).show();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<EntrenamientoDetalleResponse> call,
+                                  @NonNull Throwable throwable) {
+                if (call.isCanceled() || !isAdded() || getView() == null) {
+                    return;
+                }
+
+                ManejadorErroresApi.obtenerToast(requireContext(), throwable).show();
+            }
+        });
+    }
+
+    /** Valida la nota y actualiza el entrenamiento ya guardado. */
+    private void guardarNota() {
+        if (guardandoNota || detalleEntrenamiento == null
+                || idEntrenamiento == null || idEntrenamiento <= 0) {
+            return;
+        }
+
+        String nota = etNotaResumenEntrenamiento.getText().toString().trim();
+        if (nota.length() > LONGITUD_MAXIMA_NOTA) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.etNotaResumenEntrenamiento_error_largo,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        EntrenamientoCrearRequest request = crearSolicitudActualizacion(nota);
+        if (request == null) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.error_respuesta_invalida,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        mostrarGuardandoNota(true);
+        currentCallActualizar = entrenamientoRepository.actualizarEntrenamiento(
+                idEntrenamiento,
+                request
+        );
+        currentCallActualizar.enqueue(new Callback<EntrenamientoDetalleResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<EntrenamientoDetalleResponse> call,
+                                   @NonNull Response<EntrenamientoDetalleResponse> response) {
+                if (!isAdded() || getView() == null) {
+                    return;
+                }
+
+                mostrarGuardandoNota(false);
+                if (response.isSuccessful() && response.body() != null) {
+                    detalleEntrenamiento = response.body();
+                    mostrarNota();
+                    Toast.makeText(
+                            requireContext(),
+                            R.string.btnGuardarNotaResumenEntrenamiento_confirmacion,
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return;
+                }
+
+                ManejadorErroresApi.obtenerToast(requireContext(), response.code()).show();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<EntrenamientoDetalleResponse> call,
+                                  @NonNull Throwable throwable) {
+                if (call.isCanceled() || !isAdded() || getView() == null) {
+                    return;
+                }
+
+                mostrarGuardandoNota(false);
+                ManejadorErroresApi.obtenerToast(requireContext(), throwable).show();
+            }
+        });
+    }
+
+    /**
+     * Reconstruye el cuerpo completo que exige {@code PUT /entrenamientos/{id}}.
+     *
+     * @param nota nota escrita por el usuario, o texto vacío para eliminarla
+     * @return solicitud completa, o null si el detalle recibido está incompleto
+     */
+    private EntrenamientoCrearRequest crearSolicitudActualizacion(String nota) {
+        if (detalleEntrenamiento.getRutinaId() == null
+                || detalleEntrenamiento.getFecha() == null
+                || detalleEntrenamiento.getDuracionMinutos() == null
+                || detalleEntrenamiento.getDuracionMinutos() <= 0
+                || detalleEntrenamiento.getSeries() == null
+                || detalleEntrenamiento.getSeries().isEmpty()) {
+            return null;
+        }
+
+        List<RegistroSerieRequest> series = convertirSeriesParaSolicitud(
+                detalleEntrenamiento.getSeries());
+        if (series == null) {
+            return null;
+        }
+
+        int seriesTotales = detalleEntrenamiento.getSeriesTotales() == null
+                ? series.size()
+                : detalleEntrenamiento.getSeriesTotales();
+
+        return new EntrenamientoCrearRequest(
+                detalleEntrenamiento.getRutinaId(),
+                detalleEntrenamiento.getFecha(),
+                detalleEntrenamiento.getDuracionMinutos(),
+                nota,
+                seriesTotales,
+                series
+        );
+    }
+
+    /** @return las series listas para actualizar, o null si alguna está incompleta. */
+    private List<RegistroSerieRequest> convertirSeriesParaSolicitud(
+            List<RegistroSerieResponse> seriesGuardadas) {
+        List<RegistroSerieRequest> series = new ArrayList<>();
+
+        for (RegistroSerieResponse serie : seriesGuardadas) {
+            if (serie.getRutinaEjercicioId() == null
+                    || serie.getNumeroSerie() == null
+                    || serie.getRepeticiones() == null
+                    || serie.getPeso() == null) {
+                return null;
+            }
+
+            series.add(new RegistroSerieRequest(
+                    serie.getRutinaEjercicioId(),
+                    serie.getNumeroSerie(),
+                    serie.getRepeticiones(),
+                    serie.getPeso()
+            ));
+        }
+
+        return series;
+    }
+
+    /** Cambia el formulario entre su estado editable y el guardado en curso. */
+    private void mostrarGuardandoNota(boolean guardando) {
+        guardandoNota = guardando;
+        etNotaResumenEntrenamiento.setEnabled(!guardando);
+        btnGuardarNotaResumenEntrenamiento.setEnabled(!guardando);
+        btnGuardarNotaResumenEntrenamiento.setText(guardando
+                ? R.string.btnGuardarNotaResumenEntrenamiento_loading
+                : R.string.btnGuardarNotaResumenEntrenamiento);
+        btnBorrarEntrenamiento.setEnabled(!guardando);
+    }
+
+    /** Informa que cámara, galería y subida de archivos todavía no están conectadas. */
+    private void mostrarFotoProximamente() {
+        Toast.makeText(
+                requireContext(),
+                "La opción de foto estará disponible próximamente",
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
     // ------------------------------------------------------------------ Borrado del entrenamiento
@@ -218,7 +451,8 @@ public class ResumenEntrenamientoFragment extends Fragment {
      * deshacer, así que nunca se envía sin preguntar.
      */
     private void confirmarBorradoEntrenamiento() {
-        if (eliminandoEntrenamiento || idEntrenamiento == null || idEntrenamiento <= 0) {
+        if (eliminandoEntrenamiento || guardandoNota
+                || idEntrenamiento == null || idEntrenamiento <= 0) {
             return;
         }
 
@@ -270,7 +504,8 @@ public class ResumenEntrenamientoFragment extends Fragment {
     private void borrarEntrenamiento() {
         // Se revisa el identificador otra vez: el usuario pudo abrir el diálogo, cancelar
         // y volver a intentarlo, y no puede haber dos borrados al mismo tiempo.
-        if (eliminandoEntrenamiento || idEntrenamiento == null || idEntrenamiento <= 0) {
+        if (eliminandoEntrenamiento || guardandoNota
+                || idEntrenamiento == null || idEntrenamiento <= 0) {
             return;
         }
 
@@ -374,7 +609,8 @@ public class ResumenEntrenamientoFragment extends Fragment {
                 }
 
                 if (response.isSuccessful() && response.body() != null) {
-                    resumen = convertirAResumen(response.body());
+                    detalleEntrenamiento = response.body();
+                    resumen = convertirAResumen(detalleEntrenamiento);
                     mostrarResumen();
                     return;
                 }
@@ -624,11 +860,16 @@ public class ResumenEntrenamientoFragment extends Fragment {
             currentCallEliminar.cancel();
         }
 
+        if (currentCallActualizar != null) {
+            currentCallActualizar.cancel();
+        }
+
         // Al cancelar las llamadas ya no queda ninguna petición en vuelo, así que el
         // bloqueo puede desaparecer si las vistas se recrean. El resumen y el
         // identificador NO se limpian aquí: solo se olvidan cuando el borrado se
         // confirma, porque destruye la vista también al girar el dispositivo.
         eliminandoEntrenamiento = false;
+        guardandoNota = false;
         super.onDestroyView();
     }
 }

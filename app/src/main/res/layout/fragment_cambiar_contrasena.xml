@@ -148,6 +148,16 @@
                     android:visibility="gone" />
             </LinearLayout>
 
+            <!-- Indicador de guardado: solo se ve mientras se espera la respuesta del backend -->
+            <ProgressBar
+                android:id="@+id/pbGuardarContrasena"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:indeterminateTint="@color/colorPrimary"
+                android:visibility="gone" />
+
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/spacing_xxl" />

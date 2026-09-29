@@ -26,6 +26,10 @@
     <dimen name="avatar_size">96dp</dimen>
     <dimen name="avatar_icon_padding">26dp</dimen>
 
+    <!-- Resumen del entrenamiento: área de escritura y vista previa provisional. -->
+    <dimen name="note_input_min_height">96dp</dimen>
+    <dimen name="workout_photo_preview_size">72dp</dimen>
+
     <!-- Barra de herramientas: espacio que se reserva a cada lado del título
          para que quede centrado y nunca debajo de la flecha ni del botón de acción. -->
     <dimen name="toolbar_side_reserved">88dp</dimen>

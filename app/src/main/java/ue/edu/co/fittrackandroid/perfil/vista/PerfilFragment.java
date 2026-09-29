@@ -70,6 +70,7 @@ public class PerfilFragment extends Fragment {
     private Button btnNuevoEjercicio;
     private Button btnCambiarContrasena;
     private Button btnCerrarSesion;
+    private Button btnBorrarCuenta;
     private TextView tvTituloLista;
     private ProgressBar pbCargaEjerciciosPerfil;
     private TextView tvSinEjerciciosPerfil;
@@ -152,6 +153,7 @@ public class PerfilFragment extends Fragment {
         btnNuevoEjercicio = view.findViewById(R.id.btnNuevoEjercicio);
         btnCambiarContrasena = view.findViewById(R.id.btnCambiarContrasena);
         btnCerrarSesion = view.findViewById(R.id.btnCerrarSesion);
+        btnBorrarCuenta = view.findViewById(R.id.btnBorrarCuenta);
         tvTituloLista = view.findViewById(R.id.tvTituloLista);
         pbCargaEjerciciosPerfil = view.findViewById(R.id.pbCargaEjerciciosPerfil);
         tvSinEjerciciosPerfil = view.findViewById(R.id.tvSinEjerciciosPerfil);
@@ -197,6 +199,7 @@ public class PerfilFragment extends Fragment {
         btnNuevoEjercicio.setOnClickListener(v -> abrirCrearEjercicio());
         btnCambiarContrasena.setOnClickListener(v -> abrirCambiarContrasena());
         btnCerrarSesion.setOnClickListener(v -> confirmarCierreSesion());
+        btnBorrarCuenta.setOnClickListener(v -> confirmarBorradoCuenta());
 
         configurarLimpiarErrorNombre();
     }
@@ -507,6 +510,27 @@ public class PerfilFragment extends Fragment {
                 etNombrePerfil.setError(null);
             }
         });
+    }
+
+    /**
+     * Pide confirmación antes de borrar la cuenta. Todavía no hace nada: el backend
+     * no expone el endpoint y el aviso de la pantalla le dice al usuario que la
+     * acción aún no está disponible.
+     */
+    private void confirmarBorradoCuenta() {
+        // TODO: Llamar al endpoint de borrado de cuenta cuando exista. La respuesta
+        // decidirá si además se limpia la sesión con sesionManager.cerrarSesion().
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.tvTituloBorrarCuenta)
+                .setMessage(R.string.tvMensajeBorrarCuenta)
+                .setPositiveButton(R.string.btnConfirmarBorrarCuenta, (dialogo, cual) ->
+                        Toast.makeText(
+                                requireContext(),
+                                "El borrado de cuenta todavía no está disponible",
+                                Toast.LENGTH_SHORT
+                        ).show())
+                .setNegativeButton(R.string.btnCancelarBorrarCuenta, null)
+                .show();
     }
 
     /** Pide confirmación antes de cerrar la sesión. */

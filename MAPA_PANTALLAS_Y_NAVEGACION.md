@@ -479,7 +479,7 @@ Cómo se abre:
 Acciones:
 
 - **Atrás:** vuelve al login, que oculta de nuevo la toolbar.
-- **Guardar:** valida nombre, correo, contraseña y confirmación. Si todo está correcto muestra un mensaje y abre Inicio.
+- **Guardar:** valida nombre, correo, contraseña y confirmación con las mismas reglas del backend. Si todo está correcto envía `POST auth/register`; cuando el servidor responde `201` con token y nombre, guarda token, nombre y correo en la sesión y abre Inicio. Un `409` deja la pantalla abierta señalando el correo ya registrado.
 
 Elementos globales:
 
@@ -493,7 +493,8 @@ Archivos relacionados:
 
 Pendiente o provisional:
 
-- Los datos se validan en pantalla pero no se envían a ningún backend ni se guarda la contraseña.
+- La contraseña se valida entre 8 y 72 caracteres, viaja solo en la petición y nunca se guarda en el dispositivo.
+- La confirmación de la contraseña se compara únicamente en pantalla, porque el backend no la recibe.
 
 ### 10. Cambiar contraseña
 

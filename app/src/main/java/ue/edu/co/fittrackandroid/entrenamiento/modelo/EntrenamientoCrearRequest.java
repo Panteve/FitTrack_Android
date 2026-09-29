@@ -2,7 +2,7 @@ package ue.edu.co.fittrackandroid.entrenamiento.modelo;
 
 import java.util.List;
 
-/** Datos necesarios para guardar un entrenamiento terminado. */
+/** Datos necesarios para crear o actualizar un entrenamiento terminado. */
 public class EntrenamientoCrearRequest {
 
     private final Long rutinaId;
@@ -13,7 +13,8 @@ public class EntrenamientoCrearRequest {
     private final List<RegistroSerieRequest> series;
 
     /**
-     * Crea la solicitud que espera {@code POST /entrenamientos}.
+     * Crea la solicitud que espera {@code POST /entrenamientos} o
+     * {@code PUT /entrenamientos/{id}}.
      *
      * @param rutinaId identificador de la rutina realizada
      * @param fecha fecha del entrenamiento en formato ISO

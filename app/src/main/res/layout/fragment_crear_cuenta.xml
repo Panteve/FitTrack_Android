@@ -129,23 +129,41 @@
                     android:textSize="11sp"
                     android:textStyle="bold" />
 
-                <EditText
-                    android:id="@+id/etContrasenaRegistro"
+                <FrameLayout
+                    android:id="@+id/layoutContrasenaRegistro"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/button_height_standard"
-                    android:layout_marginTop="@dimen/spacing_xs"
-                    android:autofillHints="newPassword"
-                    android:background="@drawable/bg_input"
-                    android:drawableStart="@drawable/ic_lock"
-                    android:drawablePadding="@dimen/spacing_sm"
-                    android:hint="@string/etContrasenaRegistro_hint"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:paddingHorizontal="@dimen/spacing_md"
-                    app:drawableTint="@color/colorTextTertiary"
-                    android:textColor="@color/colorTextPrimary"
-                    android:textColorHint="@color/colorTextStrong"
-                    android:textSize="14sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs">
+
+                    <EditText
+                        android:id="@+id/etContrasenaRegistro"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/button_height_standard"
+                        android:autofillHints="newPassword"
+                        android:background="@drawable/bg_input"
+                        android:drawableStart="@drawable/ic_lock"
+                        android:drawablePadding="@dimen/spacing_sm"
+                        android:hint="@string/etContrasenaRegistro_hint"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:paddingStart="@dimen/spacing_md"
+                        android:paddingEnd="48dp"
+                        app:drawableTint="@color/colorTextTertiary"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textColorHint="@color/colorTextStrong"
+                        android:textSize="14sp" />
+
+                    <ImageButton
+                        android:id="@+id/btnOjoContrasenaRegistro"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="@string/cdOjoContrasenaRegistro"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_visibility"
+                        app:tint="@color/colorTextTertiary" />
+                </FrameLayout>
 
                 <TextView
                     android:id="@+id/tvErrorContrasenaRegistro"
@@ -202,4 +220,13 @@
                 android:layout_height="@dimen/spacing_xxl" />
         </LinearLayout>
     </ScrollView>
+
+    <!-- Indicador de registro: solo se ve mientras se espera la respuesta del backend -->
+    <ProgressBar
+        android:id="@+id/pbCrearCuenta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/colorPrimary"
+        android:visibility="gone" />
 </FrameLayout>
