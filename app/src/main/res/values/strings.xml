@@ -72,8 +72,14 @@
 
     <string name="tvLabelRutina">RUTINA RECOMENDADA</string>
     <string name="tvNombreRutina">Piernas &amp; Abdomen</string>
+    <string name="tvNombreRutina_loading">Cargando rutina…</string>
+    <string name="tvNombreRutina_vacia">No tienes una rutina recomendada</string>
+    <string name="tvNombreRutina_error">No pudimos cargar tu rutina</string>
     <string name="tvDuracionRutina">45 min</string>
-    <string name="tvEjerciciosRutina">4 ejercicios</string>
+    <string name="tvEjerciciosRutina">%1$d ejercicios</string>
+    <string name="tvEjerciciosRutina_loading">Estamos buscando tu próximo entrenamiento</string>
+    <string name="tvEjerciciosRutina_vacia">Explora tus rutinas para elegir cómo entrenar</string>
+    <string name="tvEjerciciosRutina_error">Inténtalo nuevamente en unos momentos</string>
     <string name="tvSeparador1">|</string>
     <string name="btnIniciarEntrenamiento">COMENZAR ENTRENAMIENTO</string>
     <string name="btnIniciarEntrenamiento_loading">CARGANDO…</string>
@@ -81,7 +87,10 @@
     <!-- fragment_home.xml: últimos entrenamientos -->
     <string name="tvTituloUltimosEntrenamientos">ÚLTIMOS ENTRENAMIENTOS</string>
     <string name="tvCantidadUltimosEntrenamientos">%1$d REGISTROS</string>
+    <string name="tvCantidadUltimosEntrenamientos_loading">CARGANDO…</string>
     <string name="tvSinEntrenamientos">Todavía no has registrado entrenamientos</string>
+    <string name="tvSinEntrenamientos_loading">Cargando tus últimos entrenamientos…</string>
+    <string name="tvSinEntrenamientos_error">No pudimos cargar tus últimos entrenamientos</string>
     <string name="tvDetalleUltimoEntrenamiento">%1$s  •  %2$d min</string>
 
     <!-- item_ultimo_entrenamiento.xml -->

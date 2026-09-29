@@ -69,314 +69,6 @@
                     app:tint="@color/colorPrimary" />
             </LinearLayout>
 
-            <!-- Tarjeta 1: Registro semanal -->
-            <LinearLayout
-                android:id="@+id/cardRegistroSemanal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_lg"
-                android:background="@drawable/bg_card"
-                android:elevation="@dimen/elevation_card"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_md">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvTituloRegistroSemanal"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/tvTituloRegistroSemanal"
-                        android:textColor="@color/colorTextPrimary"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <!-- Rejilla de 7 días -->
-                <LinearLayout
-                    android:id="@+id/layoutSemana"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal">
-
-                    <!-- Lunes: asistido -->
-                    <LinearLayout
-                        android:id="@+id/layoutDiaLunes"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="1dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_day_checked"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="4dp">
-
-                        <TextView
-                            android:id="@+id/tvDiaLunes"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvDiaLunes"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <ImageView
-                            android:id="@+id/imgCheckLunes"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_marginVertical="2dp"
-                            android:contentDescription="@string/tvDiaLunes"
-                            android:src="@drawable/ic_check_box"
-                            app:tint="@color/colorPrimary" />
-
-                        <TextView
-                            android:id="@+id/tvNumeroLunes"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvNumeroLunes"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <!-- Martes: hoy -->
-                    <LinearLayout
-                        android:id="@+id/layoutDiaMartes"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="1dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_day_today"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="4dp">
-
-                        <TextView
-                            android:id="@+id/tvDiaMartes"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvDiaMartes"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <ImageView
-                            android:id="@+id/imgCheckMartes"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_marginVertical="2dp"
-                            android:contentDescription="@string/tvDiaMartes"
-                            android:src="@drawable/ic_radio_button_checked"
-                            app:tint="@color/colorPrimary" />
-
-                        <TextView
-                            android:id="@+id/tvNumeroMartes"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvNumeroMartes"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <!-- Miércoles -->
-                    <LinearLayout
-                        android:id="@+id/layoutDiaMiercoles"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="1dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_day_default"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="4dp">
-
-                        <TextView
-                            android:id="@+id/tvDiaMiercoles"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvDiaMiercoles"
-                            android:textColor="@color/colorTextSecondary"
-                            android:textSize="11sp" />
-
-                        <ImageView
-                            android:id="@+id/imgCheckMiercoles"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_marginVertical="2dp"
-                            android:contentDescription="@string/tvDiaMiercoles"
-                            android:src="@drawable/ic_check_box_outline_blank"
-                            app:tint="@color/colorIconSubtle" />
-
-                        <TextView
-                            android:id="@+id/tvNumeroMiercoles"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvNumeroMiercoles"
-                            android:textColor="@color/colorTextTertiary"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <!-- Jueves -->
-                    <LinearLayout
-                        android:id="@+id/layoutDiaJueves"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="1dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_day_default"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="4dp">
-
-                        <TextView
-                            android:id="@+id/tvDiaJueves"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvDiaJueves"
-                            android:textColor="@color/colorTextSecondary"
-                            android:textSize="11sp" />
-
-                        <ImageView
-                            android:id="@+id/imgCheckJueves"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_marginVertical="2dp"
-                            android:contentDescription="@string/tvDiaJueves"
-                            android:src="@drawable/ic_check_box_outline_blank"
-                            app:tint="@color/colorIconSubtle" />
-
-                        <TextView
-                            android:id="@+id/tvNumeroJueves"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvNumeroJueves"
-                            android:textColor="@color/colorTextTertiary"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <!-- Viernes -->
-                    <LinearLayout
-                        android:id="@+id/layoutDiaViernes"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="1dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_day_default"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="4dp">
-
-                        <TextView
-                            android:id="@+id/tvDiaViernes"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvDiaViernes"
-                            android:textColor="@color/colorTextSecondary"
-                            android:textSize="11sp" />
-
-                        <ImageView
-                            android:id="@+id/imgCheckViernes"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_marginVertical="2dp"
-                            android:contentDescription="@string/tvDiaViernes"
-                            android:src="@drawable/ic_check_box_outline_blank"
-                            app:tint="@color/colorIconSubtle" />
-
-                        <TextView
-                            android:id="@+id/tvNumeroViernes"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvNumeroViernes"
-                            android:textColor="@color/colorTextTertiary"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <!-- Sábado -->
-                    <LinearLayout
-                        android:id="@+id/layoutDiaSabado"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="1dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_day_weekend"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="4dp">
-
-                        <TextView
-                            android:id="@+id/tvDiaSabado"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvDiaSabado"
-                            android:textColor="@color/colorTextDisabled"
-                            android:textSize="11sp" />
-
-                        <ImageView
-                            android:id="@+id/imgCheckSabado"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_marginVertical="2dp"
-                            android:contentDescription="@string/tvDiaSabado"
-                            android:src="@drawable/ic_check_box_outline_blank"
-                            app:tint="@color/colorIconSubtle" />
-
-                        <TextView
-                            android:id="@+id/tvNumeroSabado"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvNumeroSabado"
-                            android:textColor="@color/colorTextDisabled"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <!-- Domingo -->
-                    <LinearLayout
-                        android:id="@+id/layoutDiaDomingo"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="1dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_day_weekend"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="4dp">
-
-                        <TextView
-                            android:id="@+id/tvDiaDomingo"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvDiaDomingo"
-                            android:textColor="@color/colorTextDisabled"
-                            android:textSize="11sp" />
-
-                        <ImageView
-                            android:id="@+id/imgCheckDomingo"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_marginVertical="2dp"
-                            android:contentDescription="@string/tvDiaDomingo"
-                            android:src="@drawable/ic_check_box_outline_blank"
-                            app:tint="@color/colorIconSubtle" />
-
-                        <TextView
-                            android:id="@+id/tvNumeroDomingo"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvNumeroDomingo"
-                            android:textColor="@color/colorTextDisabled"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
-
             <!-- Tarjeta 2: Rutina asignada -->
             <LinearLayout
                 android:id="@+id/cardRutina"
@@ -428,7 +120,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="@string/tvNombreRutina"
+                            android:text="@string/tvNombreRutina_loading"
                             android:textColor="@color/colorTextPrimary"
                             android:textSize="17sp"
                             android:textStyle="bold" />
@@ -446,64 +138,22 @@
                     android:orientation="horizontal"
                     android:paddingHorizontal="@dimen/spacing_md"
                     android:paddingVertical="@dimen/spacing_xs">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/imgDuracion"
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:contentDescription="@string/tvDuracionRutina"
-                            android:src="@drawable/ic_schedule"
-                            app:tint="@color/colorTextTertiary" />
-
-                        <TextView
-                            android:id="@+id/tvDuracionRutina"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/spacing_xs"
-                            android:text="@string/tvDuracionRutina"
-                            android:textColor="@color/colorTextStrong"
-                            android:textSize="12sp" />
-                    </LinearLayout>
+                    <ImageView
+                        android:id="@+id/imgEjercicios"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_format_list_numbered"
+                        app:tint="@color/colorTextTertiary" />
 
                     <TextView
-                        android:id="@+id/tvSeparador1"
+                        android:id="@+id/tvEjerciciosRutina"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/tvSeparador1"
-                        android:textColor="@color/colorIconSubtle"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:text="@string/tvEjerciciosRutina_loading"
+                        android:textColor="@color/colorTextStrong"
                         android:textSize="12sp" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/imgEjercicios"
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:contentDescription="@string/tvEjerciciosRutina"
-                            android:src="@drawable/ic_format_list_numbered"
-                            app:tint="@color/colorTextTertiary" />
-
-                        <TextView
-                            android:id="@+id/tvEjerciciosRutina"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/spacing_xs"
-                            android:text="@string/tvEjerciciosRutina"
-                            android:textColor="@color/colorTextStrong"
-                            android:textSize="12sp" />
-                    </LinearLayout>
                 </LinearLayout>
 
                 <Button
@@ -514,6 +164,7 @@
                     android:background="@drawable/bg_button_primary"
                     android:drawableStart="@drawable/ic_play_arrow"
                     android:drawablePadding="@dimen/spacing_sm"
+                    android:enabled="false"
                     app:drawableTint="@color/colorOnPrimary"
                     android:elevation="@dimen/elevation_button"
                     android:letterSpacing="0.05"
@@ -560,8 +211,9 @@
                         android:layout_marginStart="@dimen/spacing_sm"
                         android:background="@drawable/bg_badge_teal"
                         android:paddingHorizontal="@dimen/spacing_sm"
-                        android:paddingVertical="3dp"
-                        android:textColor="@color/colorOnPrimary"
+                    android:paddingVertical="3dp"
+                    android:text="@string/tvCantidadUltimosEntrenamientos_loading"
+                    android:textColor="@color/colorOnPrimary"
                         android:textSize="10sp"
                         android:textStyle="bold" />
                 </LinearLayout>

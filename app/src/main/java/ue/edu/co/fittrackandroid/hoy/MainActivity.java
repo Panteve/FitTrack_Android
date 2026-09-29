@@ -186,14 +186,14 @@ public class MainActivity extends AppCompatActivity {
 
     /** Muestra el fragment de Home (pantalla principal "Hoy"). */
     public void mostrarHome() {
-        // Inicio es una raíz: se descarta cualquier pantalla secundaria abierta.
         limpiarBackStack();
         layoutToolbar.setVisibility(View.VISIBLE);
         mostrarNavegacionInferior();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragmentContainer, new HomeFragment())
-                .commit();
-        bottomNavigation.setSelectedItemId(R.id.navigation_inicio);
+        if (bottomNavigation.getSelectedItemId() == R.id.navigation_inicio) {
+            cargarFragment(new HomeFragment());
+        } else {
+            bottomNavigation.setSelectedItemId(R.id.navigation_inicio);
+        }
     }
 
     /** Muestra el fragment de Login SIN toolbar ni bottom nav. */
