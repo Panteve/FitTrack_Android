@@ -26,6 +26,7 @@ import java.util.List;
 
 import ue.edu.co.fittrackandroid.ejercicios.vista.CrearEjercicioFragment;
 import ue.edu.co.fittrackandroid.ejercicios.vista.EjerciciosFragment;
+import ue.edu.co.fittrackandroid.ejercicios.vista.ModificarEjercicioFragment;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EjercicioEntrenamiento;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoEnCurso;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.SerieEntrenamiento;
@@ -700,6 +701,17 @@ public class MainActivity extends AppCompatActivity {
     /** Navega a la pantalla de crear ejercicio (con retroceso). */
     public void mostrarCrearEjercicio() {
         cargarFragmentConBackStack(new CrearEjercicioFragment());
+    }
+
+    /**
+     * Navega a la pantalla que permite consultar, modificar o borrar un ejercicio propio.
+     * Solo se pasa el identificador: la pantalla consulta el detalle al backend para no
+     * trabajar con datos que ya pudieron quedar viejos en la lista del perfil.
+     *
+     * @param ejercicioId identificador del ejercicio elegido en la lista del perfil.
+     */
+    public void mostrarModificarEjercicio(Long ejercicioId) {
+        cargarFragmentConBackStack(ModificarEjercicioFragment.newInstance(ejercicioId));
     }
 
     /** Navega a la pantalla de crear una cuenta nueva (con retroceso). */

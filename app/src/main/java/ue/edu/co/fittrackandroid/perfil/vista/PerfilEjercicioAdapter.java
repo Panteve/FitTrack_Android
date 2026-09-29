@@ -16,14 +16,26 @@ import ue.edu.co.fittrackandroid.R;
 /**
  * Adapter para los ejercicios creados por el usuario en el perfil.
  * Solo muestra los datos recibidos: no consulta la API ni navega a otra pantalla.
+ * Cuando se toca una fila avisa a PerfilFragment, que es quien abre la pantalla para
+ * consultar, modificar o borrar ese ejercicio.
  */
 public class PerfilEjercicioAdapter
         extends RecyclerView.Adapter<PerfilEjercicioAdapter.EjercicioPerfilViewHolder> {
 
-    private final List<EjercicioResponse> ejercicios;
+    /**
+     * Callback que avisa qué ejercicio quiere consultar el usuario.
+     */
+    public interface OnEjercicioClickListener {
+        void onEjercicioClick(EjercicioResponse ejercicio);
+    }
 
-    public PerfilEjercicioAdapter(List<EjercicioResponse> ejercicios) {
+    private final List<EjercicioResponse> ejercicios;
+    private final OnEjercicioClickListener listener;
+
+    public PerfilEjercicioAdapter(List<EjercicioResponse> ejercicios,
+                                  OnEjercicioClickListener listener) {
         this.ejercicios = ejercicios;
+        this.listener = listener;
     }
 
     @NonNull
@@ -31,7 +43,7 @@ public class PerfilEjercicioAdapter
     public EjercicioPerfilViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_ejercicio_perfil, parent, false);
-        return new EjercicioPerfilViewHolder(view);
+        return new EjercicioPerfilViewHolder(view, listener);
     }
 
     @Override
@@ -50,9 +62,12 @@ public class PerfilEjercicioAdapter
         private final TextView tvNombreEjercicio;
         private final TextView tvGrupoMuscularEjercicio;
         private final View viewSeparadorEjercicio;
+        private final OnEjercicioClickListener listener;
 
-        EjercicioPerfilViewHolder(@NonNull View itemView) {
+        EjercicioPerfilViewHolder(@NonNull View itemView,
+                                  OnEjercicioClickListener listener) {
             super(itemView);
+            this.listener = listener;
             tvNumeroEjercicio = itemView.findViewById(R.id.tvNumeroEjercicioPerfil);
             tvNombreEjercicio = itemView.findViewById(R.id.tvNombreEjercicioPerfil);
             tvGrupoMuscularEjercicio = itemView.findViewById(R.id.tvGrupoMuscularEjercicioPerfil);
@@ -67,6 +82,10 @@ public class PerfilEjercicioAdapter
 
             // El último ejercicio no deja una línea colgando al final de la tarjeta.
             viewSeparadorEjercicio.setVisibility(esUltimo ? View.GONE : View.VISIBLE);
+
+            // Toda la fila abre la pantalla de modificar el ejercicio. El click se asigna
+            // en cada bind porque el RecyclerView reutiliza la vista con otros ejercicios.
+            itemView.setOnClickListener(view -> listener.onEjercicioClick(ejercicio));
         }
     }
 }

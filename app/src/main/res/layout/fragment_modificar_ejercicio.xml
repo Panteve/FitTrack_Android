@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Modificar ejercicio: se ve igual que Crear ejercicio, pero abre con los datos que ya
+     tiene el ejercicio guardados y termina con el botón para borrarlo.
+     La acción GUARDAR pertenece a la toolbar de MainActivity, por eso aquí no se dibuja. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutModificarEjercicio"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <ScrollView
+        android:id="@+id/svModificarEjercicio"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/layoutContenidoModificarEjercicio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <!-- Campo nombre del ejercicio -->
+            <TextView
+                android:id="@+id/tvLabelNombreEjercicio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tvLabelNombreEjercicio"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etNombreEjercicio"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height_standard"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:autofillHints="name"
+                android:background="@drawable/bg_input"
+                android:hint="@string/etNombreEjercicio_hint"
+                android:inputType="textCapWords"
+                android:maxLines="1"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:singleLine="true"
+                android:textColor="@color/colorTextPrimary"
+                android:textColorHint="@color/colorTextStrong"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvErrorNombreEjercicio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:text="@string/tvErrorNombreEjercicio"
+                android:textColor="@color/colorError"
+                android:textSize="11sp"
+                android:visibility="gone" />
+
+            <!-- Campo grupo muscular. La opción inicial es un texto de ayuda:
+                 todavía no es un grupo válido y por eso nunca se envía al backend. -->
+            <TextView
+                android:id="@+id/tvLabelGrupoMuscular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:text="@string/tvLabelGrupoMuscular"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/spGrupoMuscular"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height_standard"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:background="@drawable/bg_input"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:spinnerMode="dropdown" />
+
+            <TextView
+                android:id="@+id/tvErrorGrupoMuscular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:text="@string/tvErrorGrupoMuscular"
+                android:textColor="@color/colorError"
+                android:textSize="11sp"
+                android:visibility="gone" />
+
+            <!-- Borrar el ejercicio. Va al final de todo el contenido desplazable, no en la
+                 toolbar, para que quede lejos del guardado y se lea como una acción aparte. -->
+            <Button
+                android:id="@+id/btnBorrarEjercicio"
+                style="@style/FitTrack.Button.Danger"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xxl"
+                android:text="@string/btnBorrarEjercicio" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Estado de error: mensaje y reintento cuando el ejercicio no pudo consultarse. -->
+    <LinearLayout
+        android:id="@+id/layoutErrorModificarEjercicio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/spacing_xl"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvErrorCargaModificarEjercicio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/tvErrorCargaModificarEjercicio"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnReintentarModificarEjercicio"
+            style="@style/FitTrack.Button.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height_standard"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:text="@string/btnReintentarModificarEjercicio" />
+    </LinearLayout>
+
+    <!-- Capa de proceso: cubre toda la pantalla y, al ser clickable y focusable, impide
+         cambiar o borrar el ejercicio mientras la petición está en vuelo. -->
+    <FrameLayout
+        android:id="@+id/layoutCargaModificarEjercicio"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorOverlayCarga"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/pbModificarEjercicio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/colorPrimary" />
+    </FrameLayout>
+</FrameLayout>

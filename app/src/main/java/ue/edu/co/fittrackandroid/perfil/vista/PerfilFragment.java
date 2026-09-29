@@ -124,8 +124,8 @@ public class PerfilFragment extends Fragment {
         // El perfil es una pestaña raíz: la toolbar debe verse siempre como la principal.
         ((MainActivity) requireActivity()).mostrarToolbarPrincipal();
 
-        // Se consulta en onResume para que, al volver desde CrearEjercicioFragment,
-        // la lista muestre el ejercicio recién creado.
+        // Se consulta en onResume para que, al volver desde CrearEjercicioFragment o desde
+        // ModificarEjercicioFragment, la lista muestre los cambios o el ejercicio borrado.
         cargarEjercicios();
     }
 
@@ -251,7 +251,10 @@ public class PerfilFragment extends Fragment {
                 getString(R.string.tvTituloLista, ejerciciosRecibidos.size()));
         pbCargaEjerciciosPerfil.setVisibility(View.GONE);
         tvSinEjerciciosPerfil.setVisibility(View.GONE);
-        rvEjerciciosPerfil.setAdapter(new PerfilEjercicioAdapter(ejerciciosRecibidos));
+        rvEjerciciosPerfil.setAdapter(new PerfilEjercicioAdapter(
+                ejerciciosRecibidos,
+                this::abrirModificarEjercicio
+        ));
         rvEjerciciosPerfil.setVisibility(View.VISIBLE);
     }
 
@@ -277,6 +280,16 @@ public class PerfilFragment extends Fragment {
     /** Abre la pantalla de crear un ejercicio nuevo. */
     private void abrirCrearEjercicio() {
         ((MainActivity) requireActivity()).mostrarCrearEjercicio();
+    }
+
+    /**
+     * Abre la pantalla para consultar, modificar o borrar un ejercicio propio.
+     * Solo viaja el identificador: el nombre y el grupo muscular actual se consultan
+     * en el backend, así que la pantalla nunca trabaja con datos que ya podían quedar
+     * viejos.
+     */
+    private void abrirModificarEjercicio(EjercicioResponse ejercicio) {
+        ((MainActivity) requireActivity()).mostrarModificarEjercicio(ejercicio.getId());
     }
 
     /** Abre la pantalla de cambiar la contraseña de la cuenta. */

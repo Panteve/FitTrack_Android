@@ -75,6 +75,18 @@ RutinasFragment
         └── BORRAR RUTINA → confirmación → RutinasFragment
 ```
 
+La lista de ejercicios propios del perfil tiene una salida parecida:
+
+```text
+PerfilFragment
+└── Tocar ejercicio propio
+    └── ModificarEjercicioFragment
+        ├── GUARDAR → PerfilFragment
+        └── BORRAR EJERCICIO → confirmación → PerfilFragment
+```
+
+En los dos casos la pantalla anterior ya vuelve a consultar su lista al regresar, porque lo hace en `onResume`. Por eso la pantalla modificada no necesita avisar con un `FragmentResult`.
+
 El entrenamiento activo todavía no aparece en este flujo porque no existe como código de la aplicación. Actualmente, el botón de iniciar sí consulta el detalle de la rutina y abre `EntrenamientoActivoFragment`.
 
 ## Navegación inferior
@@ -101,6 +113,7 @@ Casos concretos:
 - Crear ejercicio → Atrás → Inicio.
 - Crear rutina → Atrás → Rutinas.
 - Modificar rutina → Atrás → Rutinas, sin guardar nada.
+- Modificar ejercicio → Atrás → Perfil, sin guardar ni borrar nada.
 - Selector de ejercicios → Atrás → Crear rutina, conservando la instancia anterior mientras permanezca en la pila.
 - Selector de ejercicios → elegir un ejercicio → el selector devuelve el ejercicio y regresa automáticamente a Crear rutina.
 - Selector de ejercicios abierto desde Modificar rutina → el ejercicio se agrega a la rutina que ya estaba cargada, conservando su nombre, día y ejercicios.
@@ -418,6 +431,7 @@ Acciones:
 - **Foto, icono de cámara o Cambiar foto:** abre el selector de documentos de Android para elegir una imagen.
 - **Guardar nombre:** valida que no esté vacío y lo guarda localmente en `SharedPreferences`.
 - **Nuevo ejercicio:** abre `CrearEjercicioFragment` como pantalla secundaria.
+- **Tocar un ejercicio de “Mis ejercicios”:** toda la fila es pulsable y abre `ModificarEjercicioFragment` con el identificador de ese ejercicio.
 - **Cambiar contraseña:** abre `CambiarContrasenaFragment` como pantalla secundaria.
 - **Cerrar sesión:** muestra un diálogo de confirmación. Al aceptar, limpia las preferencias de sesión, limpia la pila secundaria y abre Login.
 
@@ -426,7 +440,7 @@ Persistencia actual:
 - El nombre y el URI de la foto se guardan localmente en preferencias propias del perfil.
 - Cerrar sesión conserva el nombre y la foto, porque solo limpia las preferencias llamadas `sesion`.
 - Si la imagen guardada deja de estar disponible, se vuelve a mostrar el avatar predeterminado.
-- La lista de ejercicios es informativa y está definida directamente en el layout.
+- La lista de ejercicios se consulta al backend con `GET /ejercicios/mis-ejercicios` y se vuelve a consultar cada vez que el perfil vuelve a mostrarse, para que se vean los ejercicios creados, modificados o borrados desde otras pantallas.
 
 Archivos relacionados:
 
@@ -498,6 +512,53 @@ Pendiente o provisional:
 
 - La contraseña actual no se verifica contra ninguna fuente de datos y la nueva no se guarda.
 
+### 11. Modificar ejercicio
+
+Responsabilidad:
+
+- Consultar un ejercicio propio y abrir el formulario con sus datos actuales.
+- Cambiar el nombre y el grupo muscular.
+- Guardar los cambios en el backend.
+- Borrar el ejercicio, previa confirmación.
+
+Cómo se abre:
+
+- Al tocar cualquier ejercicio de la lista “Mis ejercicios” del perfil. Solo viaja el identificador del ejercicio, porque el nombre y el grupo muscular se consultan al backend al abrir la pantalla.
+
+Toolbar:
+
+- Título “Modificar ejercicio”.
+- Flecha de volver.
+- Acción “Guardar”, deshabilitada hasta que el ejercicio termina de cargar y mientras no haya un grupo muscular válido.
+
+Estados visuales:
+
+- Cargando: capa oscura con el indicador centrado y el formulario oculto.
+- Con el ejercicio cargado: el mismo formulario de Crear ejercicio, con el nombre y el grupo muscular ya escritos.
+- Error: mensaje y botón **Reintentar** cuando `GET /ejercicios/{id}` no responde.
+
+Acciones:
+
+- **Guardar:** valida el nombre y el grupo con las mismas reglas de Crear ejercicio y envía `PUT /ejercicios/{id}`. El cuerpo es el mismo de la creación, porque el backend reemplaza los datos del ejercicio por los que se envían. Al salir bien muestra un Toast y regresa al perfil.
+- **Borrar ejercicio:** pide confirmación en un diálogo y, al aceptarla, envía `DELETE /ejercicios/{id}`. El borrado es lógico: el ejercicio deja de aparecer en el perfil y entre los ejercicios disponibles, pero no se borra de la base de datos.
+- **Reintentar:** vuelve a consultar el ejercicio por su identificador.
+- **Atrás:** regresa al perfil sin guardar ni borrar nada.
+
+Datos actuales:
+
+- La pantalla se bloquea con una capa oscura mientras guarda o borra, y las peticiones se cancelan si el usuario se va.
+- El backend solo deja consultar, modificar y borrar ejercicios del usuario autenticado.
+- Los nombres repetidos están permitidos, así que la pantalla no los revisa.
+- El perfil no necesita enterarse del resultado: vuelve a consultar sus ejercicios al regresar, porque lo hace en `onResume`.
+
+Archivos relacionados:
+
+- Java de pantalla: `app/src/main/java/ue/edu/co/fittrackandroid/ejercicios/vista/ModificarEjercicioFragment.java`
+- Layout de pantalla: `app/src/main/res/layout/fragment_modificar_ejercicio.xml`
+- Layout de fila seleccionable del perfil: `app/src/main/res/layout/item_ejercicio_perfil.xml`
+- API: `EjercicioApiService.java` y `EjercicioRepository.java` dentro de la carpeta `ejercicios/datos`.
+- Modelos: `EjercicioRequest.java` y `EjercicioResponse.java` dentro de la carpeta `ejercicios/modelo`.
+
 ## Funciones provisionales y TODO principales
 
 | Área | Estado actual | Trabajo pendiente |
@@ -511,6 +572,7 @@ Pendiente o provisional:
 | Rutinas | Se leen del backend con `GET /rutinas`. | Agregar filtros y orden por día. |
 | Crear rutina | Se guarda con `POST /rutinas`. | Nada pendiente para guardar; falta quitar ejercicios y series. |
 | Modificar rutina | Consulta con `GET /rutinas/{id}`, actualiza con `PUT` y borra con `DELETE`. | Quitar ejercicios y series desde la tarjeta. |
+| Modificar ejercicio | Consulta con `GET /ejercicios/{id}`, actualiza con `PUT` y borra con `DELETE`. | Nada pendiente para consultar, modificar y borrar un ejercicio propio. |
 | Iniciar entrenamiento | Solo Toasts o una animación breve. | Abrir y gestionar un entrenamiento activo. |
 | Perfil | Nombre y foto locales; historial de ejemplo. | Integrar datos del usuario y entrenamientos reales. |
 
@@ -571,6 +633,7 @@ Fragments raíz
 
 Fragments secundarios
 ├── CrearEjercicioFragment
+├── ModificarEjercicioFragment
 ├── CrearRutinaFragment
 ├── ModificarRutinaFragment
 ├── CrearCuentaFragment

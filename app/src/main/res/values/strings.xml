@@ -267,6 +267,19 @@
     <string name="btnGuardar_loading">GUARDANDO…</string>
     <string name="tvEjercicioCreado">Ejercicio creado: %1$s</string>
 
+    <!-- ModificarEjercicioFragment -->
+    <string name="tvToolbarTituloModificarEjercicio">Modificar ejercicio</string>
+    <string name="btnGuardarCambiosEjercicio">GUARDAR</string>
+    <string name="btnBorrarEjercicio">BORRAR EJERCICIO</string>
+    <string name="tvErrorCargaModificarEjercicio">No pudimos cargar el ejercicio</string>
+    <string name="btnReintentarModificarEjercicio">REINTENTAR</string>
+    <string name="tvTituloConfirmarBorrarEjercicio">Borrar ejercicio</string>
+    <string name="tvMensajeConfirmarBorrarEjercicio">¿Quieres borrar el ejercicio %1$s?</string>
+    <string name="btnConfirmarBorrarEjercicio">BORRAR</string>
+    <string name="btnCancelarBorrarEjercicio">CANCELAR</string>
+    <string name="tvEjercicioActualizado">Ejercicio %1$s actualizado</string>
+    <string name="tvEjercicioEliminado">Ejercicio eliminado</string>
+
     <!-- PerfilFragment -->
     <string name="cdFotoPerfil">Foto de perfil</string>
     <string name="cdCambiarFoto">Cambiar la foto de perfil</string>
