@@ -207,18 +207,20 @@
     <!-- EjerciciosFragment -->
     <string name="cdBuscarEjercicio">Buscar un ejercicio por nombre</string>
     <string name="etBuscarEjercicio_hint">Buscar ejercicio…</string>
-    <string name="tvChipTodos">TODOS</string>
-    <string name="tvChipPecho">PECHO</string>
-    <string name="tvChipEspalda">ESPALDA</string>
-    <string name="tvChipPierna">PIERNA</string>
+    <string name="tvChipTodos">Todos</string>
+    <string name="tvChipPecho">Pecho</string>
+    <string name="tvChipEspalda">Espalda</string>
+    <string name="tvChipPierna">Pierna</string>
+    <string name="tvChipBrazo">Brazo</string>
 
-    <!-- Datos de ejemplo de la lista de ejercicios -->
-    <string name="tvNombreEjercicioLista1">Press de Banca Plano</string>
-    <string name="tvNombreEjercicioLista2">Press Inclinado con Mancuernas</string>
-    <string name="tvNombreEjercicioLista3">Dominadas Pronas</string>
-    <string name="tvNombreEjercicioLista4">Remo con Barra Pendlay</string>
-    <string name="tvNombreEjercicioLista5">Sentadilla Trasera Profunda</string>
-    <string name="tvNombreEjercicioLista6">Prensa Inclinada 45°</string>
+    <!-- Secciones del selector: ejercicios del sistema y ejercicios del usuario -->
+    <string name="tvTituloEjerciciosSistema">EJERCICIOS DEL SISTEMA</string>
+    <string name="tvSinEjerciciosSistema">No hay ejercicios del sistema disponibles</string>
+    <string name="tvTituloMisEjercicios">MIS EJERCICIOS</string>
+    <string name="tvSinMisEjercicios">Todavía no has creado ejercicios</string>
+    <!-- Estados de carga y error al consultar los ejercicios disponibles -->
+    <string name="tvErrorCargaEjercicios">No pudimos cargar los ejercicios disponibles</string>
+    <string name="btnReintentarCargaEjercicios">REINTENTAR</string>
 
     <!-- item_ejercicio.xml -->
     <string name="tvNombreEjercicio">Nombre del ejercicio</string>
@@ -228,18 +230,12 @@
     <string name="tvLabelNombreEjercicio">NOMBRE DEL EJERCICIO</string>
     <string name="etNombreEjercicio_hint">Ej. Sentadilla con Barra</string>
     <string name="tvErrorNombreEjercicio">Ingresa el nombre del ejercicio</string>
+    <string name="tvErrorNombreEjercicioLargo">El nombre no puede superar los 100 caracteres</string>
     <string name="tvLabelGrupoMuscular">GRUPO MUSCULAR</string>
-    <string name="tvValorGrupoMuscular">Seleccionar</string>
-    <string name="cdGrupoMuscular">Seleccionar grupo muscular</string>
-    <string name="tvLabelTipoEquipo">TIPO DE EQUIPO</string>
-    <string name="tvValorTipoEquipo">Seleccionar</string>
-    <string name="cdTipoEquipo">Seleccionar tipo de equipo</string>
-    <string name="tvLabelPeso">PESO</string>
-    <string name="tvValorPeso">Seleccionar</string>
-    <string name="cdPeso">Seleccionar peso</string>
-    <string name="tvLabelRepeticiones">REPETICIONES</string>
-    <string name="tvValorRepeticiones">Seleccionar</string>
-    <string name="cdRepeticiones">Seleccionar repeticiones</string>
+    <string name="spGrupoMuscular_prompt">Seleccionar grupo muscular</string>
+    <string name="tvErrorGrupoMuscular">Selecciona el grupo muscular</string>
+    <string name="btnGuardar_loading">GUARDANDO…</string>
+    <string name="tvEjercicioCreado">Ejercicio creado: %1$s</string>
 
     <!-- PerfilFragment -->
     <string name="cdFotoPerfil">Foto de perfil</string>

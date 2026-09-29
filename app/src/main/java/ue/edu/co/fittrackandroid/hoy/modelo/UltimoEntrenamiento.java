@@ -1,0 +1,46 @@
+package ue.edu.co.fittrackandroid.hoy.modelo;
+
+import ue.edu.co.fittrackandroid.resumen.modelo.ResumenEntrenamiento;
+
+/**
+ * Modelo de un entrenamiento reciente, tal como se muestra en la fila de la lista
+ * de últimos entrenamientos de la pantalla de inicio.
+ */
+public class UltimoEntrenamiento {
+
+    private final String nombre;
+    private final Long id;
+    private final String fecha;
+    private final int duracionMinutos;
+
+    private final ResumenEntrenamiento resumen;
+
+    public UltimoEntrenamiento(Long id, String nombre, String fecha, int duracionMinutos,
+                               ResumenEntrenamiento resumen) {
+        this.id = id;
+        this.nombre = nombre;
+        this.fecha = fecha;
+        this.duracionMinutos = duracionMinutos;
+        this.resumen = resumen;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getFecha() {
+        return fecha;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public int getDuracionMinutos() {
+        return duracionMinutos;
+    }
+
+    public ResumenEntrenamiento getResumen() {
+        return resumen;
+    }
+}

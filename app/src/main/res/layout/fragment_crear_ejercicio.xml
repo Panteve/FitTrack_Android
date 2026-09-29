@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Crear ejercicio: solo pide el nombre y el grupo muscular, que son los únicos datos
+     que el backend necesita para registrar el ejercicio.
+     La acción GUARDAR pertenece a la toolbar de MainActivity, por eso aquí no se dibuja. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutCrearEjercicio"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,7 +22,7 @@
             android:orientation="vertical"
             android:padding="@dimen/spacing_lg">
 
-            <!-- Nombre del ejercicio -->
+            <!-- Campo nombre del ejercicio -->
             <TextView
                 android:id="@+id/tvLabelNombreEjercicio"
                 android:layout_width="wrap_content"
@@ -56,216 +58,45 @@
                 android:textSize="11sp"
                 android:visibility="gone" />
 
-            <!-- Campos del ejercicio -->
-            <LinearLayout
-                android:id="@+id/cardCamposEjercicio"
-                android:layout_width="match_parent"
+            <!-- Campo grupo muscular -->
+            <TextView
+                android:id="@+id/tvLabelGrupoMuscular"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_lg"
-                android:background="@drawable/bg_card"
-                android:elevation="@dimen/elevation_card"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_md">
+                android:text="@string/tvLabelGrupoMuscular"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="11sp"
+                android:textStyle="bold" />
 
-                <LinearLayout
-                    android:id="@+id/layoutCampoGrupoMuscular"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:minHeight="48dp"
-                    android:orientation="horizontal">
+            <Spinner
+                android:id="@+id/spGrupoMuscular"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height_standard"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:background="@drawable/bg_input"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:spinnerMode="dropdown" />
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvErrorGrupoMuscular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:text="@string/tvErrorGrupoMuscular"
+                android:textColor="@color/colorError"
+                android:textSize="11sp"
+                android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/tvLabelGrupoMuscular"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvLabelGrupoMuscular"
-                            android:textColor="@color/colorTextTertiary"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvValorGrupoMuscular"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/tvValorGrupoMuscular"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/imgChevronGrupoMuscular"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="@dimen/spacing_sm"
-                        android:contentDescription="@string/cdGrupoMuscular"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/colorIconSubtle" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/colorDivider" />
-
-                <LinearLayout
-                    android:id="@+id/layoutCampoTipoEquipo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:minHeight="48dp"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvLabelTipoEquipo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvLabelTipoEquipo"
-                            android:textColor="@color/colorTextTertiary"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvValorTipoEquipo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/tvValorTipoEquipo"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/imgChevronTipoEquipo"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="@dimen/spacing_sm"
-                        android:contentDescription="@string/cdTipoEquipo"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/colorIconSubtle" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/colorDivider" />
-
-                <LinearLayout
-                    android:id="@+id/layoutCampoPeso"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:minHeight="48dp"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvLabelPeso"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvLabelPeso"
-                            android:textColor="@color/colorTextTertiary"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvValorPeso"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/tvValorPeso"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/imgChevronPeso"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="@dimen/spacing_sm"
-                        android:contentDescription="@string/cdPeso"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/colorIconSubtle" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/colorDivider" />
-
-                <LinearLayout
-                    android:id="@+id/layoutCampoRepeticiones"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:minHeight="48dp"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvLabelRepeticiones"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tvLabelRepeticiones"
-                            android:textColor="@color/colorTextTertiary"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvValorRepeticiones"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/tvValorRepeticiones"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/imgChevronRepeticiones"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="@dimen/spacing_sm"
-                        android:contentDescription="@string/cdRepeticiones"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/colorIconSubtle" />
-                </LinearLayout>
-            </LinearLayout>
+            <!-- Indicador de guardado: solo se ve mientras se espera la respuesta del backend -->
+            <ProgressBar
+                android:id="@+id/pbGuardarEjercicio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:indeterminateTint="@color/colorPrimary"
+                android:visibility="gone" />
 
             <Space
                 android:layout_width="match_parent"

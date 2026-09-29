@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Grupos musculares que puede elegir el usuario al crear un ejercicio.
+         El primer elemento es el texto de la opción inicial, la que todavía
+         no es un grupo válido, y las demás son las opciones que se envían
+         al backend tal como están escritas aquí. -->
+    <string-array name="spGrupoMuscular_opciones">
+        <item>@string/spGrupoMuscular_prompt</item>
+        <item>@string/tvChipPecho</item>
+        <item>@string/tvChipEspalda</item>
+        <item>@string/tvChipPierna</item>
+        <item>@string/tvChipBrazo</item>
+    </string-array>
+</resources>
