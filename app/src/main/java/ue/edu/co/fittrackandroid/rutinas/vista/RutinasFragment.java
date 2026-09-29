@@ -45,6 +45,15 @@ public class RutinasFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Los avisos de rutina creada o modificada se registran en onCreate,
+        // antes de que exista la vista.
+        registrarResultadoRutinaCreada();
+        registrarResultadoRutinaModificada();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_rutinas, container, false);
@@ -59,6 +68,40 @@ public class RutinasFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Escucha el resultado de CrearRutinaFragment y vuelve a consultar las rutinas, para
+     * que la recién creada aparezca de una vez en la lista.
+     * La lista no se recarga en onResume: para eso está este resultado.
+     */
+    private void registrarResultadoRutinaCreada() {
+        getParentFragmentManager().setFragmentResultListener(
+                CrearRutinaFragment.REQUEST_RUTINA_CREADA,
+                this,
+                (clave, resultado) -> {
+                    if (!isAdded() || rutinaRepository == null) {
+                        return;
+                    }
+                    obtenerRutinas();
+                });
+    }
+
+    /**
+     * Escucha el resultado de ModificarRutinaFragment y vuelve a consultar las rutinas,
+     * para que los cambios de la tarjeta abierta aparezcan de una vez o la rutina borrada
+     * desaparezca de la lista.
+     */
+    private void registrarResultadoRutinaModificada() {
+        getParentFragmentManager().setFragmentResultListener(
+                ModificarRutinaFragment.REQUEST_RUTINA_MODIFICADA,
+                this,
+                (clave, resultado) -> {
+                    if (!isAdded() || rutinaRepository == null) {
+                        return;
+                    }
+                    obtenerRutinas();
+                });
+    }
+
     private void initObjects(View view){
         btnNuevaRutina = view.findViewById(R.id.btnNuevaRutina);
         tvCantidadPlanes = view.findViewById(R.id.tvCantidadPlanes);
@@ -69,6 +112,12 @@ public class RutinasFragment extends Fragment {
     }
 
     private void obtenerRutinas() {
+        // Una consulta anterior puede seguir en vuelo si llega una rutina nueva
+        // o si la pantalla se vuelve a abrir.
+        if (currentCallRutinas != null) {
+            currentCallRutinas.cancel();
+        }
+
         mostrarEstadoCarga();
         currentCallRutinas = rutinaRepository.getRutinas();
         currentCallRutinas.enqueue(new Callback<List<RutinasResponse>>() {
@@ -125,7 +174,8 @@ public class RutinasFragment extends Fragment {
         layoutRutinasVacias.setVisibility(View.GONE);
         rvPlanes.setAdapter(new RutinaAdapter(
                 rutinasRecibidas,
-                RutinasFragment.this::iniciarEntrenamientoConRutina));
+                RutinasFragment.this::iniciarEntrenamientoConRutina,
+                RutinasFragment.this::abrirModificarRutina));
         rvPlanes.setVisibility(View.VISIBLE);
     }
 
@@ -143,6 +193,11 @@ public class RutinasFragment extends Fragment {
         // Al volver desde Ejercicios o Crear ejercicio, la toolbar debe quedar como la principal.
         ((MainActivity) requireActivity()).mostrarToolbarPrincipal();
 
+    }
+
+    /** Abre la pantalla que permite consultar, modificar o borrar la rutina elegida. */
+    private void abrirModificarRutina(RutinasResponse rutina) {
+        ((MainActivity) requireActivity()).mostrarModificarRutina(rutina.getId());
     }
 
     /** Consulta el detalle del plan elegido antes de iniciar el entrenamiento. */

@@ -11,4 +11,19 @@
         <item>@string/tvChipPierna</item>
         <item>@string/tvChipBrazo</item>
     </string-array>
+
+    <!-- Días de la semana que puede elegir el usuario al crear una rutina.
+         El orden tiene que coincidir con DiaSemana: el primer elemento es el
+         texto de la opción inicial, la que todavía no es un día válido, y las
+         demás se convierten en el enum que espera el backend. -->
+    <string-array name="spDiaRutina_opciones">
+        <item>@string/spDiaRutina_prompt</item>
+        <item>@string/spDiaRutina_lunes</item>
+        <item>@string/spDiaRutina_martes</item>
+        <item>@string/spDiaRutina_miercoles</item>
+        <item>@string/spDiaRutina_jueves</item>
+        <item>@string/spDiaRutina_viernes</item>
+        <item>@string/spDiaRutina_sabado</item>
+        <item>@string/spDiaRutina_domingo</item>
+    </string-array>
 </resources>

@@ -1,45 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Misma estructura visual que Crear rutina, pero con los datos de la rutina ya cargados
+     y un botón para borrarla al final de todo el contenido. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layoutCrearRutina"
+    android:id="@+id/layoutModificarRutina"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
     <ScrollView
-        android:id="@+id/svCrearRutina"
+        android:id="@+id/svModificarRutina"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:scrollbars="none">
+        android:scrollbars="none"
+        android:visibility="gone">
 
         <!-- layout_height="match_parent" + fillViewport: cuando la pantalla queda vacía,
              el espacio sobrante se reparte y el estado vacío puede quedar centrado. -->
         <LinearLayout
-            android:id="@+id/layoutContenidoCrearRutina"
+            android:id="@+id/layoutContenidoModificarRutina"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="@dimen/spacing_lg">
 
-            <!-- Nombre de la rutina nueva -->
+            <!-- Nombre de la rutina que se está modificando -->
             <TextView
-                android:id="@+id/tvLabelNombreRutinaNueva"
+                android:id="@+id/tvLabelNombreRutina"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/tvLabelNombreRutinaNueva"
+                android:text="@string/tvLabelNombreRutina"
                 android:textColor="@color/colorTextSecondary"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/etNombreRutinaNueva"
+                android:id="@+id/etNombreRutina"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height_standard"
                 android:layout_marginTop="@dimen/spacing_xs"
                 android:autofillHints="name"
                 android:background="@drawable/bg_input"
-                android:hint="@string/etNombreRutinaNueva_hint"
+                android:hint="@string/etNombreRutina_hint"
                 android:inputType="textCapSentences"
                 android:maxLines="1"
                 android:paddingHorizontal="@dimen/spacing_md"
@@ -49,11 +52,11 @@
                 android:textSize="14sp" />
 
             <TextView
-                android:id="@+id/tvErrorNombreRutinaNueva"
+                android:id="@+id/tvErrorNombreRutina"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_xs"
-                android:text="@string/tvErrorNombreRutinaNueva"
+                android:text="@string/tvErrorNombreRutina"
                 android:textColor="@color/colorError"
                 android:textSize="11sp"
                 android:visibility="gone" />
@@ -145,7 +148,7 @@
                     android:textSize="11sp"
                     android:textStyle="bold" />
 
-                <!-- El desplazamiento lo maneja svCrearRutina, por eso el RecyclerView
+                <!-- El desplazamiento lo maneja svModificarRutina, por eso el RecyclerView
                      se ajusta a su contenido y no hace scroll propio. -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvEjerciciosRutina"
@@ -171,13 +174,52 @@
                     android:textStyle="bold"
                     app:drawableTint="@color/colorOnPrimary" />
             </LinearLayout>
+
+            <!-- Borrar la rutina. Va al final de todo el contenido desplazable, no en la
+                 toolbar, para que quede lejos del guardado y se lea como una acción aparte. -->
+            <Button
+                android:id="@+id/btnBorrarRutina"
+                style="@style/FitTrack.Button.Danger"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xxl"
+                android:text="@string/btnBorrarRutina" />
         </LinearLayout>
     </ScrollView>
 
-    <!-- Capa de guardado: cubre toda la pantalla y, al ser clickable y focusable,
-         impide que el usuario cambie algo mientras la rutina se envía al backend. -->
+    <!-- Estado de error: mensaje y reintento cuando el detalle no pudo consultarse. -->
+    <LinearLayout
+        android:id="@+id/layoutErrorModificarRutina"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/spacing_xl"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvErrorCargaModificarRutina"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/tvErrorCargaModificarRutina"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnReintentarModificarRutina"
+            style="@style/FitTrack.Button.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height_standard"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:text="@string/btnReintentarModificarRutina" />
+    </LinearLayout>
+
+    <!-- Capa de proceso: cubre toda la pantalla y, al ser clickable y focusable, impide
+         cambiar o borrar algo mientras la petición está en vuelo. -->
     <FrameLayout
-        android:id="@+id/layoutCargaGuardarRutina"
+        android:id="@+id/layoutCargaModificarRutina"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorOverlayCarga"
@@ -186,7 +228,7 @@
         android:visibility="gone">
 
         <ProgressBar
-            android:id="@+id/pbGuardarRutina"
+            android:id="@+id/pbModificarRutina"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

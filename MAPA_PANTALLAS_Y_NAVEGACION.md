@@ -65,7 +65,17 @@ CrearEjercicioFragment   CrearRutinaFragment         | Cambiar contraseña
                         CrearRutinaFragment
 ```
 
-El entrenamiento activo todavía no aparece en este flujo porque no existe como código de la aplicación. Actualmente, los botones que deberían iniciar un entrenamiento solo muestran un mensaje temporal.
+La lista de rutinas tiene además su propia salida hacia la pantalla de modificación:
+
+```text
+RutinasFragment
+└── VER DETALLES
+    └── ModificarRutinaFragment
+        ├── GUARDAR → RutinasFragment
+        └── BORRAR RUTINA → confirmación → RutinasFragment
+```
+
+El entrenamiento activo todavía no aparece en este flujo porque no existe como código de la aplicación. Actualmente, el botón de iniciar sí consulta el detalle de la rutina y abre `EntrenamientoActivoFragment`.
 
 ## Navegación inferior
 
@@ -90,8 +100,10 @@ Casos concretos:
 
 - Crear ejercicio → Atrás → Inicio.
 - Crear rutina → Atrás → Rutinas.
+- Modificar rutina → Atrás → Rutinas, sin guardar nada.
 - Selector de ejercicios → Atrás → Crear rutina, conservando la instancia anterior mientras permanezca en la pila.
 - Selector de ejercicios → elegir un ejercicio → el selector devuelve el ejercicio y regresa automáticamente a Crear rutina.
+- Selector de ejercicios abierto desde Modificar rutina → el ejercicio se agrega a la rutina que ya estaba cargada, conservando su nombre, día y ejercicios.
 - Crear cuenta → Atrás → Login, que vuelve a mostrarse sin toolbar.
 - Cambiar contraseña → Atrás → Perfil.
 - Login no se abre usando la pila de retroceso. Al estar en Login y pulsar Atrás, se aplica el comportamiento normal de Android.
@@ -111,7 +123,7 @@ Responsabilidad:
 
 Cómo se abre:
 
-- Al iniciar la aplicación, porque `verificarSesionActiva()` devuelve siempre `false` actualmente.
+- Al iniciar la aplicación, porque `MainActivity` abre el Login directamente al arrancar.
 - Al confirmar “Cerrar sesión” desde Perfil.
 
 Acciones:
@@ -229,13 +241,13 @@ Acciones generales:
 Acciones de cada tarjeta:
 
 - **Menú de opciones:** solo muestra un Toast con el nombre de la rutina.
-- **Ver detalles:** solo muestra un Toast; no abre otra pantalla.
-- **Iniciar:** solo muestra un Toast; no comienza todavía un entrenamiento.
+- **Ver detalles:** abre `ModificarRutinaFragment` como pantalla secundaria, con el identificador de esa rutina.
+- **Iniciar:** consulta el detalle de la rutina y abre `EntrenamientoActivoFragment`.
 
 Datos actuales:
 
-- Las tres rutinas y sus ejercicios son datos de demostración construidos en memoria.
-- No se leen rutinas guardadas por el usuario.
+- Las rutinas se leen del backend con `GET /rutinas`.
+- La lista se vuelve a consultar cuando otra pantalla avisa que una rutina se creó, se modificó o se borró.
 
 Archivos relacionados:
 
@@ -307,6 +319,7 @@ Responsabilidad:
 Cómo se abre actualmente:
 
 - Desde Agregar ejercicio en `CrearRutinaFragment`.
+- Desde Agregar ejercicio en `ModificarRutinaFragment`.
 
 Toolbar:
 
@@ -318,8 +331,8 @@ Acciones:
 
 - **Escribir en el buscador:** filtra la lista por nombre.
 - **Elegir un grupo muscular:** combina ese filtro con el texto del buscador.
-- **Tocar un ejercicio:** envía su nombre y grupo muscular mediante `FragmentResult`, regresa a Crear rutina y lo añade al final.
-- **Atrás:** regresa a Crear rutina sin añadir nada.
+- **Tocar un ejercicio:** envía su identificador, nombre y grupo muscular mediante `FragmentResult`, regresa a la pantalla que abrió el selector y lo añade al final.
+- **Atrás:** regresa a la pantalla que abrió el selector sin añadir nada.
 
 Datos actuales:
 
@@ -334,7 +347,58 @@ Archivos relacionados:
 - Layout de fila: `app/src/main/res/layout/item_ejercicio.xml`
 - Modelo: `app/src/main/java/ue/edu/co/fittrackandroid/ejercicios/Ejercicio.java`
 
-### 7. Perfil
+### 7. Modificar rutina
+
+Responsabilidad:
+
+- Consultar una rutina que ya existe y abrirla con sus datos.
+- Cambiar el nombre y el día de entrenamiento.
+- Agregar ejercicios y series, igual que en Crear rutina.
+- Guardar los cambios en el backend.
+- Borrar la rutina, previa confirmación.
+
+Cómo se abre:
+
+- Desde **Ver detalles** en una tarjeta de `RutinasFragment`. El identificador de la rutina viaja en los argumentos del Fragment.
+
+Toolbar:
+
+- Título “Modificar rutina”.
+- Flecha de volver.
+- Acción “Guardar”, deshabilitada hasta que la rutina termina de cargar.
+
+Estados visuales:
+
+- Cargando: solo el indicador, con el formulario oculto.
+- Con la rutina cargada: el mismo formulario de Crear rutina, con nombre, día, ejercicios y series ya escritos.
+- Sin ejercicios: estado vacío con el botón para agregar el primero.
+- Error: mensaje y botón **Reintentar** cuando `GET /rutinas/{id}` no responde.
+
+Acciones:
+
+- **Agregar ejercicio:** abre `EjerciciosFragment`. El ejercicio vuelve a la rutina y se agrega al final con su primera serie.
+- **Agregar serie:** añade una serie nueva únicamente al ejercicio correspondiente.
+- **Guardar:** valida el formulario y envía `PUT /rutinas/{id}` con el mismo cuerpo que usa la creación. Si el backend responde que el nombre ya existe (409), el error aparece debajo del campo nombre. Al salir bien muestra un Toast y regresa a Rutinas.
+- **Borrar rutina:** pide confirmación en un diálogo y, al aceptarla, envía `DELETE /rutinas/{id}`. El borrado es lógico: la rutina deja de aparecer en la lista, pero no se borra de la base de datos.
+- **Reintentar:** vuelve a consultar el detalle de la rutina.
+- **Atrás:** regresa a Rutinas sin guardar ni borrar nada.
+
+Datos actuales:
+
+- La pantalla no muestra ni edita la descripción, pero la guarda y la vuelve a enviar al actualizar, para no borrar la que ya existía.
+- Los ejercicios y las series llegan del backend en el mismo orden en que se guardaron, y ese orden se conserva.
+- La pantalla se bloquea con una capa oscura mientras carga, guarda o borra, y las peticiones se cancelan si el usuario se va.
+- Todavía no se pueden quitar ejercicios ni series: esa acción sigue pendiente también en Crear rutina.
+
+Archivos relacionados:
+
+- Java de pantalla: `app/src/main/java/ue/edu/co/fittrackandroid/rutinas/vista/ModificarRutinaFragment.java`
+- Layout de pantalla: `app/src/main/res/layout/fragment_modificar_rutina.xml`
+- Adapter editable compartido con Crear rutina: `app/src/main/java/ue/edu/co/fittrackandroid/rutinas/vista/CrearRutinaEjercicioAdapter.java`
+- Modelos: `EjercicioRutinaEditable.java`, `RutinaCrearRequest.java` y `SerieRutina.java` dentro de la carpeta `rutinas`.
+- API: `RutinaApiService.java` y `RutinaRepository.java` dentro de la carpeta `rutinas/datos`.
+
+### 8. Perfil
 
 Responsabilidad:
 
@@ -376,7 +440,7 @@ Pendiente o provisional:
 - Los entrenamientos recientes deben reemplazarse por registros reales.
 - El cierre de sesión deberá eliminar tokens o credenciales cuando exista autenticación.
 
-### 8. Crear cuenta
+### 9. Crear cuenta
 
 Responsabilidad:
 
@@ -405,7 +469,7 @@ Pendiente o provisional:
 
 - Los datos se validan en pantalla pero no se envían a ningún backend ni se guarda la contraseña.
 
-### 9. Cambiar contraseña
+### 10. Cambiar contraseña
 
 Responsabilidad:
 
@@ -438,15 +502,15 @@ Pendiente o provisional:
 
 | Área | Estado actual | Trabajo pendiente |
 |---|---|---|
-| Sesión | Siempre se inicia mostrando Login. | Verificar y guardar una sesión real. |
+| Sesión | Siempre se inicia mostrando Login. | Guardar la sesión del usuario al entrar. |
 | Login | Cualquier intento termina abriendo Inicio después de la espera. | Validar credenciales y manejar errores reales. |
 | Registro | Valida los datos en pantalla y abre Inicio. | Enviar el registro al backend y guardar la sesión. |
 | Cambio de contraseña | Valida los tres campos y vuelve al perfil. | Verificar la contraseña actual y actualizarla en el backend. |
 | Crear ejercicio | Solo valida el nombre y regresa. | Guardar el ejercicio y habilitar el resto de campos. |
 | Lista de ejercicios | Seis registros fijos. | Leer ejercicios guardados. |
-| Rutinas | Tres planes fijos. | Leer y guardar rutinas reales. |
-| Crear rutina | Valida y muestra confirmación, pero no persiste. | Guardar la rutina y recuperar su información. |
-| Detalle y opciones de rutina | Solo Toasts. | Crear las acciones o pantallas correspondientes. |
+| Rutinas | Se leen del backend con `GET /rutinas`. | Agregar filtros y orden por día. |
+| Crear rutina | Se guarda con `POST /rutinas`. | Nada pendiente para guardar; falta quitar ejercicios y series. |
+| Modificar rutina | Consulta con `GET /rutinas/{id}`, actualiza con `PUT` y borra con `DELETE`. | Quitar ejercicios y series desde la tarjeta. |
 | Iniciar entrenamiento | Solo Toasts o una animación breve. | Abrir y gestionar un entrenamiento activo. |
 | Perfil | Nombre y foto locales; historial de ejemplo. | Integrar datos del usuario y entrenamientos reales. |
 
@@ -481,6 +545,7 @@ Decisiones ya implementadas:
 Acciones que requieren confirmación previa:
 
 - `mostrarCrearRutina()` y `mostrarEntrenamientoActivo()` pasan por `pedirConfirmacionSiHayEntrenamientoEnCurso()`.
+- `mostrarModificarRutina()` no se intercepta: editar o borrar una rutina no reemplaza la sesión en curso, así que el entrenamiento sigue intacto.
 - Si hay entrenamiento en curso, el diálogo ofrece tres salidas: **Descartar** (borra la sesión y continúa con la acción), **Reanudar** (vuelve a la pantalla del entrenamiento actual) y **Cancelar** (no hace nada).
 - `mostrarSelectorEjercicios()` no se intercepta, porque la usa el propio entrenamiento en curso para agregar ejercicios.
 
@@ -507,6 +572,7 @@ Fragments raíz
 Fragments secundarios
 ├── CrearEjercicioFragment
 ├── CrearRutinaFragment
+├── ModificarRutinaFragment
 ├── CrearCuentaFragment
 ├── CambiarContrasenaFragment
 └── EjerciciosFragment

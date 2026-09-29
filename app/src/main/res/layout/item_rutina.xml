@@ -57,16 +57,6 @@
                 android:textColor="@color/colorTextTertiary"
                 android:textSize="12sp" />
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/imgMenuPlan"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="@dimen/spacing_md"
-            android:contentDescription="@string/cdMenuPlan"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_more_vert"
-            app:tint="@color/colorTextTertiary" />
     </LinearLayout>
 
     <!-- Lista de ejercicios del plan -->

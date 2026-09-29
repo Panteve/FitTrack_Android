@@ -4,9 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,8 +18,8 @@ import ue.edu.co.fittrackandroid.rutinas.modelo.RutinasResponse;
 /**
  * Adapter para la lista de planes de entrenamiento.
  * Cada tarjeta muestra sus ejercicios con un RecyclerView anidado.
- * El botón de iniciar no navega: avisa a la pantalla para que sea ella la que abra
- * el entrenamiento en curso.
+ * Ninguno de los dos botones navega: avisan a la pantalla para que sea ella la que abra
+ * el entrenamiento en curso o la pantalla de modificar la rutina.
  */
 public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaViewHolder> {
 
@@ -32,12 +30,23 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
         void onIniciarRutina(RutinasResponse rutina);
     }
 
+    /**
+     * Callback que avisa qué plan se quiere consultar y modificar.
+     */
+    public interface OnVerDetallesRutinaListener {
+        void onVerDetallesRutina(RutinasResponse rutina);
+    }
+
     private final List<RutinasResponse> rutinas;
     private final OnIniciarRutinaListener listenerIniciarRutina;
+    private final OnVerDetallesRutinaListener listenerVerDetallesRutina;
 
-    public RutinaAdapter(List<RutinasResponse> rutinas, OnIniciarRutinaListener listenerIniciarRutina) {
+    public RutinaAdapter(List<RutinasResponse> rutinas,
+                         OnIniciarRutinaListener listenerIniciarRutina,
+                         OnVerDetallesRutinaListener listenerVerDetallesRutina) {
         this.rutinas = rutinas;
         this.listenerIniciarRutina = listenerIniciarRutina;
+        this.listenerVerDetallesRutina = listenerVerDetallesRutina;
     }
 
     @NonNull
@@ -45,7 +54,7 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
     public RutinaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_rutina, parent, false);
-        return new RutinaViewHolder(view, listenerIniciarRutina);
+        return new RutinaViewHolder(view, listenerIniciarRutina, listenerVerDetallesRutina);
     }
 
     @Override
@@ -62,19 +71,20 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
 
         private final TextView tvNombre;
         private final TextView tvResumen;
-        private final ImageView imgMenu;
         private final RecyclerView rvEjercicios;
         private final Button btnVerDetalles;
         private final Button btnIniciar;
         private final OnIniciarRutinaListener listenerIniciarRutina;
+        private final OnVerDetallesRutinaListener listenerVerDetallesRutina;
 
-        RutinaViewHolder(@NonNull View itemView, OnIniciarRutinaListener listenerIniciarRutina) {
+        RutinaViewHolder(@NonNull View itemView, OnIniciarRutinaListener listenerIniciarRutina,
+                         OnVerDetallesRutinaListener listenerVerDetallesRutina) {
             super(itemView);
             this.listenerIniciarRutina = listenerIniciarRutina;
+            this.listenerVerDetallesRutina = listenerVerDetallesRutina;
 
             tvNombre = itemView.findViewById(R.id.tvNombrePlan);
             tvResumen = itemView.findViewById(R.id.tvResumenPlan);
-            imgMenu = itemView.findViewById(R.id.imgMenuPlan);
             rvEjercicios = itemView.findViewById(R.id.rvEjerciciosPlan);
             btnVerDetalles = itemView.findViewById(R.id.btnVerDetalles);
             btnIniciar = itemView.findViewById(R.id.btnIniciarRutina);
@@ -93,16 +103,10 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
                 rvEjercicios.setAdapter(null);
             }
 
-            // TODO: Reemplazar este mensaje por un menú con las acciones disponibles para
-            // la rutina, como editar y eliminar. La eliminación debe pedir confirmación,
-            // actualizar el almacenamiento y notificar el cambio a RutinasFragment.
-            imgMenu.setOnClickListener(v -> Toast.makeText(v.getContext(),
-                    "Opciones de: " + rutina.getNombre(), Toast.LENGTH_SHORT).show());
-
-            // TODO: Crear RutinaDetalleFragment y solicitar la navegación mediante un
-            // callback, entregando el identificador de la rutina seleccionada.
-            btnVerDetalles.setOnClickListener(v -> Toast.makeText(v.getContext(),
-                    "Ver detalles: " + rutina.getNombre(), Toast.LENGTH_SHORT).show());
+            // Ver detalles abre la pantalla de modificar la rutina; no se navega desde aquí,
+            // solo se avisa a RutinasFragment con la rutina seleccionada.
+            btnVerDetalles.setOnClickListener(
+                    v -> listenerVerDetallesRutina.onVerDetallesRutina(rutina));
             btnIniciar.setOnClickListener(v -> listenerIniciarRutina.onIniciarRutina(rutina));
         }
     }

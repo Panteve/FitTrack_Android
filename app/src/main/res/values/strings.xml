@@ -123,7 +123,6 @@
     <string name="tvNombrePlan">Nombre del plan</string>
     <string name="tvResumenPlan">4 ejercicios  •  45 min</string>
     <string name="tvResumenPlan_dinamico">%1$d ejercicios</string>
-    <string name="cdMenuPlan">Opciones del plan</string>
     <string name="btnVerDetalles">VER DETALLES</string>
     <string name="btnIniciarRutina">INICIAR</string>
 
@@ -173,10 +172,41 @@
     <string name="tvLabelNombreRutinaNueva">NOMBRE DE LA RUTINA</string>
     <string name="etNombreRutinaNueva_hint">Ej. Día A: Pecho y tríceps</string>
     <string name="tvErrorNombreRutinaNueva">Ingresa el nombre de la rutina</string>
+    <string name="tvErrorNombreRutinaNuevaLargo">El nombre no puede superar los 100 caracteres</string>
+    <string name="tvErrorNombreRutinaNuevaDuplicado">Ya tienes una rutina con ese nombre</string>
+    <string name="tvLabelDiaRutina">DÍA DE ENTRENAMIENTO</string>
+    <string name="spDiaRutina_prompt">Seleccionar día</string>
+    <string name="spDiaRutina_lunes">Lunes</string>
+    <string name="spDiaRutina_martes">Martes</string>
+    <string name="spDiaRutina_miercoles">Miércoles</string>
+    <string name="spDiaRutina_jueves">Jueves</string>
+    <string name="spDiaRutina_viernes">Viernes</string>
+    <string name="spDiaRutina_sabado">Sábado</string>
+    <string name="spDiaRutina_domingo">Domingo</string>
+    <string name="tvErrorDiaRutina">Selecciona un día de entrenamiento</string>
     <string name="tvRutinaSinEjercicios">Todavía no hay ejercicios</string>
     <string name="btnAgregarPrimerEjercicio">AGREGAR EJERCICIO</string>
     <string name="tvTituloEjerciciosRutina">EJERCICIOS</string>
     <string name="btnAgregarEjercicio">AGREGAR EJERCICIO</string>
+    <string name="tvRutinaCreada">Rutina creada: %1$s</string>
+
+    <!-- ModificarRutinaFragment -->
+    <string name="tvToolbarTituloModificarRutina">Modificar rutina</string>
+    <string name="btnGuardarCambiosRutina">GUARDAR</string>
+    <string name="tvLabelNombreRutina">NOMBRE DE LA RUTINA</string>
+    <string name="etNombreRutina_hint">Ej. Día A: Pecho y tríceps</string>
+    <string name="tvErrorNombreRutina">Ingresa el nombre de la rutina</string>
+    <string name="tvErrorNombreRutinaLargo">El nombre no puede superar los 100 caracteres</string>
+    <string name="tvErrorNombreRutinaDuplicado">Ya tienes una rutina con ese nombre</string>
+    <string name="btnBorrarRutina">BORRAR RUTINA</string>
+    <string name="tvErrorCargaModificarRutina">No pudimos cargar la rutina</string>
+    <string name="btnReintentarModificarRutina">REINTENTAR</string>
+    <string name="tvTituloConfirmarBorrarRutina">Borrar rutina</string>
+    <string name="tvMensajeConfirmarBorrarRutina">¿Quieres borrar la rutina %1$s?</string>
+    <string name="btnConfirmarBorrarRutina">BORRAR</string>
+    <string name="btnCancelarBorrarRutina">CANCELAR</string>
+    <string name="tvRutinaActualizada">Rutina %1$s actualizada</string>
+    <string name="tvRutinaEliminada">Rutina eliminada</string>
 
     <!-- Toolbar del selector de ejercicios (EjerciciosFragment) -->
     <string name="tvToolbarTituloSeleccionarEjercicio">Seleccionar ejercicio</string>

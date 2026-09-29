@@ -42,13 +42,15 @@ import ue.edu.co.fittrackandroid.remote.SesionManager;
 import ue.edu.co.fittrackandroid.resumen.modelo.ResumenEntrenamiento;
 import ue.edu.co.fittrackandroid.resumen.vista.ResumenEntrenamientoFragment;
 import ue.edu.co.fittrackandroid.rutinas.vista.CrearRutinaFragment;
+import ue.edu.co.fittrackandroid.rutinas.vista.ModificarRutinaFragment;
 import ue.edu.co.fittrackandroid.rutinas.vista.RutinasFragment;
 import ue.edu.co.fittrackandroid.utils.SerieRutina;
 
 /**
- * Activity principal (única). Decide qué fragment mostrar según el estado de sesión:
- * - Si hay sesión activa → HomeFragment
- * - Si no hay sesión → LoginFragment
+ * Activity principal (única). Aloja la toolbar, el contenedor de fragments y la navegación
+ * inferior, y decide qué pantalla se muestra al abrir la aplicación.
+ * - Al iniciar por primera vez, o si no hay sesión → LoginFragment
+ * - Al iniciar con sesión guardada → HomeFragment
  *
  * También es la dueña del estado del entrenamiento en curso y de la isla compacta que
  * permite recuperarlo cuando el usuario lo minimiza.
@@ -118,13 +120,7 @@ public class MainActivity extends AppCompatActivity {
         configurarBottomNavigation();
 
         if (savedInstanceState == null) {
-            boolean haySesionActiva = verificarSesionActiva();
-
-            if (haySesionActiva) {
-                mostrarHome();
-            } else {
-                mostrarLogin();
-            }
+            mostrarLogin();
         }
     }
 
@@ -189,17 +185,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)
                 .commit();
-    }
-
-    /**
-     * TODO: Consultar la sesión guardada y comprobar que el token exista y siga vigente.
-     * Si el token expiró o no es válido, se debe limpiar la sesión local y mostrar el login.
-     *
-     * @return {@code true} cuando el usuario tenga una sesión válida.
-     */
-    private boolean verificarSesionActiva() {
-        // TODO: Reemplazar este valor fijo por el resultado de la verificación del token.
-        return false;
     }
 
     /** Muestra el fragment de Home (pantalla principal "Hoy"). */
@@ -699,6 +684,17 @@ public class MainActivity extends AppCompatActivity {
     public void mostrarCrearRutina() {
         pedirConfirmacionSiHayEntrenamientoEnCurso(() ->
                 cargarFragmentConBackStack(new CrearRutinaFragment()));
+    }
+
+    /**
+     * Navega a la pantalla que permite consultar, modificar o borrar una rutina existente.
+     * A diferencia de crear rutina, no interrumpe un entrenamiento en curso: editar la
+     * rutina no reemplaza la sesión que el usuario ya tiene abierta.
+     *
+     * @param rutinaId identificador de la rutina elegida en la lista.
+     */
+    public void mostrarModificarRutina(Long rutinaId) {
+        cargarFragmentConBackStack(ModificarRutinaFragment.newInstance(rutinaId));
     }
 
     /** Navega a la pantalla de crear ejercicio (con retroceso). */

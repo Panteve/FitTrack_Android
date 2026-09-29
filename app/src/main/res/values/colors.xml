@@ -40,4 +40,8 @@
     <color name="colorError">#FFD32F2F</color>
     <color name="colorErrorContainer">#FFFFDAD6</color>
     <color name="colorErrorText">#FFD32F2F</color>
+
+    <!-- Capa oscura que se coloca encima de una pantalla mientras espera
+         una respuesta del backend, para bloquear la edición. -->
+    <color name="colorOverlayCarga">#99000000</color>
 </resources>
