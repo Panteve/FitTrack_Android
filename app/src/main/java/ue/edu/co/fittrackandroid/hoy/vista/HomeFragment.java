@@ -28,6 +28,7 @@ import ue.edu.co.fittrackandroid.hoy.modelo.UltimoEntrenamiento;
 import ue.edu.co.fittrackandroid.MainActivity;
 import ue.edu.co.fittrackandroid.R;
 import ue.edu.co.fittrackandroid.remote.SesionManager;
+import ue.edu.co.fittrackandroid.resumen.vista.ResumenEntrenamientoFragment;
 import ue.edu.co.fittrackandroid.rutinas.datos.RutinaRepository;
 import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 
@@ -54,6 +55,15 @@ public class HomeFragment extends Fragment {
 
     public HomeFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // El aviso de entrenamiento borrado se registra en onCreate, antes de que exista
+        // la vista, porque el resultado se envía justo cuando la pantalla del resumen
+        // sale de la pila.
+        registrarResultadoEntrenamientoEliminado();
     }
 
     @Override
@@ -139,8 +149,33 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    /**
+     * Escucha el resultado de ResumenEntrenamientoFragment y vuelve a consultar la
+     * información del inicio, para que el entrenamiento borrado desaparezca de
+     * "Últimos entrenamientos" y el contador se actualice. Si era el último, la
+     * pantalla muestra el estado vacío.
+     * La pantalla no se recarga en onResume: para eso está este resultado.
+     */
+    private void registrarResultadoEntrenamientoEliminado() {
+        getParentFragmentManager().setFragmentResultListener(
+                ResumenEntrenamientoFragment.REQUEST_ENTRENAMIENTO_ELIMINADO,
+                this,
+                (clave, resultado) -> {
+                    if (!isAdded() || homeRepository == null) {
+                        return;
+                    }
+                    cargarInfoHome();
+                });
+    }
+
     /** Consulta y presenta la información principal del usuario. */
     private void cargarInfoHome() {
+        // Una consulta anterior puede seguir en vuelo, por ejemplo si el usuario borra
+        // dos entrenamientos seguidos: se cancela para que no se crucen respuestas.
+        if (currentCallHome != null) {
+            currentCallHome.cancel();
+        }
+
         currentCallHome = homeRepository.getInfoHome();
         currentCallHome.enqueue(new Callback<HomeResponse>() {
 

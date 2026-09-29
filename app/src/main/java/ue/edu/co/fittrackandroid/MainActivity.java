@@ -87,7 +87,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Identificador del entrenamiento guardado que se está mostrando en el resumen.
      * Sirve para consultar el detalle cuando el resumen no viene ya construido,
-     * por ejemplo al abrir un registro de "Últimos entrenamientos".
+     * por ejemplo al abrir un registro de "Últimos entrenamientos", y para borrarlo
+     * con {@code DELETE /entrenamientos/{id}} desde la pantalla del resumen.
      */
     private Long idEntrenamientoResumenActual;
 
@@ -525,9 +526,16 @@ public class MainActivity extends AppCompatActivity {
      * entrenamiento sale de la pila, así la flecha hacia atrás nunca devuelve a una sesión
      * finalizada: se recupera la pantalla desde la que se empezó a entrenar.
      *
-     * @param resumen copia de solo lectura del entrenamiento terminado.
+     * <p>El identificador que devuelve el backend también se guarda aquí: es el único dato
+     * que permite borrar el entrenamiento recién creado, porque todavía no existe historial
+     * en disco del que recuperarlo.
+     *
+     * @param idEntrenamiento identificador del entrenamiento guardado en el backend.
+     * @param resumen         copia de solo lectura del entrenamiento terminado.
      */
-    public void mostrarResumenEntrenamiento(ResumenEntrenamiento resumen) {
+    public void mostrarResumenEntrenamiento(Long idEntrenamiento,
+                                            ResumenEntrenamiento resumen) {
+        idEntrenamientoResumenActual = idEntrenamiento;
         resumenEntrenamientoActual = resumen;
 
         descartarEntrenamientoEnCurso();
@@ -540,8 +548,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Abre el resumen de un entrenamiento que ya está guardado en el historial.
      *
-     * <p>A diferencia de {@link #mostrarResumenEntrenamiento(ResumenEntrenamiento)}, esta
-     * pantalla no borra nada: consultar el pasado nunca puede terminar, descartar ni
+     * <p>A diferencia de {@link #mostrarResumenEntrenamiento(Long, ResumenEntrenamiento)},
+     * esta pantalla no borra nada: consultar el pasado nunca puede terminar, descartar ni
      * pausear el entrenamiento que el usuario puede tener abierto. Si el resumen todavía
      * no está construido se guarda el identificador para que la propia pantalla del
      * resumen consulte el detalle del entrenamiento.
@@ -575,8 +583,11 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Olvida el resumen que se está mostrando.
-     * TODO: Se usará para dejar de depender de la referencia en memoria cuando exista
-     *       el historial guardado; por ahora nadie la llama.
+     * La usa el cierre de sesión y la pantalla del resumen cuando el entrenamiento
+     * ya fue borrado en el backend, para que no quede en memoria un registro que
+     * dejó de existir.
+     * TODO: Reemplazar por el entrenamiento leído del almacenamiento cuando exista
+     *       el historial guardado.
      */
     public void limpiarResumenEntrenamientoActual() {
         resumenEntrenamientoActual = null;

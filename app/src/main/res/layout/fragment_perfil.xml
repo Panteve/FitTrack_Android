@@ -95,6 +95,7 @@
                 android:background="@drawable/bg_input"
                 android:hint="@string/etNombrePerfil_hint"
                 android:inputType="textPersonName|textCapWords"
+                android:maxLength="255"
                 android:maxLines="1"
                 android:paddingHorizontal="@dimen/spacing_md"
                 android:singleLine="true"

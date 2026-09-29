@@ -524,7 +524,12 @@ public class EntrenamientoActivoFragment extends Fragment
                 }
 
                 if (response.isSuccessful() && response.body() != null) {
-                    activity.mostrarResumenEntrenamiento(resumen);
+                    // El identificador lo crea el backend: es el único válido para consultar
+                    // o borrar después el entrenamiento guardado.
+                    activity.mostrarResumenEntrenamiento(
+                            response.body().getId(),
+                            resumen
+                    );
                     return;
                 }
 

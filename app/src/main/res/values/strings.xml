@@ -288,7 +288,9 @@
     <string name="tvLabelNombrePerfil">NOMBRE</string>
     <string name="etNombrePerfil_hint">Tu nombre</string>
     <string name="etNombrePerfil_error">Ingresa tu nombre</string>
+    <string name="etNombrePerfil_error_largo">El nombre no puede superar los 255 caracteres</string>
     <string name="btnGuardarNombre">GUARDAR NOMBRE</string>
+    <string name="btnGuardarNombre_loading">GUARDANDO…</string>
     <string name="tvLabelCorreoPerfil">CORREO ELECTRÓNICO</string>
     <!-- Texto inicial: se reemplaza por el correo guardado en la sesión al abrir el perfil. -->
     <string name="tvCorreoPerfil">—</string>
@@ -404,6 +406,13 @@
     <string name="btnReintentarResumenEntrenamiento">REINTENTAR</string>
     <!-- Se usa cuando el backend solo conservó el día y no la hora real de la sesión. -->
     <string name="tvFechaResumenEntrenamiento_sin_hora">%1$s</string>
+    <!-- Borrado del entrenamiento ya guardado: solo se muestra si hay un identificador válido. -->
+    <string name="btnBorrarEntrenamiento">BORRAR ENTRENAMIENTO</string>
+    <string name="tvTituloConfirmarBorrarEntrenamiento">Borrar entrenamiento</string>
+    <string name="tvMensajeConfirmarBorrarEntrenamiento">¿Quieres borrar este entrenamiento de %1$s?</string>
+    <string name="btnConfirmarBorrarEntrenamiento">BORRAR</string>
+    <string name="btnCancelarBorrarEntrenamiento">CANCELAR</string>
+    <string name="tvEntrenamientoEliminado">Entrenamiento eliminado</string>
 
     <!-- item_grupo_muscular_resumen.xml -->
     <string name="tvNombreGrupoMuscularResumen">Grupo muscular</string>

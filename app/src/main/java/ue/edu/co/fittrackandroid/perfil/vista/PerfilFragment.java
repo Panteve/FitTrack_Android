@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +39,8 @@ import ue.edu.co.fittrackandroid.ejercicios.modelo.EjercicioResponse;
 import ue.edu.co.fittrackandroid.ejercicios.vista.CrearEjercicioFragment;
 import ue.edu.co.fittrackandroid.MainActivity;
 import ue.edu.co.fittrackandroid.R;
+import ue.edu.co.fittrackandroid.perfil.datos.PerfilRepository;
+import ue.edu.co.fittrackandroid.perfil.modelo.CambiarNombreRequest;
 import ue.edu.co.fittrackandroid.remote.SesionManager;
 import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 
@@ -50,6 +54,10 @@ public class PerfilFragment extends Fragment {
 
     private static final String PREFERENCIAS_PERFIL = "preferencias_perfil";
     private static final String CLAVE_URI_FOTO_PERFIL = "uri_foto_perfil";
+
+    // El registro de usuario admite nombres de hasta 255 caracteres; en Perfil se
+    // aplica la misma regla para no enviar un nombre que el backend rechace.
+    private static final int LONGITUD_MAXIMA_NOMBRE = 255;
 
     private ActivityResultLauncher<String[]> selectorImagen;
 
@@ -68,7 +76,10 @@ public class PerfilFragment extends Fragment {
     private RecyclerView rvEjerciciosPerfil;
     private SesionManager sesionManager;
     private EjercicioRepository ejercicioRepository;
+    private PerfilRepository perfilRepository;
     private Call<List<EjercicioResponse>> currentCallEjercicios;
+    private Call<Void> currentCallCambiarNombre;
+    private boolean guardandoNombre;
 
     public PerfilFragment() {
         // Required empty public constructor
@@ -109,6 +120,7 @@ public class PerfilFragment extends Fragment {
         inicializarVistas(view);
         sesionManager = new SesionManager(requireContext());
         ejercicioRepository = new EjercicioRepository(requireContext());
+        perfilRepository = new PerfilRepository(requireContext());
 
         // La lista de ejercicios se consulta en onResume, no aquí: cargarDatosPerfil()
         // sigue siendo el responsable de los datos de la sesión y de la foto local.
@@ -185,6 +197,8 @@ public class PerfilFragment extends Fragment {
         btnNuevoEjercicio.setOnClickListener(v -> abrirCrearEjercicio());
         btnCambiarContrasena.setOnClickListener(v -> abrirCambiarContrasena());
         btnCerrarSesion.setOnClickListener(v -> confirmarCierreSesion());
+
+        configurarLimpiarErrorNombre();
     }
 
     /** Consulta los ejercicios creados por el usuario y los muestra en la tarjeta. */
@@ -362,25 +376,137 @@ public class PerfilFragment extends Fragment {
         }
     }
 
-    /** Valida y guarda el nombre escrito por el usuario. */
+    /**
+     * Valida el nombre escrito y pide al backend que lo actualice. El nombre solo se
+     * guarda en la sesión cuando el backend confirma el cambio con un 204, de modo que
+     * un fallo no deja el nombre guardado con un valor que el servidor no conoce.
+     * Si algo sale mal, el texto escrito se conserva para que el usuario reintente.
+     */
     private void guardarNombre() {
-        String nombreUsuario = etNombrePerfil.getText().toString().trim();
-
-        if (nombreUsuario.isEmpty()) {
-            etNombrePerfil.setError(getString(R.string.etNombrePerfil_error));
-            etNombrePerfil.requestFocus();
+        // Bloqueo de reintentos: el botón se deshabilita mientras la petición está en vuelo.
+        if (guardandoNombre) {
             return;
         }
 
-        // TODO: Actualizar el nombre en la fuente de datos del usuario y guardarlo solo
-        // después de confirmar el resultado. Mientras se guarda, deshabilitar el botón
-        // para evitar solicitudes duplicadas y conservar el texto si ocurre un error.
-        // Se guarda junto al correo para no perderlo, porque los dos viven en la sesión.
-        sesionManager.guardarInfoPersonal(nombreUsuario, sesionManager.obtenerCorreo());
+        String nombreUsuario = etNombrePerfil.getText().toString().trim();
 
-        // El saludo de Inicio lee el mismo nombre, así que ya sale actualizado.
+        if (!validarNombre(nombreUsuario)) {
+            return;
+        }
+
+        CambiarNombreRequest cambiarNombreRequest = new CambiarNombreRequest(nombreUsuario);
+
+        mostrarGuardandoNombre(true);
+
+        currentCallCambiarNombre = perfilRepository.cambiarNombre(cambiarNombreRequest);
+        currentCallCambiarNombre.enqueue(new Callback<Void>() {
+
+            @Override
+            public void onResponse(@NonNull Call<Void> call,
+                                   @NonNull Response<Void> response) {
+                if (!isAdded()) {
+                    return;
+                }
+
+                // El backend responde 204 sin cuerpo, así que solo importa el código.
+                if (response.isSuccessful()) {
+                    procesarNombreActualizado(nombreUsuario);
+                    return;
+                }
+
+                mostrarGuardandoNombre(false);
+                ManejadorErroresApi
+                        .obtenerToast(requireContext(), response.code())
+                        .show();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
+                if (call.isCanceled() || !isAdded()) {
+                    return;
+                }
+
+                mostrarGuardandoNombre(false);
+                ManejadorErroresApi
+                        .obtenerToast(requireContext(), throwable)
+                        .show();
+            }
+        });
+    }
+
+    /**
+     * Revisa el nombre ya recortado y muestra el error correspondiente si no sirve.
+     *
+     * @param nombreUsuario nombre escrito por el usuario, sin espacios de los extremos.
+     * @return true si el nombre se puede enviar al backend.
+     */
+    private boolean validarNombre(String nombreUsuario) {
+        if (nombreUsuario.isEmpty()) {
+            etNombrePerfil.setError(getString(R.string.etNombrePerfil_error));
+            etNombrePerfil.requestFocus();
+            return false;
+        }
+
+        if (nombreUsuario.length() > LONGITUD_MAXIMA_NOMBRE) {
+            etNombrePerfil.setError(getString(R.string.etNombrePerfil_error_largo));
+            etNombrePerfil.requestFocus();
+            return false;
+        }
+
         etNombrePerfil.setError(null);
-        Toast.makeText(requireContext(), "Nombre guardado", Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    /**
+     * Bloquea el formulario mientras se guarda el nombre, para no enviar dos veces, y
+     * cambia el texto del botón para que se vea que la petición está en curso.
+     *
+     * @param guardando true si la llamada está en vuelo, false si ya terminó.
+     */
+    private void mostrarGuardandoNombre(boolean guardando) {
+        guardandoNombre = guardando;
+        etNombrePerfil.setEnabled(!guardando);
+        btnGuardarNombre.setEnabled(!guardando);
+        btnGuardarNombre.setText(
+                guardando
+                        ? R.string.btnGuardarNombre_loading
+                        : R.string.btnGuardarNombre
+        );
+    }
+
+    /**
+     * Guarda en la sesión el nombre que el backend ya confirmó y lo deja visible.
+     * El saludo de Inicio lee el mismo nombre, así que ya sale actualizado al volver.
+     * El usuario se queda en el perfil, no se regresa a otra pantalla.
+     *
+     * @param nombreUsuario nombre ya validado y confirmado por el backend.
+     */
+    private void procesarNombreActualizado(String nombreUsuario) {
+        sesionManager.guardarNombre(nombreUsuario);
+        etNombrePerfil.setText(nombreUsuario);
+        etNombrePerfil.setError(null);
+        mostrarGuardandoNombre(false);
+
+        Toast.makeText(requireContext(), "Nombre actualizado", Toast.LENGTH_SHORT).show();
+    }
+
+    /** Oculta el error del nombre mientras el usuario escribe. */
+    private void configurarLimpiarErrorNombre() {
+        etNombrePerfil.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence texto, int inicio, int cantidad, int despues) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence texto, int inicio, int antes, int cantidad) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable texto) {
+                // Solo se limpia el error: no se valida ni se llama al backend en cada tecla.
+                etNombrePerfil.setError(null);
+            }
+        });
     }
 
     /** Pide confirmación antes de cerrar la sesión. */
@@ -403,6 +529,13 @@ public class PerfilFragment extends Fragment {
         if (currentCallEjercicios != null) {
             currentCallEjercicios.cancel();
         }
+
+        // Si la pantalla se cierra mientras se guarda el nombre, la llamada se cancela
+        // para no intentar tocar vistas de un Fragment que ya no está visible.
+        if (currentCallCambiarNombre != null) {
+            currentCallCambiarNombre.cancel();
+        }
+
         super.onDestroyView();
     }
 }

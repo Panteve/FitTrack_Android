@@ -2,6 +2,7 @@ package ue.edu.co.fittrackandroid.entrenamiento.datos;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -23,4 +24,15 @@ public interface EntrenamientoApiService {
      */
     @GET("entrenamientos/{id}")
     Call<EntrenamientoDetalleResponse> getEntrenamientoById(@Path("id") Long id);
+
+    /**
+     * Elimina lógicamente un entrenamiento ya guardado. El backend lo desactiva, así que
+     * deja de aparecer en el historial y ya no se puede consultar. Responde 204 sin cuerpo.
+     *
+     * @param entrenamientoId identificador del entrenamiento guardado.
+     */
+    @DELETE("entrenamientos/{id}")
+    Call<Void> eliminarEntrenamiento(
+            @Path("id") Long entrenamientoId
+    );
 }

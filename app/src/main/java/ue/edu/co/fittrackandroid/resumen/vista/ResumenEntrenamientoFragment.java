@@ -1,5 +1,6 @@
 package ue.edu.co.fittrackandroid.resumen.vista;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -52,19 +54,34 @@ import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
  * completo y se muestra de una vez. En el segundo solo llega el identificador, así que
  * aquí se consulta el detalle del entrenamiento y se reconstruye el resumen.
  *
+ * <p>Al final del resumen aparece "BORRAR ENTRENAMIENTO". Esa acción solo existe sobre un
+ * entrenamiento que ya está guardado en el backend, por eso el botón se oculta cuando no
+ * hay un identificador válido. No tiene relación con descartar la sesión en curso ni con
+ * cerrar la pantalla: el registro que se borra aquí ya no se puede recuperar.
+ *
  * <p>No hay ningún temporizador: todos los datos ya son finales.
  */
 public class ResumenEntrenamientoFragment extends Fragment {
+
+    /**
+     * Clave del resultado que avisa que el entrenamiento fue borrado. La escucha
+     * HomeFragment, la pantalla que puede tener abierto el historial, para que vuelva a
+     * consultar su información y el registro desaparezca de "Últimos entrenamientos".
+     */
+    public static final String REQUEST_ENTRENAMIENTO_ELIMINADO = "entrenamientoEliminado";
 
     private MainActivity activity;
     private ResumenEntrenamiento resumen;
     private Long idEntrenamiento;
     private EntrenamientoRepository entrenamientoRepository;
     private Call<EntrenamientoDetalleResponse> currentCallDetalle;
+    private Call<Void> currentCallEliminar;
+    private boolean eliminandoEntrenamiento;
 
     private ProgressBar pbCargaResumenEntrenamiento;
     private TextView tvErrorResumenEntrenamiento;
     private Button btnReintentarResumenEntrenamiento;
+    private Button btnBorrarEntrenamiento;
     private View layoutErrorResumenEntrenamiento;
     private ScrollView svResumenEntrenamiento;
     private TextView tvNombreResumenEntrenamiento;
@@ -98,6 +115,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
 
         inicializarVistas(view);
         btnReintentarResumenEntrenamiento.setOnClickListener(v -> cargarResumenDesdeApi());
+        btnBorrarEntrenamiento.setOnClickListener(v -> confirmarBorradoEntrenamiento());
 
         if (resumen != null) {
             // El resumen ya venía construido: no hace falta ninguna consulta.
@@ -123,6 +141,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
         layoutErrorResumenEntrenamiento = view.findViewById(R.id.layoutErrorResumenEntrenamiento);
         tvErrorResumenEntrenamiento = view.findViewById(R.id.tvErrorResumenEntrenamiento);
         btnReintentarResumenEntrenamiento = view.findViewById(R.id.btnReintentarResumenEntrenamiento);
+        btnBorrarEntrenamiento = view.findViewById(R.id.btnBorrarEntrenamiento);
         svResumenEntrenamiento = view.findViewById(R.id.svResumenEntrenamiento);
         tvNombreResumenEntrenamiento = view.findViewById(R.id.tvNombreResumenEntrenamiento);
         tvFechaResumenEntrenamiento = view.findViewById(R.id.tvFechaResumenEntrenamiento);
@@ -175,6 +194,160 @@ public class ResumenEntrenamientoFragment extends Fragment {
         mostrarMetricas();
         mostrarGruposMusculares();
         mostrarEjercicios();
+        actualizarBotonBorrar();
+    }
+
+    // ------------------------------------------------------------------ Borrado del entrenamiento
+
+    /**
+     * Solo se puede borrar un entrenamiento que el backend ya guardó, así que el botón
+     * aparece únicamente cuando hay un identificador válido. Si por un estado inesperado
+     * no lo hay, se oculta: nunca se intenta eliminar con un identificador nulo.
+     */
+    private void actualizarBotonBorrar() {
+        boolean tieneIdValido = idEntrenamiento != null
+                && idEntrenamiento > 0;
+
+        btnBorrarEntrenamiento.setVisibility(
+                tieneIdValido ? View.VISIBLE : View.GONE
+        );
+    }
+
+    /**
+     * Pide confirmación antes de borrar el entrenamiento guardado. El borrado no se puede
+     * deshacer, así que nunca se envía sin preguntar.
+     */
+    private void confirmarBorradoEntrenamiento() {
+        if (eliminandoEntrenamiento || idEntrenamiento == null || idEntrenamiento <= 0) {
+            return;
+        }
+
+        AlertDialog dialogo = new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.tvTituloConfirmarBorrarEntrenamiento)
+                .setMessage(getString(
+                        R.string.tvMensajeConfirmarBorrarEntrenamiento,
+                        obtenerNombreEntrenamiento()
+                ))
+                .setPositiveButton(
+                        R.string.btnConfirmarBorrarEntrenamiento,
+                        (dialogoVisible, cual) -> borrarEntrenamiento()
+                )
+                .setNegativeButton(
+                        R.string.btnCancelarBorrarEntrenamiento,
+                        null
+                )
+                .create();
+
+        dialogo.show();
+        // El botón de borrar queda en rojo para que se lea como una acción destructiva.
+        dialogo.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setTextColor(requireContext().getColor(R.color.colorErrorText));
+    }
+
+    /**
+     * @return el nombre del entrenamiento tal como lo muestra la cabecera. Si el nombre
+     *         llegó vacío se usa el mismo nombre de respaldo que ella.
+     */
+    private String obtenerNombreEntrenamiento() {
+        if (resumen == null) {
+            return getString(R.string.tvNombreResumenEntrenamiento_fallback);
+        }
+
+        String nombre = resumen.getNombre();
+
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return getString(R.string.tvNombreResumenEntrenamiento_fallback);
+        }
+
+        return nombre;
+    }
+
+    /**
+     * Pide al backend eliminar el entrenamiento con {@code DELETE /entrenamientos/{id}}.
+     * La eliminación es lógica: el registro deja de aparecer en el historial y ya no se
+     * puede consultar, pero sigue existiendo en la base de datos.
+     */
+    private void borrarEntrenamiento() {
+        // Se revisa el identificador otra vez: el usuario pudo abrir el diálogo, cancelar
+        // y volver a intentarlo, y no puede haber dos borrados al mismo tiempo.
+        if (eliminandoEntrenamiento || idEntrenamiento == null || idEntrenamiento <= 0) {
+            return;
+        }
+
+        mostrarEliminando(true);
+
+        currentCallEliminar = entrenamientoRepository
+                .eliminarEntrenamiento(idEntrenamiento);
+
+        currentCallEliminar.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call,
+                                   @NonNull Response<Void> response) {
+                if (!isAdded()) {
+                    return;
+                }
+
+                // El endpoint responde 204 sin cuerpo, así que basta con que el código
+                // sea correcto: no hay ningún body que revisar.
+                if (response.isSuccessful()) {
+                    procesarEntrenamientoEliminado();
+                    return;
+                }
+
+                // El resumen y el identificador se conservan para que el usuario pueda
+                // volver a intentarlo.
+                mostrarEliminando(false);
+                ManejadorErroresApi.obtenerToast(requireContext(), response.code()).show();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call,
+                                  @NonNull Throwable throwable) {
+                if (call.isCanceled() || !isAdded()) {
+                    return;
+                }
+
+                mostrarEliminando(false);
+                ManejadorErroresApi.obtenerToast(requireContext(), throwable).show();
+            }
+        });
+    }
+
+    /**
+     * Avisa que el entrenamiento se borró, informa a HomeFragment para que vuelva a
+     * consultar su información (donde el registro ya no aparecerá) y regresa a la
+     * pantalla anterior. El resumen se olvida de MainActivity para que no quede en
+     * memoria un entrenamiento que ya no existe.
+     */
+    private void procesarEntrenamientoEliminado() {
+        Toast.makeText(
+                requireContext(),
+                R.string.tvEntrenamientoEliminado,
+                Toast.LENGTH_SHORT
+        ).show();
+
+        getParentFragmentManager().setFragmentResult(
+                REQUEST_ENTRENAMIENTO_ELIMINADO,
+                new Bundle()
+        );
+
+        activity.limpiarResumenEntrenamientoActual();
+        activity.regresar();
+    }
+
+    /**
+     * Muestra u oculta el indicador de proceso. Reutiliza el mismo indicador de carga
+     * del detalle: mientras se borra no tiene sentido dejar el resumen en pantalla.
+     *
+     * @param eliminando true mientras la petición de borrado está en vuelo.
+     */
+    private void mostrarEliminando(boolean eliminando) {
+        eliminandoEntrenamiento = eliminando;
+        btnBorrarEntrenamiento.setEnabled(!eliminando);
+
+        pbCargaResumenEntrenamiento.setVisibility(eliminando ? View.VISIBLE : View.GONE);
+        layoutErrorResumenEntrenamiento.setVisibility(View.GONE);
+        svResumenEntrenamiento.setVisibility(eliminando ? View.GONE : View.VISIBLE);
     }
 
     // ------------------------------------------------------------------ Consulta del detalle
@@ -446,6 +619,16 @@ public class ResumenEntrenamientoFragment extends Fragment {
         if (currentCallDetalle != null) {
             currentCallDetalle.cancel();
         }
+
+        if (currentCallEliminar != null) {
+            currentCallEliminar.cancel();
+        }
+
+        // Al cancelar las llamadas ya no queda ninguna petición en vuelo, así que el
+        // bloqueo puede desaparecer si las vistas se recrean. El resumen y el
+        // identificador NO se limpian aquí: solo se olvidan cuando el borrado se
+        // confirma, porque destruye la vista también al girar el dispositivo.
+        eliminandoEntrenamiento = false;
         super.onDestroyView();
     }
 }

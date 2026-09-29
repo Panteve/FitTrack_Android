@@ -31,4 +31,16 @@ public class EntrenamientoRepository {
     public Call<EntrenamientoDetalleResponse> getEntrenamientoById(Long id) {
         return entrenamientoApiService.getEntrenamientoById(id);
     }
+
+    /**
+     * Prepara la eliminación lógica de un entrenamiento guardado.
+     *
+     * @param entrenamientoId identificador del entrenamiento
+     * @return llamada sin contenido de respuesta
+     */
+    public Call<Void> eliminarEntrenamiento(Long entrenamientoId) {
+        return entrenamientoApiService.eliminarEntrenamiento(
+                entrenamientoId
+        );
+    }
 }

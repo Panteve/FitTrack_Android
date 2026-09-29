@@ -39,6 +39,17 @@ public final class SesionManager {
                 .apply();
     }
 
+    /**
+     * Actualiza únicamente el nombre almacenado en la sesión.
+     *
+     * @param nombre nuevo nombre confirmado por el backend
+     */
+    public void guardarNombre(String nombre) {
+        sharedPreferences.edit()
+                .putString(CLAVE_NOMBRE, nombre)
+                .apply();
+    }
+
     public String obtenerAccessToken() {
         return sharedPreferences.getString(
                 CLAVE_ACCESS_TOKEN,

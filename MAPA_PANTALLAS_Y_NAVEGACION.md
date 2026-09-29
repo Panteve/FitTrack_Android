@@ -87,6 +87,18 @@ PerfilFragment
 
 En los dos casos la pantalla anterior ya vuelve a consultar su lista al regresar, porque lo hace en `onResume`. Por eso la pantalla modificada no necesita avisar con un `FragmentResult`.
 
+El resumen de un entrenamiento terminado tiene su propia salida hacia el borrado del registro guardado:
+
+```text
+ResumenEntrenamientoFragment
+└── BORRAR ENTRENAMIENTO
+    └── confirmación
+        ├── CANCELAR → permanece en el resumen
+        └── BORRAR → elimina → regresa → actualiza historial
+```
+
+Este borrado no usa `onResume`: la pantalla del resumen envía un `FragmentResult` (`REQUEST_ENTRENAMIENTO_ELIMINADO`) y es `HomeFragment` quien vuelve a consultar su información al regresar.
+
 El entrenamiento activo todavía no aparece en este flujo porque no existe como código de la aplicación. Actualmente, el botón de iniciar sí consulta el detalle de la rutina y abre `EntrenamientoActivoFragment`.
 
 ## Navegación inferior
@@ -559,6 +571,47 @@ Archivos relacionados:
 - API: `EjercicioApiService.java` y `EjercicioRepository.java` dentro de la carpeta `ejercicios/datos`.
 - Modelos: `EjercicioRequest.java` y `EjercicioResponse.java` dentro de la carpeta `ejercicios/modelo`.
 
+### 12. Resumen del entrenamiento terminado
+
+Responsabilidad:
+
+- Mostrar en solo lectura el resultado de un entrenamiento ya terminado.
+- Presentar el nombre, el día y la hora, las métricas finales, la distribución de grupos musculares y los ejercicios con sus series.
+- Borrar el entrenamiento guardado, previa confirmación.
+
+Cómo se abre:
+
+- Al confirmar **Terminar** en `EntrenamientoActivoFragment`, una vez que el backend confirma que el entrenamiento se guardó.
+- Al tocar un registro de **Últimos entrenamientos** en `HomeFragment`.
+
+Estados visuales:
+
+- Cargando: solo el indicador, cuando el resumen hay que reconstruirlo con `GET /entrenamientos/{id}`.
+- Con el resumen: el contenido completo desplazable, con el botón de borrar al final.
+- Error: mensaje y botón **Reintentar** cuando la consulta no pudo completarse.
+
+Acciones:
+
+- **Borrar entrenamiento:** pide confirmación en un diálogo y, al aceptarla, envía `DELETE /entrenamientos/{id}`. El borrado es lógico: el entrenamiento deja de aparecer en el historial y ya no se puede consultar, pero no se borra de la base de datos. Al salir bien muestra un Toast, avisa a `HomeFragment` con un `FragmentResult`, olvida el resumen guardado en `MainActivity` y regresa a la pantalla anterior.
+- **Reintentar:** vuelve a consultar el detalle del entrenamiento.
+- **Atrás:** regresa a la pantalla anterior sin borrar nada.
+
+Datos actuales:
+
+- El botón de borrar solo se muestra cuando existe un identificador válido. Sin él el botón se oculta y nunca se intenta eliminar nada.
+- El identificador lo entrega el backend, tanto al crear el entrenamiento como al abrirlo del historial. Nunca se usa un identificador local ni el de la rutina.
+- El endpoint responde `204` sin cuerpo, así que la pantalla solo revisa que el código de la respuesta sea correcto.
+- Mientras se borra se reutiliza el mismo indicador de carga del detalle y se oculta el resumen. Si la eliminación falla, el resumen y el identificador se conservan para poder reintentar.
+- La pantalla no modifica la toolbar: la acción de borrar vive en el contenido, no en la barra superior.
+- Esta acción es distinta de **Descartar entrenamiento**, que solo borra la sesión en curso y no toca ningún registro guardado.
+
+Archivos relacionados:
+
+- Java de pantalla: `app/src/main/java/ue/edu/fittrackandroid/resumen/vista/ResumenEntrenamientoFragment.java`
+- Layout de pantalla: `app/src/main/res/layout/fragment_resumen_entrenamiento.xml`
+- API: `EntrenamientoApiService.java` y `EntrenamientoRepository.java` dentro de la carpeta `entrenamiento/datos`.
+- Modelo: `ResumenEntrenamiento.java` dentro de la carpeta `resumen/modelo`.
+
 ## Funciones provisionales y TODO principales
 
 | Área | Estado actual | Trabajo pendiente |
@@ -574,6 +627,7 @@ Archivos relacionados:
 | Modificar rutina | Consulta con `GET /rutinas/{id}`, actualiza con `PUT` y borra con `DELETE`. | Quitar ejercicios y series desde la tarjeta. |
 | Modificar ejercicio | Consulta con `GET /ejercicios/{id}`, actualiza con `PUT` y borra con `DELETE`. | Nada pendiente para consultar, modificar y borrar un ejercicio propio. |
 | Iniciar entrenamiento | Solo Toasts o una animación breve. | Abrir y gestionar un entrenamiento activo. |
+| Resumen del entrenamiento | Se muestra con el resumen ya construido o reconstruido con `GET /entrenamientos/{id}`; borra con `DELETE /entrenamientos/{id}`. | Nada pendiente para consultar y borrar un entrenamiento guardado. |
 | Perfil | Nombre y foto locales; historial de ejemplo. | Integrar datos del usuario y entrenamientos reales. |
 
 ## Funcionalidades planificadas en documentos separados

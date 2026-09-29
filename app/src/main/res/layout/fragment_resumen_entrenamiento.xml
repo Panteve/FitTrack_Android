@@ -236,6 +236,19 @@
                 android:textColor="@color/colorTextSecondary"
                 android:textSize="13sp"
                 android:visibility="gone" />
+
+            <!-- Borrado del entrenamiento guardado. Va al final de todo el resumen porque
+                 es una acción destructiva y no compite con la información del entrenamiento.
+                 La pantalla lo oculta cuando no hay un identificador válido. -->
+            <Button
+                android:id="@+id/btnBorrarEntrenamiento"
+                style="@style/FitTrack.Button.Danger"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xxl"
+                android:layout_marginBottom="@dimen/spacing_xxl"
+                android:text="@string/btnBorrarEntrenamiento"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 </FrameLayout>
