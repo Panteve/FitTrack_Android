@@ -15,7 +15,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 
 import ue.edu.co.fittrackandroid.R;
 
@@ -128,15 +131,7 @@ public class EntrenamientoEjercicioAdapter
             this.ejercicio = ejercicio;
 
             tvNombre.setText(ejercicio.getNombre());
-
-            // El grupo muscular solo aparece cuando se conoce; al iniciar un entrenamiento
-            // desde una rutina todavía no se tiene ese dato.
-            if (ejercicio.getGrupoMuscular().isEmpty()) {
-                tvGrupoMuscular.setVisibility(View.GONE);
-            } else {
-                tvGrupoMuscular.setVisibility(View.VISIBLE);
-                tvGrupoMuscular.setText(ejercicio.getGrupoMuscular());
-            }
+            tvGrupoMuscular.setVisibility(View.GONE);
 
             mostrarSeries();
 
@@ -173,14 +168,18 @@ public class EntrenamientoEjercicioAdapter
             EditText etRepeticiones = filaSerie.findViewById(R.id.etRepeticionesSerieEntrenamiento);
             CheckBox cbSerieCompletada = filaSerie.findViewById(R.id.cbSerieCompletada);
 
-            // El número visible sale de la posición de la serie, por eso siempre es consecutivo.
-            tvNumeroSerie.setText(String.valueOf(posicionSerie + 1));
+            int numeroSerie = serie.getNumeroSerie() > 0
+                    ? serie.getNumeroSerie()
+                    : posicionSerie + 1;
+            tvNumeroSerie.setText(String.valueOf(numeroSerie));
+
+            etPeso.setText(formatearPeso(serie.getPeso()));
+            if (serie.getRepeticiones() > 0) {
+                etRepeticiones.setText(String.valueOf(serie.getRepeticiones()));
+            }
 
             conectarCampoPeso(etPeso, serie);
             conectarCampoRepeticiones(etRepeticiones, serie);
-
-            etPeso.setText(serie.getPeso());
-            etRepeticiones.setText(serie.getRepeticiones());
 
             // El check se pinta antes de conectar su listener, así el RecyclerView no
             // interpreta el estado guardado como una acción del usuario.
@@ -204,7 +203,7 @@ public class EntrenamientoEjercicioAdapter
 
                 @Override
                 public void afterTextChanged(Editable texto) {
-                    serie.setPeso(texto.toString());
+                    serie.setPeso(convertirPeso(texto.toString()));
                     etPeso.setError(null);
                     escucha.onDatosSerieCambiados();
                 }
@@ -224,7 +223,7 @@ public class EntrenamientoEjercicioAdapter
 
                 @Override
                 public void afterTextChanged(Editable texto) {
-                    serie.setRepeticiones(texto.toString());
+                    serie.setRepeticiones(convertirRepeticiones(texto.toString()));
                     etRepeticiones.setError(null);
                     escucha.onDatosSerieCambiados();
                 }
@@ -246,8 +245,9 @@ public class EntrenamientoEjercicioAdapter
                 }
 
                 // Se leen los campos por si el usuario los editó sin pasar por el watcher.
-                serie.setPeso(etPeso.getText().toString());
-                serie.setRepeticiones(etRepeticiones.getText().toString());
+                serie.setPeso(convertirPeso(etPeso.getText().toString()));
+                serie.setRepeticiones(
+                        convertirRepeticiones(etRepeticiones.getText().toString()));
 
                 if (estaMarcada && !serie.tieneDatosValidos()) {
                     desmarcarSerie(serie, etPeso, etRepeticiones, cbSerieCompletada);
@@ -301,6 +301,55 @@ public class EntrenamientoEjercicioAdapter
         /** @return la posición de la serie dentro de su ejercicio, para avisar al fragment. */
         private int posicionSerieDe(SerieEntrenamiento serie) {
             return ejercicio.getSeries().indexOf(serie);
+        }
+
+        /** Convierte el peso numérico en un texto corto para el campo editable. */
+        private String formatearPeso(double peso) {
+            if (peso < 0) {
+                return "";
+            }
+
+            DecimalFormat formato = new DecimalFormat("#0.##",
+                    DecimalFormatSymbols.getInstance(Locale.getDefault()));
+            return formato.format(peso);
+        }
+
+        /**
+         * Convierte el peso escrito al tipo numérico del modelo.
+         *
+         * @param texto peso escrito por el usuario
+         * @return el peso convertido, o -1 si el campo está vacío o no es válido
+         */
+        private double convertirPeso(String texto) {
+            String pesoEscrito = texto.trim();
+            if (pesoEscrito.isEmpty()) {
+                return -1;
+            }
+
+            try {
+                return Double.parseDouble(pesoEscrito.replace(',', '.'));
+            } catch (NumberFormatException excepcion) {
+                return -1;
+            }
+        }
+
+        /**
+         * Convierte las repeticiones escritas al tipo numérico del modelo.
+         *
+         * @param texto repeticiones escritas por el usuario
+         * @return las repeticiones convertidas o cero si el valor no es válido
+         */
+        private int convertirRepeticiones(String texto) {
+            String repeticionesEscritas = texto.trim();
+            if (repeticionesEscritas.isEmpty()) {
+                return 0;
+            }
+
+            try {
+                return Integer.parseInt(repeticionesEscritas);
+            } catch (NumberFormatException excepcion) {
+                return 0;
+            }
         }
     }
 }

@@ -23,16 +23,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ue.edu.co.fittrackandroid.R;
-import ue.edu.co.fittrackandroid.ejercicios.EjerciciosFragment;
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
 import ue.edu.co.fittrackandroid.resumen.EjercicioResumen;
 import ue.edu.co.fittrackandroid.resumen.ResumenEntrenamiento;
 import ue.edu.co.fittrackandroid.resumen.SerieResumen;
+import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 
 /**
  * Pantalla del entrenamiento en curso.
@@ -41,8 +46,8 @@ import ue.edu.co.fittrackandroid.resumen.SerieResumen;
  * con sus series y el temporizador de descanso entre series.
  *
  * <p>La sesión completa vive en {@link EntrenamientoEnCurso}, que es propiedad de MainActivity.
- * Por eso el tiempo y los datos se conservan al abrir el selector de ejercicios y al minimizar
- * el entrenamiento, aunque el fragment y sus vistas se destruyan.
+ * Por eso el tiempo y los datos se conservan al minimizar el entrenamiento, aunque el fragment
+ * y sus vistas se destruyan.
  */
 public class EntrenamientoActivoFragment extends Fragment
         implements EntrenamientoEjercicioAdapter.EscuchaEntrenamiento  {
@@ -61,12 +66,14 @@ public class EntrenamientoActivoFragment extends Fragment
     private MainActivity activity;
     private EntrenamientoEnCurso entrenamiento;
     private EntrenamientoEjercicioAdapter adapter;
+    private EntrenamientoRepository entrenamientoRepository;
+    private Call<EntrenamientoDetalleResponse> currentCall;
+    private boolean guardandoEntrenamiento;
 
     private TextView tvDuracionEntrenamiento;
     private TextView tvVolumenEntrenamiento;
     private TextView tvSeriesEntrenamiento;
     private RecyclerView rvEjerciciosEntrenamiento;
-    private Button btnAgregarEjercicioEntrenamiento;
     private Button btnDescartarEntrenamiento;
     private View layoutDescansoEntrenamiento;
     private TextView tvTiempoDescanso;
@@ -104,7 +111,7 @@ public class EntrenamientoActivoFragment extends Fragment
         // TODO: Recuperar el entrenamiento activo desde el almacenamiento si MainActivity no
         // conserva la referencia, incluyendo ejercicios, series, descanso y tiempo transcurrido.
         entrenamiento = activity.obtenerEntrenamientoEnCurso();
-        registrarResultadoEjercicio();
+        entrenamientoRepository = new EntrenamientoRepository(requireContext());
     }
 
     @Override
@@ -150,15 +157,19 @@ public class EntrenamientoActivoFragment extends Fragment
     @Override
     public void onPause() {
         super.onPause();
-        // No se restaura la navegación inferior aquí porque onPause también ocurre al abrir
-        // el selector de ejercicios, que debe seguir sin barra inferior.
+        // No se restaura la navegación inferior aquí porque la sesión sigue activa aunque
+        // el fragment deje de estar visible.
         detenerActualizacionesVisuales();
     }
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        if (currentCall != null) {
+            currentCall.cancel();
+        }
+        guardandoEntrenamiento = false;
         cancelarCallbacks();
+        super.onDestroyView();
     }
 
     /**
@@ -183,7 +194,6 @@ public class EntrenamientoActivoFragment extends Fragment
         tvVolumenEntrenamiento = view.findViewById(R.id.tvVolumenEntrenamiento);
         tvSeriesEntrenamiento = view.findViewById(R.id.tvSeriesEntrenamiento);
         rvEjerciciosEntrenamiento = view.findViewById(R.id.rvEjerciciosEntrenamiento);
-        btnAgregarEjercicioEntrenamiento = view.findViewById(R.id.btnAgregarEjercicioEntrenamiento);
         btnDescartarEntrenamiento = view.findViewById(R.id.btnDescartarEntrenamiento);
         layoutDescansoEntrenamiento = view.findViewById(R.id.layoutDescansoEntrenamiento);
         tvTiempoDescanso = view.findViewById(R.id.tvTiempoDescanso);
@@ -199,7 +209,6 @@ public class EntrenamientoActivoFragment extends Fragment
     }
 
     private void configurarAcciones() {
-        btnAgregarEjercicioEntrenamiento.setOnClickListener(v -> abrirSelectorEjercicios());
         btnDescartarEntrenamiento.setOnClickListener(v -> confirmarDescartarEntrenamiento());
         btnRestarDescanso.setOnClickListener(v -> restarTiempoDescanso());
         btnSumarDescanso.setOnClickListener(v -> sumarTiempoDescanso());
@@ -218,6 +227,7 @@ public class EntrenamientoActivoFragment extends Fragment
         );
         activity.mostrarControlMinimizarEntrenamiento(this::minimizarEntrenamiento);
         activity.setAccionToolbar(this::confirmarTerminarEntrenamiento);
+        activity.habilitarAccionToolbar(true);
     }
 
     /** El botón físico de retroceso también minimiza, nunca abandona la sesión. */
@@ -231,24 +241,7 @@ public class EntrenamientoActivoFragment extends Fragment
                 });
     }
 
-    /** Escucha el ejercicio que envía EjerciciosFragment y lo agrega a la sesión. */
-    private void registrarResultadoEjercicio() {
-        getParentFragmentManager().setFragmentResultListener(
-                EjerciciosFragment.REQUEST_SELECCION_EJERCICIO,
-                this,
-                (clave, resultado) -> {
-                    String nombreEjercicio = resultado.getString(
-                            EjerciciosFragment.RESULT_NOMBRE_EJERCICIO);
-                    String grupoMuscular = resultado.getString(
-                            EjerciciosFragment.RESULT_GRUPO_MUSCULAR);
-
-                    // TODO: Recibir también el identificador persistente del ejercicio para
-                    // guardar la relación correcta dentro del entrenamiento y su historial.
-                    agregarEjercicioSeleccionado(nombreEjercicio, grupoMuscular);
-                });
-    }
-
-    /** Vuelve a poner en marcha los relojes después de abrir el selector o volver del minimized. */
+    /** Vuelve a poner en marcha los relojes al regresar a la sesión minimizada. */
     private void reanudarActualizacionesVisuales() {
         // El tiempo sigue contando aunque la pantalla no esté visible, porque se calcula
         // siempre desde el instante en que empezó la sesión.
@@ -420,27 +413,6 @@ public class EntrenamientoActivoFragment extends Fragment
 
     // ------------------------------------------------------------------ Ejercicios y series
 
-    private void abrirSelectorEjercicios() {
-        // TODO: El selector debe cargar desde la base de datos los ejercicios disponibles
-        // para el usuario antes de permitir que se agreguen al entrenamiento activo.
-        activity.mostrarSelectorEjercicios();
-    }
-
-    /** Agrega el ejercicio elegido en el selector, con su primera serie. */
-    private void agregarEjercicioSeleccionado(String nombreEjercicio, String grupoMuscular) {
-        // El resultado solo se procesa con la vista ya creada: las vistas se recrean cada
-        // vez que la pantalla vuelve del selector, así que el adapter puede estar vacío.
-        if (nombreEjercicio == null || adapter == null) {
-            return;
-        }
-
-        // Cada ejercicio entra con su primera serie, igual que en la creación de rutinas.
-        adapter.agregarEjercicio(new EjercicioEntrenamiento(nombreEjercicio, grupoMuscular));
-        recalcularResumen();
-
-        // TODO: Persistir el ejercicio agregado dentro del entrenamiento activo.
-    }
-
     @Override
     public void onAgregarSerie(int posicionEjercicio) {
         // La serie nueva solo pertenece a ese ejercicio: ningún otro cambia.
@@ -504,6 +476,10 @@ public class EntrenamientoActivoFragment extends Fragment
 
     /** Pide confirmación antes de terminar, y solo si hay al menos una serie completada. */
     private void confirmarTerminarEntrenamiento() {
+        if (guardandoEntrenamiento) {
+            return;
+        }
+
         int seriesCompletadas = contarSeriesCompletadas();
         if (seriesCompletadas == 0) {
             Toast.makeText(requireContext(), R.string.tvMensajeTerminarSinSeries,
@@ -527,16 +503,102 @@ public class EntrenamientoActivoFragment extends Fragment
     }
 
     private void terminarEntrenamiento() {
-        // Se copian los datos finales antes de cerrar la sesión, porque después de esto
-        // el entrenamiento en curso deja de existir.
         ResumenEntrenamiento resumen = crearResumenFinal();
+        EntrenamientoCrearRequest request = crearSolicitudEntrenamiento();
 
         detenerActualizacionesVisuales();
+        mostrarGuardandoEntrenamiento(true);
 
-        // TODO: Guardar el entrenamiento terminado y sus series en el historial antes de
-        // eliminar la sesión activa. Solo se debe abrir el resumen cuando el guardado termine
-        // correctamente; si falla, conservar la sesión para permitir otro intento.
-        activity.mostrarResumenEntrenamiento(resumen);
+        currentCall = entrenamientoRepository.crearEntrenamiento(request);
+        currentCall.enqueue(new Callback<EntrenamientoDetalleResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<EntrenamientoDetalleResponse> call,
+                                   @NonNull Response<EntrenamientoDetalleResponse> response) {
+                if (!isAdded()) {
+                    return;
+                }
+
+                if (response.isSuccessful() && response.body() != null) {
+                    activity.mostrarResumenEntrenamiento(resumen);
+                    return;
+                }
+
+                restaurarDespuesDeErrorGuardado();
+                ManejadorErroresApi.obtenerToast(requireContext(), response.code()).show();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<EntrenamientoDetalleResponse> call,
+                                  @NonNull Throwable throwable) {
+                if (call.isCanceled() || !isAdded()) {
+                    return;
+                }
+
+                restaurarDespuesDeErrorGuardado();
+                ManejadorErroresApi.obtenerToast(requireContext(), throwable).show();
+            }
+        });
+    }
+
+    /** Construye el cuerpo requerido por el backend con las series completadas. */
+    private EntrenamientoCrearRequest crearSolicitudEntrenamiento() {
+        List<RegistroSerieRequest> seriesCompletadas = new ArrayList<>();
+
+        for (EjercicioEntrenamiento ejercicio : entrenamiento.getEjercicios()) {
+            List<SerieEntrenamiento> series = ejercicio.getSeries();
+
+            for (int posicionSerie = 0; posicionSerie < series.size(); posicionSerie++) {
+                SerieEntrenamiento serie = series.get(posicionSerie);
+                if (!serie.isCompletada() || !serie.tieneDatosValidos()) {
+                    continue;
+                }
+
+                int numeroSerie = serie.getNumeroSerie() > 0
+                        ? serie.getNumeroSerie()
+                        : posicionSerie + 1;
+                seriesCompletadas.add(new RegistroSerieRequest(
+                        ejercicio.getRutinaEjercicioId(),
+                        numeroSerie,
+                        serie.getRepeticiones(),
+                        serie.getPeso()));
+            }
+        }
+
+        long duracionSegundos = entrenamiento.getSegundosTranscurridos();
+        int duracionMinutos = (int) Math.max(1, (duracionSegundos + 59) / 60);
+        String fecha = new SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                .format(new Date(entrenamiento.getFechaHoraInicio()));
+
+        return new EntrenamientoCrearRequest(
+                entrenamiento.getIdRutina(),
+                fecha,
+                duracionMinutos,
+                entrenamiento.getNotas(),
+                seriesCompletadas);
+    }
+
+    /** Bloquea o restaura las acciones mientras se guarda el entrenamiento. */
+    private void mostrarGuardandoEntrenamiento(boolean guardando) {
+        guardandoEntrenamiento = guardando;
+        btnDescartarEntrenamiento.setEnabled(!guardando);
+
+        if (guardando) {
+            activity.mostrarToolbarSecundaria(
+                    getString(R.string.tvToolbarTituloEntrenamientoActivo),
+                    true,
+                    getString(R.string.btnTerminarEntrenamiento_loading));
+            activity.mostrarControlMinimizarEntrenamiento(this::minimizarEntrenamiento);
+            activity.setAccionToolbar(this::confirmarTerminarEntrenamiento);
+            activity.habilitarAccionToolbar(false);
+        } else {
+            configurarToolbar();
+        }
+    }
+
+    /** Conserva la sesión y permite reintentar cuando la API rechaza el guardado. */
+    private void restaurarDespuesDeErrorGuardado() {
+        mostrarGuardandoEntrenamiento(false);
+        reanudarActualizacionesVisuales();
     }
 
     /**
@@ -555,8 +617,8 @@ public class EntrenamientoActivoFragment extends Fragment
 
             for (SerieEntrenamiento serie : ejercicio.getSeries()) {
                 if (serie.isCompletada() && serie.tieneDatosValidos()) {
-                    seriesResumen.add(new SerieResumen(serie.obtenerPesoNumerico(),
-                            serie.obtenerRepeticionesNumericas()));
+                    seriesResumen.add(new SerieResumen(serie.getPeso(),
+                            serie.getRepeticiones()));
                 }
             }
 
@@ -564,26 +626,17 @@ public class EntrenamientoActivoFragment extends Fragment
                 continue;
             }
 
-            ejerciciosResumen.add(new EjercicioResumen(ejercicio.getNombre(),
-                    grupoMuscularDe(ejercicio), seriesResumen));
+            ejerciciosResumen.add(new EjercicioResumen(
+                    ejercicio.getNombre(),
+                    getString(R.string.tvGrupoMuscularResumen_fallback),
+                    seriesResumen));
         }
 
-        return new ResumenEntrenamiento(entrenamiento.getNombre(),
+        return new ResumenEntrenamiento(entrenamiento.getNombreRutina(),
                 entrenamiento.getFechaHoraInicio(),
                 entrenamiento.getSegundosTranscurridos(),
                 contarSeriesTotales(),
                 ejerciciosResumen);
-    }
-
-    /**
-     * @return el grupo muscular del ejercicio, o un nombre de respaldo cuando la sesión se
-     *         inició desde una rutina que aún no traía ese dato.
-     */
-    private String grupoMuscularDe(EjercicioEntrenamiento ejercicio) {
-        if (ejercicio.getGrupoMuscular() == null || ejercicio.getGrupoMuscular().trim().isEmpty()) {
-            return getString(R.string.tvGrupoMuscularResumen_fallback);
-        }
-        return ejercicio.getGrupoMuscular();
     }
 
     /** Pide confirmación antes de descartar la sesión y todo lo registrado en ella. */
@@ -606,6 +659,10 @@ public class EntrenamientoActivoFragment extends Fragment
 
     /** El chevron hacia abajo solo minimiza: no termina ni descarta la sesión. */
     private void minimizarEntrenamiento() {
+        if (guardandoEntrenamiento) {
+            return;
+        }
+
         detenerActualizacionesVisuales();
 
         // TODO: Confirmar que el estado más reciente quedó persistido antes de abandonar

@@ -9,13 +9,13 @@ import ue.edu.co.fittrackandroid.resumen.ResumenEntrenamiento;
 public class UltimoEntrenamiento {
 
     private final String nombre;
-    private final Integer id;
+    private final Long id;
     private final String fecha;
     private final int duracionMinutos;
 
     private final ResumenEntrenamiento resumen;
 
-    public UltimoEntrenamiento(int id, String nombre, String fecha, int duracionMinutos,
+    public UltimoEntrenamiento(Long id, String nombre, String fecha, int duracionMinutos,
                                ResumenEntrenamiento resumen) {
         this.id = id;
         this.nombre = nombre;
@@ -32,7 +32,7 @@ public class UltimoEntrenamiento {
         return fecha;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 

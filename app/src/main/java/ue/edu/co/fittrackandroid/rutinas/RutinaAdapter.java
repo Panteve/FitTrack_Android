@@ -81,10 +81,16 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
 
         void asignar(RutinasResponse rutina) {
             tvNombre.setText(rutina.getNombre());
-            tvResumen.setText(rutina.getResumen());
+            tvResumen.setText(itemView.getContext().getString(
+                    R.string.tvResumenPlan_dinamico,
+                    rutina.getCantidadEjercicios()));
 
             rvEjercicios.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
-            rvEjercicios.setAdapter(new RutinaEjercicioAdapter(rutina.getEjercicios()));
+            if (rutina.getEjercicios() != null) {
+                rvEjercicios.setAdapter(new RutinaEjercicioAdapter(rutina.getEjercicios()));
+            } else {
+                rvEjercicios.setAdapter(null);
+            }
 
             // TODO: Reemplazar este mensaje por un menú con las acciones disponibles para
             // la rutina, como editar y eliminar. La eliminación debe pedir confirmación,

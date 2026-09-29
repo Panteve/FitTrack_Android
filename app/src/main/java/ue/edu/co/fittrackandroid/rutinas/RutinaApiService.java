@@ -11,9 +11,9 @@ import ue.edu.co.fittrackandroid.hoy.RutinaResponse;
 public interface RutinaApiService {
 
     @GET("rutinas/{id}")
-    Call<RutinaResponse> getRutinaByid(@Path("id") int id);
+    Call<RutinaResponse> getRutinaById(@Path("id") Long id);
 
-    @GET("/rutinas")
+    @GET("rutinas")
     Call<List<RutinasResponse>> getRutinas();
 
 }

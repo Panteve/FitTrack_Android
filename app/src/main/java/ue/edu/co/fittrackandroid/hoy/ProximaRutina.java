@@ -3,10 +3,10 @@ package ue.edu.co.fittrackandroid.hoy;
 public class ProximaRutina {
     private final String nombre;
     private final Integer numeroDeEjercicios;
-    private final Integer id;
+    private final Long id;
 
 
-    public ProximaRutina(Integer id, Integer numeroDeEjercicios, String nombre) {
+    public ProximaRutina(Long id, Integer numeroDeEjercicios, String nombre) {
         this.id = id;
         this.numeroDeEjercicios = numeroDeEjercicios;
         this.nombre = nombre;
@@ -16,7 +16,7 @@ public class ProximaRutina {
         return nombre;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 

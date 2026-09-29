@@ -16,8 +16,8 @@ public class RutinaRepository {
         this.rutinaApiService = RetrofitClient.getInstance(context).create(RutinaApiService.class);
     }
 
-    public Call<RutinaResponse> getRutinaById(int id) {
-        return rutinaApiService.getRutinaByid(id);
+    public Call<RutinaResponse> getRutinaById(Long id) {
+        return rutinaApiService.getRutinaById(id);
     }
 
     public Call<List<RutinasResponse>> getRutinas() {

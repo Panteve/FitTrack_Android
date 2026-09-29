@@ -64,14 +64,58 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Lista de planes de entrenamiento -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvPlanes"
+        <!-- Estados de carga, lista y lista vacía -->
+        <FrameLayout
+            android:id="@+id/layoutEstadoRutinas"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipToPadding="false"
-            android:paddingBottom="@dimen/spacing_xxl"
-            android:scrollbars="none" />
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPlanes"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="@dimen/spacing_xxl"
+                android:scrollbars="none"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/pbCargaRutinas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminateTint="@color/colorPrimary" />
+
+            <LinearLayout
+                android:id="@+id/layoutRutinasVacias"
+                style="@style/FitTrack.Container.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvRutinasVacias"
+                    style="@style/FitTrack.Text.Subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/tvRutinasVacias" />
+
+                <TextView
+                    android:id="@+id/tvDescripcionRutinasVacias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:gravity="center"
+                    android:text="@string/tvDescripcionRutinasVacias"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="@dimen/text_size_body" />
+
+            </LinearLayout>
+        </FrameLayout>
     </LinearLayout>
 </FrameLayout>

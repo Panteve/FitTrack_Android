@@ -42,11 +42,9 @@ public class HomeFragment extends Fragment {
     private SesionManager sesionManager;
     private HomeRepository homeRepository;
     private RutinaRepository rutinaRepository;
-    private Integer idProximaRutina;
+    private Long idProximaRutina;
     private Call<HomeResponse> currentCallHome;
     private Call<RutinaResponse> currentCallRutina;
-
-
 
     public HomeFragment() {
         // Required empty public constructor
@@ -57,9 +55,10 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        initObjects(view);
         homeRepository = new HomeRepository(requireContext());
+        rutinaRepository = new RutinaRepository(requireContext());
         sesionManager = new SesionManager(requireContext());
+        initObjects(view);
 
         cargarInfoHome();
         btnIniciarEntrenamiento.setOnClickListener(v -> iniciarEntrenamiento());
@@ -104,13 +103,16 @@ public class HomeFragment extends Fragment {
         currentCallRutina = rutinaRepository.getRutinaById(idProximaRutina);
         currentCallRutina.enqueue(new Callback<RutinaResponse>() {
             @Override
-            public void onResponse(@NonNull Call<RutinaResponse> call, @NonNull Response<RutinaResponse> response) {
+            public void onResponse(@NonNull Call<RutinaResponse> call,
+                                   @NonNull Response<RutinaResponse> response) {
                 if (!isAdded()) {
                     return;
                 }
 
                 if (response.isSuccessful() && response.body() != null) {
                     RutinaResponse rutinaResponse = response.body();
+                    btnIniciarEntrenamiento.setEnabled(true);
+                    btnIniciarEntrenamiento.setText(R.string.btnIniciarEntrenamiento);
                     ((MainActivity) requireActivity()).mostrarEntrenamientoActivo(rutinaResponse);
                 } else {
                     btnIniciarEntrenamiento.setEnabled(true);
@@ -120,7 +122,8 @@ public class HomeFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<RutinaResponse> call, @NonNull Throwable throwable) {
+            public void onFailure(@NonNull Call<RutinaResponse> call,
+                                  @NonNull Throwable throwable) {
                 if (call.isCanceled() || !isAdded()) {
                     return;
                 }
@@ -140,7 +143,8 @@ public class HomeFragment extends Fragment {
         currentCallHome.enqueue(new Callback<HomeResponse>() {
 
             @Override
-            public void onResponse(@NonNull Call<HomeResponse> call, @NonNull Response<HomeResponse> response) {
+            public void onResponse(@NonNull Call<HomeResponse> call,
+                                   @NonNull Response<HomeResponse> response) {
                 if (!isAdded()) {
                     return;
                 }
@@ -156,7 +160,8 @@ public class HomeFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<HomeResponse> call, @NonNull Throwable throwable) {
+            public void onFailure(@NonNull Call<HomeResponse> call,
+                                  @NonNull Throwable throwable) {
                 if (call.isCanceled() || !isAdded()) {
                     return;
                 }

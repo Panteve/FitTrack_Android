@@ -5,28 +5,41 @@ import java.util.List;
 
 /**
  * Modelo de un ejercicio dentro de un entrenamiento en curso.
- * Al construirlo se agrega automáticamente la primera serie, tal como se ve en la pantalla.
+ * Conserva su identificador, nombre y las series editables de la sesión.
  */
 public class EjercicioEntrenamiento {
 
     private final String nombre;
-    private final int id;
+    private final Long rutinaEjercicioId;
     private final List<SerieEntrenamiento> series = new ArrayList<>();
 
-    public EjercicioEntrenamiento(int id, String nombre, List<SerieEntrenamiento> series) {
+    /**
+     * Crea un ejercicio con las series recibidas desde la rutina.
+     *
+     * @param rutinaEjercicioId identificador del bloque dentro de la rutina
+     * @param nombre nombre visible del ejercicio
+     * @param series series iniciales del ejercicio; puede ser {@code null}
+     */
+    public EjercicioEntrenamiento(Long rutinaEjercicioId, String nombre,
+                                 List<SerieEntrenamiento> series) {
         this.nombre = nombre;
-        this.id = id;
-        this.series.addAll(series);
+        this.rutinaEjercicioId = rutinaEjercicioId;
+        if (series != null) {
+            this.series.addAll(series);
+        }
     }
 
+    /** @return el nombre visible del ejercicio. */
     public String getNombre() {
         return nombre;
     }
 
-    public int getId() {
-        return id;
+    /** @return el identificador del bloque de ejercicio dentro de la rutina. */
+    public Long getRutinaEjercicioId() {
+        return rutinaEjercicioId;
     }
 
+    /** @return las series editables del ejercicio. */
     public List<SerieEntrenamiento> getSeries() {
         return series;
     }
@@ -37,7 +50,8 @@ public class EjercicioEntrenamiento {
      * @return la serie recién agregada.
      */
     public SerieEntrenamiento agregarSerie() {
-        SerieEntrenamiento serieNueva = new SerieEntrenamiento();
+        int numeroSerie = series.size() + 1;
+        SerieEntrenamiento serieNueva = new SerieEntrenamiento(numeroSerie, 0, 0);
         series.add(serieNueva);
         return serieNueva;
     }

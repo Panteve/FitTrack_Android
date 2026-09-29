@@ -1,32 +1,33 @@
 package ue.edu.co.fittrackandroid.utils;
 
 public class SerieRutina {
-    private int id;
+    private Long id;
     private int numeroSerie;
     private int repeticionesObjetivo;
-    private int pesoObjetivo;
+    private double pesoObjetivo;
 
     public SerieRutina() {
     }
 
-    public SerieRutina(int numeroSerie, int id, int repeticionesObjetivo, int pesoObjetivo) {
+    public SerieRutina(int numeroSerie, Long id, int repeticionesObjetivo,
+                       double pesoObjetivo) {
         this.numeroSerie = numeroSerie;
         this.id = id;
         this.repeticionesObjetivo = repeticionesObjetivo;
         this.pesoObjetivo = pesoObjetivo;
     }
 
-    public SerieRutina(int repeticionesObjetivo, int numeroSerie, int pesoObjetivo) {
+    public SerieRutina(int repeticionesObjetivo, int numeroSerie, double pesoObjetivo) {
         this.repeticionesObjetivo = repeticionesObjetivo;
         this.numeroSerie = numeroSerie;
         this.pesoObjetivo = pesoObjetivo;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -46,11 +47,11 @@ public class SerieRutina {
         this.numeroSerie = numeroSerie;
     }
 
-    public int getPesoObjetivo() {
+    public double getPesoObjetivo() {
         return pesoObjetivo;
     }
 
-    public void setPesoObjetivo(int pesoObjetivo) {
+    public void setPesoObjetivo(double pesoObjetivo) {
         this.pesoObjetivo = pesoObjetivo;
     }
 }

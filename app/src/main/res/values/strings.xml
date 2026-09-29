@@ -120,10 +120,13 @@
 
     <string name="tvTituloPlanes">MIS PLANES DE ENTRENAMIENTO</string>
     <string name="tvCantidadPlanes">%1$d ACTIVOS</string>
+    <string name="tvRutinasVacias">Todavía no tienes rutinas</string>
+    <string name="tvDescripcionRutinasVacias">Crea una rutina para organizar tus ejercicios y comenzar a entrenar.</string>
 
     <!-- item_rutina.xml -->
     <string name="tvNombrePlan">Nombre del plan</string>
     <string name="tvResumenPlan">4 ejercicios  •  45 min</string>
+    <string name="tvResumenPlan_dinamico">%1$d ejercicios</string>
     <string name="cdMenuPlan">Opciones del plan</string>
     <string name="btnVerDetalles">VER DETALLES</string>
     <string name="btnIniciarRutina">INICIAR</string>
@@ -280,6 +283,7 @@
     <!-- EntrenamientoActivoFragment: toolbar e isla del entrenamiento minimizado -->
     <string name="tvToolbarTituloEntrenamientoActivo">Entrenamiento activo</string>
     <string name="btnTerminarEntrenamiento">TERMINAR</string>
+    <string name="btnTerminarEntrenamiento_loading">GUARDANDO…</string>
     <string name="cdMinimizarEntrenamiento">Minimizar entrenamiento</string>
 
     <!-- layoutIslaEntrenamiento: fila compacta sobre la navegación inferior -->
@@ -308,7 +312,6 @@
     <string name="tvLabelSeriesEntrenamiento">SERIES</string>
     <string name="tvSeriesEntrenamiento">%1$d/%2$d</string>
     <string name="tvTituloEjerciciosEntrenamiento">EJERCICIOS</string>
-    <string name="btnAgregarEjercicioEntrenamiento">AGREGAR EJERCICIO</string>
     <string name="btnDescartarEntrenamiento">DESCARTAR ENTRENO</string>
 
     <!-- item_ejercicio_entrenamiento.xml -->

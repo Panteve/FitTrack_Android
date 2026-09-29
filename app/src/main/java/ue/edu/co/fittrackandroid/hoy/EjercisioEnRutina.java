@@ -5,24 +5,25 @@ import java.util.List;
 import ue.edu.co.fittrackandroid.utils.SerieRutina;
 
 public class EjercisioEnRutina {
-    private int id;
-    private int ejercicioId;
+    private Long id;
+    private Long ejercicioId;
     private String nombre;
     private int orden;
     private List<SerieRutina> series;
 
-    public int getEjercicioId() {
+    public Long getEjercicioId() {
         return ejercicioId;
     }
-    public void setEjercicioId(int ejercicioId) {
+
+    public void setEjercicioId(Long ejercicioId) {
         this.ejercicioId = ejercicioId;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

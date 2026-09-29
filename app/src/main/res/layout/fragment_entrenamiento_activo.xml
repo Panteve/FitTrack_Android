@@ -2,7 +2,6 @@
 <!-- Pantalla del entrenamiento en curso: el contenido se desplaza y el panel de
      descanso queda fijo en la parte inferior, fuera del ScrollView. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutEntrenamientoActivo"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -145,22 +144,6 @@
                 android:layout_marginTop="@dimen/spacing_sm"
                 android:nestedScrollingEnabled="false"
                 android:overScrollMode="never" />
-
-            <Button
-                android:id="@+id/btnAgregarEjercicioEntrenamiento"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/button_height_standard"
-                android:background="@drawable/bg_button_primary"
-                android:drawableStart="@drawable/ic_add"
-                android:drawablePadding="@dimen/spacing_sm"
-                android:elevation="@dimen/elevation_button"
-                android:letterSpacing="0.05"
-                android:text="@string/btnAgregarEjercicioEntrenamiento"
-                android:textAllCaps="true"
-                android:textColor="@color/colorOnPrimary"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:drawableTint="@color/colorOnPrimary" />
 
             <Button
                 android:id="@+id/btnDescartarEntrenamiento"

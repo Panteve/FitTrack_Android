@@ -35,6 +35,7 @@ import ue.edu.co.fittrackandroid.login.LoginFragment;
 import ue.edu.co.fittrackandroid.perfil.CambiarContrasenaFragment;
 import ue.edu.co.fittrackandroid.perfil.PerfilFragment;
 import ue.edu.co.fittrackandroid.registro.CrearCuentaFragment;
+import ue.edu.co.fittrackandroid.remote.SesionManager;
 import ue.edu.co.fittrackandroid.resumen.ResumenEntrenamiento;
 import ue.edu.co.fittrackandroid.resumen.ResumenEntrenamientoFragment;
 import ue.edu.co.fittrackandroid.rutinas.CrearRutinaFragment;
@@ -243,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
         restaurarControlVolver();
         btnVolverToolbar.setVisibility(View.GONE);
         ocultarAccionSecundariaToolbar();
+        btnAccionToolbar.setEnabled(true);
         btnAccionToolbar.setVisibility(View.GONE);
         btnAccionToolbar.setOnClickListener(null);
     }
@@ -257,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
         restaurarControlVolver();
         btnVolverToolbar.setVisibility(conVolver ? View.VISIBLE : View.GONE);
         ocultarAccionSecundariaToolbar();
+        btnAccionToolbar.setEnabled(true);
         btnAccionToolbar.setOnClickListener(null);
         if (textoAccion != null) {
             btnAccionToolbar.setVisibility(View.VISIBLE);
@@ -327,6 +330,11 @@ public class MainActivity extends AppCompatActivity {
         btnAccionToolbar.setOnClickListener(v -> accion.run());
     }
 
+    /** Habilita o bloquea temporalmente la acción principal de la toolbar. */
+    public void habilitarAccionToolbar(boolean habilitada) {
+        btnAccionToolbar.setEnabled(habilitada);
+    }
+
     /** Oculta la navegación inferior, por ejemplo durante un entrenamiento en curso. */
     public void ocultarNavegacionInferior() {
         bottomNavigation.setVisibility(View.GONE);
@@ -345,11 +353,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Navega al selector de ejercicios (con retroceso).
-     * Se usa desde la creación de rutinas para elegir un ejercicio y también desde el
-     * entrenamiento en curso para agregar ejercicios a la sesión.
-     */
+    /** Navega al selector de ejercicios utilizado durante la creación de rutinas. */
     public void mostrarSelectorEjercicios() {
         cargarFragmentConBackStack(new EjerciciosFragment());
     }
@@ -362,8 +366,10 @@ public class MainActivity extends AppCompatActivity {
      * pregunta si quiere descartarla, reanudarla o cancelar, porque empezar otro
      * entrenamiento reemplazaría lo que ya registró.
      *
-     * <p>Solo se entregan datos simples: el nombre de la rutina y los nombres de sus
-     * ejercicios, porque los modelos de rutinas no implementan Parcelable ni Serializable.
+     * <p>La respuesta completa se convierte al modelo editable antes de abrir el Fragment,
+     * por lo que la pantalla recibe los identificadores, ejercicios y series ya preparados.
+     *
+     * @param rutinaResponse detalle completo de la rutina seleccionada
      */
     public void mostrarEntrenamientoActivo(RutinaResponse rutinaResponse) {
         pedirConfirmacionSiHayEntrenamientoEnCurso(() -> {
@@ -390,6 +396,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void iniciarEntrenamientoEnCurso(RutinaResponse rutinaResponse) {
         entrenamientoEnCurso = new EntrenamientoEnCurso(
+                rutinaResponse.getId(),
                 rutinaResponse.getNombre(),
                 SystemClock.elapsedRealtime(),
                 System.currentTimeMillis()
@@ -491,8 +498,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Abre el resumen de un entrenamiento terminado. Lo usan tanto el entrenamiento en
-     * curso al confirmar "Terminar" como Inicio al pulsar un entrenamiento reciente.
+     * Abre el resumen de la sesión activa después de guardarla correctamente.
      *
      * <p>La sesión en curso se borra antes de mostrar el resumen, y la pantalla del
      * entrenamiento sale de la pila, así la flecha hacia atrás nunca devuelve a una sesión
@@ -501,7 +507,6 @@ public class MainActivity extends AppCompatActivity {
      * @param resumen copia de solo lectura del entrenamiento terminado.
      */
     public void mostrarResumenEntrenamiento(ResumenEntrenamiento resumen) {
-        // TODO: Reemplazar esta referencia en memoria por el historial guardado cuando exista.
         resumenEntrenamientoActual = resumen;
 
         descartarEntrenamientoEnCurso();
@@ -653,12 +658,11 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Cierra la sesión activa y vuelve al login.
-     * Solo se borran los datos que representan la sesión; el nombre y la foto del perfil
-     * se conservan en sus propias preferencias.
+     * Se borran el token y los demás datos asociados a la sesión autenticada.
      */
     public void cerrarSesion() {
-        // TODO: Eliminar también el token / credenciales cuando exista autenticación real.
-        getSharedPreferences("sesion", MODE_PRIVATE).edit().clear().apply();
+        SesionManager sesionManager = new SesionManager(this);
+        sesionManager.cerrarSesion();
         // Un entrenamiento en curso no puede sobrevivir al cierre de sesión.
         descartarEntrenamientoEnCurso();
         limpiarResumenEntrenamientoActual();

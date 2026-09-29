@@ -3,17 +3,17 @@ package ue.edu.co.fittrackandroid.hoy;
 import java.util.List;
 
 public class RutinaResponse {
-    private int id;
+    private Long id;
     private String nombre;
     private String descripcion;
     private String diaSemana;
     private List<EjercisioEnRutina> ejercicios;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

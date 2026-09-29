@@ -10,8 +10,7 @@ import java.util.Locale;
  * Estado de la sesión de entrenamiento que está en curso.
  *
  * <p>MainActivity mantiene una única referencia a este objeto mientras la aplicación siga viva,
- * de esa forma la sesión sobrevive a que el fragment se destruya al minimizar el entrenamiento
- * o al abrir el selector de ejercicios.
+ * de esa forma la sesión sobrevive a que el fragment se destruya al minimizar el entrenamiento.
  *
  * <p>Los tiempos se guardan como instantes de {@link SystemClock#elapsedRealtime()} y nunca como
  * contadores que se van sumando, así el tiempo no se altera si cambia la hora del dispositivo.
@@ -21,8 +20,8 @@ import java.util.Locale;
  */
 public class EntrenamientoEnCurso {
 
-    // TODO: Agregar un identificador persistente de la sesión y el identificador de la
-    // rutina de origen, si existe, para poder recuperar y guardar el entrenamiento correcto.
+    // TODO: Agregar un identificador persistente de la sesión para poder recuperar y guardar
+    // el entrenamiento correcto.
 
     /** Instante en que empezó el entrenamiento, en milisegundos de reloj del sistema. */
     // TODO: Al persistir la sesión, guardar también una referencia de tiempo que permita
@@ -37,7 +36,8 @@ public class EntrenamientoEnCurso {
 
     private String notas;
 
-    private int idRutina;
+    /** Identificador de la rutina usada para iniciar la sesión. */
+    private final Long idRutina;
 
     /** Ejercicios de la sesión, con sus series y el estado de cada una. */
     private final List<EjercicioEntrenamiento> ejercicios = new ArrayList<>();
@@ -49,16 +49,34 @@ public class EntrenamientoEnCurso {
     private boolean activa = true;
 
     /**
-     * @param nombreRutina         nombre de la rutina que se está entrenando, o vacío si no se conoce.
+     * @param idRutina identificador de la rutina que originó el entrenamiento
+     * @param nombreRutina nombre de la rutina que se está entrenando, o vacío si no se conoce
      * @param instanteInicio momento en que comenzó el entrenamiento, con
-     *                       {@link SystemClock#elapsedRealtime()}.
+     *                       {@link SystemClock#elapsedRealtime()}
      * @param fechaHoraInicio momento real en que comenzó el entrenamiento, con
-     *                        {@link System#currentTimeMillis()}.
+     *                        {@link System#currentTimeMillis()}
      */
-    public EntrenamientoEnCurso(String nombreRutina, long instanteInicio, long fechaHoraInicio) {
+    public EntrenamientoEnCurso(Long idRutina, String nombreRutina, long instanteInicio,
+                                long fechaHoraInicio) {
+        this.idRutina = idRutina;
         this.nombreRutina = nombreRutina;
         this.instanteInicio = instanteInicio;
         this.fechaHoraInicio = fechaHoraInicio;
+    }
+
+    /** @return el identificador de la rutina que originó el entrenamiento. */
+    public Long getIdRutina() {
+        return idRutina;
+    }
+
+    /** @return las notas opcionales registradas para el entrenamiento. */
+    public String getNotas() {
+        return notas;
+    }
+
+    /** @param notas notas opcionales del entrenamiento. */
+    public void setNotas(String notas) {
+        this.notas = notas;
     }
 
     public long getInstanteInicio() {
