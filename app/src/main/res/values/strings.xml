@@ -96,22 +96,18 @@
     <!-- item_ultimo_entrenamiento.xml -->
     <string name="tvNombreUltimoEntrenamiento">Nombre de la rutina</string>
 
-    <!-- fragment_perfil.xml: lista de ejercicios de la rutina -->
-    <string name="tvTituloLista">LISTA DE EJERCICIOS (4)</string>
-    <string name="tvSubtituloLista">4 SERIES C/U</string>
-    <string name="tvNumeroEjercicio1">1</string>
-    <string name="tvNumeroEjercicio2">2</string>
-    <string name="tvNumeroEjercicio3">3</string>
-    <string name="tvNumeroEjercicio4">4</string>
-    <string name="tvNombreEjercicio1">Sentadilla con Barra</string>
-    <string name="tvGrupoMuscularEjercicio1">Pierna</string>
-    <string name="tvNombreEjercicio2">Prensa Inclinada</string>
-    <string name="tvGrupoMuscularEjercicio2">Pecho</string>
-    <string name="tvNombreEjercicio3">Extensiones de Cuádriceps</string>
-    <string name="tvGrupoMuscularEjercicio3">Pierna</string>
-    <string name="tvNombreEjercicio4">Plancha Isométrica</string>
-    <string name="tvGrupoMuscularEjercicio4">Abdomen</string>
+    <!-- fragment_perfil.xml: ejercicios creados por el usuario -->
+    <string name="tvTituloLista">MIS EJERCICIOS (%1$d)</string>
+    <string name="tvSubtituloLista">CREADOS POR TI</string>
+    <string name="tvSinEjerciciosPerfil">Todavía no has creado ejercicios</string>
+    <string name="tvSinEjerciciosPerfil_loading">Cargando tus ejercicios…</string>
+    <string name="tvSinEjerciciosPerfil_error">No pudimos cargar tus ejercicios</string>
     <string name="btnNuevoEjercicio">+ NUEVO EJERCICIO</string>
+
+    <!-- item_ejercicio_perfil.xml -->
+    <string name="tvNumeroEjercicioPerfil">1</string>
+    <string name="tvNombreEjercicioPerfil">Press de banca</string>
+    <string name="tvGrupoMuscularEjercicioPerfil">Pecho</string>
 
     <string name="tvConsejo">Consejo: Mantén los descansos de 90 segundos para optimizar la hipertrofia hoy.</string>
 
@@ -229,8 +225,6 @@
     <string name="tvGrupoMuscularEjercicio">Grupo muscular</string>
 
     <!-- CrearEjercicioFragment -->
-    <string name="cdMultimediaEjercicio">Agregar foto o video del ejercicio</string>
-    <string name="tvCardMultimedia">AGREGAR FOTO O VIDEO DEL EJERCICIO</string>
     <string name="tvLabelNombreEjercicio">NOMBRE DEL EJERCICIO</string>
     <string name="etNombreEjercicio_hint">Ej. Sentadilla con Barra</string>
     <string name="tvErrorNombreEjercicio">Ingresa el nombre del ejercicio</string>
@@ -257,8 +251,8 @@
     <string name="etNombrePerfil_error">Ingresa tu nombre</string>
     <string name="btnGuardarNombre">GUARDAR NOMBRE</string>
     <string name="tvLabelCorreoPerfil">CORREO ELECTRÓNICO</string>
-    <!-- TODO: Reemplazar por el correo del usuario autenticado cuando exista la sesión real. -->
-    <string name="tvCorreoPerfil">alex.ramirez@correo.com</string>
+    <!-- Texto inicial: se reemplaza por el correo guardado en la sesión al abrir el perfil. -->
+    <string name="tvCorreoPerfil">—</string>
     <string name="btnCerrarSesion">CERRAR SESIÓN</string>
     <string name="tvTituloCerrarSesion">Cerrar sesión</string>
     <string name="tvMensajeCerrarSesion">¿Seguro que quieres salir de FitTrack? Tus rutinas y tu nombre se guardarán.</string>
@@ -266,7 +260,6 @@
     <string name="btnCancelarCerrarSesion">CANCELAR</string>
     <string name="tvLabelCuenta">CUENTA</string>
     <string name="btnCambiarContrasena">CAMBIAR CONTRASEÑA</string>
-    <string name="tvNombreInicialPerfil">Alex Ramírez</string>
 
     <!-- CambiarContrasenaFragment -->
     <string name="tvToolbarTituloCambiarContrasena">Cambiar contraseña</string>
@@ -367,6 +360,11 @@
     <string name="tvTituloGruposMuscularesResumen">GRUPOS MUSCULARES TRABAJADOS</string>
     <string name="tvTituloEjerciciosResumen">EJERCICIOS REALIZADOS</string>
     <string name="tvResumenSinEjercicios">No se registraron ejercicios en este entrenamiento</string>
+    <!-- Estados de carga y error al consultar un entrenamiento guardado del historial -->
+    <string name="tvErrorResumenEntrenamiento">No pudimos cargar el resumen del entrenamiento</string>
+    <string name="btnReintentarResumenEntrenamiento">REINTENTAR</string>
+    <!-- Se usa cuando el backend solo conservó el día y no la hora real de la sesión. -->
+    <string name="tvFechaResumenEntrenamiento_sin_hora">%1$s</string>
 
     <!-- item_grupo_muscular_resumen.xml -->
     <string name="tvNombreGrupoMuscularResumen">Grupo muscular</string>

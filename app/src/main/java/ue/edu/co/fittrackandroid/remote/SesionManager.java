@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
- * Guarda y proporciona los tokens de la sesión del usuario.
+ * Guarda y proporciona los tokens y los datos personales de la sesión del usuario.
  */
 public final class SesionManager {
 
@@ -12,6 +12,7 @@ public final class SesionManager {
 
     private static final String CLAVE_ACCESS_TOKEN = "access_token";
     private static final String CLAVE_NOMBRE = "nombre";
+    private static final String CLAVE_CORREO = "correo";
 
     private final SharedPreferences sharedPreferences;
 
@@ -31,9 +32,10 @@ public final class SesionManager {
                 .apply();
     }
 
-    public void guardarNombre(String nombre){
+    public void guardarInfoPersonal(String nombre, String correo){
         sharedPreferences.edit()
                 .putString(CLAVE_NOMBRE, nombre)
+                .putString(CLAVE_CORREO, correo)
                 .apply();
     }
 
@@ -48,6 +50,16 @@ public final class SesionManager {
         return sharedPreferences.getString(
                 CLAVE_NOMBRE,
                 "Sin nombre"
+        );
+    }
+
+    /**
+     * @return el correo con el que inició sesión, o null si todavía no se ha guardado.
+     */
+    public String obtenerCorreo() {
+        return sharedPreferences.getString(
+                CLAVE_CORREO,
+                null
         );
     }
 

@@ -85,11 +85,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Al volver desde Crear ejercicio, la toolbar debe quedar como la principal.
         ((MainActivity) requireActivity()).mostrarToolbarPrincipal();
-
-        // TODO: Volver a consultar la rutina, el registro semanal y el historial cuando
-        // estos datos sean persistentes, para reflejar los cambios hechos en otras pantallas.
     }
 
     private void iniciarEntrenamiento() {
@@ -249,19 +245,17 @@ public class HomeFragment extends Fragment {
 
     /**
      * Abre la pantalla con el resultado del entrenamiento reciente que el usuario pulsó.
-     * El adapter solo entrega el elemento; la navegación la decide esta pantalla.
+     * El adapter solo entrega el elemento y esta pantalla no consulta nada: entrega el
+     * identificador y el resumen, si ya venía construido. La pantalla del resumen decide
+     * si necesita pedir el detalle del entrenamiento.
      *
      * @param entrenamiento entrenamiento seleccionado en la lista.
      */
     private void abrirResumenEntrenamiento(UltimoEntrenamiento entrenamiento) {
-        // Un registro sin resumen asociado no se puede abrir: no se inventa una pantalla vacía.
-        if (entrenamiento.getResumen() == null) {
-            // TODO: Cuando el historial use identificadores, cargar el resumen correspondiente
-            // y mostrar un mensaje si el entrenamiento ya no existe o no se puede recuperar.
-            return;
-        }
-
-        ((MainActivity) requireActivity()).mostrarResumenEntrenamiento(entrenamiento.getResumen());
+        ((MainActivity) requireActivity())
+                .mostrarResumenEntrenamientoHistorial(
+                        entrenamiento.getId(),
+                        entrenamiento.getResumen());
     }
 
     private String formatearFechaHoy() {

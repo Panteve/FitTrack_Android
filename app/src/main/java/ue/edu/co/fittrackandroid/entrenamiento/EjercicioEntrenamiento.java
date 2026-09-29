@@ -10,6 +10,7 @@ import java.util.List;
 public class EjercicioEntrenamiento {
 
     private final String nombre;
+    private final String grupoMuscular;
     private final Long rutinaEjercicioId;
     private final List<SerieEntrenamiento> series = new ArrayList<>();
 
@@ -18,11 +19,13 @@ public class EjercicioEntrenamiento {
      *
      * @param rutinaEjercicioId identificador del bloque dentro de la rutina
      * @param nombre nombre visible del ejercicio
+     * @param grupoMuscular grupo muscular principal del ejercicio
      * @param series series iniciales del ejercicio; puede ser {@code null}
      */
-    public EjercicioEntrenamiento(Long rutinaEjercicioId, String nombre,
+    public EjercicioEntrenamiento(Long rutinaEjercicioId, String nombre, String grupoMuscular,
                                  List<SerieEntrenamiento> series) {
         this.nombre = nombre;
+        this.grupoMuscular = grupoMuscular;
         this.rutinaEjercicioId = rutinaEjercicioId;
         if (series != null) {
             this.series.addAll(series);
@@ -32,6 +35,11 @@ public class EjercicioEntrenamiento {
     /** @return el nombre visible del ejercicio. */
     public String getNombre() {
         return nombre;
+    }
+
+    /** @return el grupo muscular principal del ejercicio. */
+    public String getGrupoMuscular() {
+        return grupoMuscular;
     }
 
     /** @return el identificador del bloque de ejercicio dentro de la rutina. */

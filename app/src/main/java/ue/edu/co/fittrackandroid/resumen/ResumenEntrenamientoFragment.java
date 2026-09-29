@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,14 +17,24 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ue.edu.co.fittrackandroid.R;
+import ue.edu.co.fittrackandroid.entrenamiento.EntrenamientoDetalleResponse;
 import ue.edu.co.fittrackandroid.entrenamiento.EntrenamientoEnCurso;
+import ue.edu.co.fittrackandroid.entrenamiento.EntrenamientoRepository;
+import ue.edu.co.fittrackandroid.entrenamiento.RegistroSerieResponse;
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
+import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 
 /**
  * Pantalla de solo lectura con el resultado de un entrenamiento terminado.
@@ -32,8 +44,9 @@ import ue.edu.co.fittrackandroid.hoy.MainActivity;
  * grupos musculares trabajados y los ejercicios con sus series realizadas.
  *
  * <p>La pantalla se abre al confirmar "Terminar" y también al pulsar un registro de
- * "Últimos entrenamientos" en Inicio. En los dos casos MainActivity guarda el
- * {@link ResumenEntrenamiento} que se está mostrando.
+ * "Últimos entrenamientos" en Inicio. En el primer caso MainActivity ya tiene el resumen
+ * completo y se muestra de una vez. En el segundo solo llega el identificador, así que
+ * aquí se consulta el detalle del entrenamiento y se reconstruye el resumen.
  *
  * <p>No hay ningún temporizador: todos los datos ya son finales.
  */
@@ -41,7 +54,15 @@ public class ResumenEntrenamientoFragment extends Fragment {
 
     private MainActivity activity;
     private ResumenEntrenamiento resumen;
+    private Long idEntrenamiento;
+    private EntrenamientoRepository entrenamientoRepository;
+    private Call<EntrenamientoDetalleResponse> currentCallDetalle;
 
+    private ProgressBar pbCargaResumenEntrenamiento;
+    private TextView tvErrorResumenEntrenamiento;
+    private Button btnReintentarResumenEntrenamiento;
+    private View layoutErrorResumenEntrenamiento;
+    private ScrollView svResumenEntrenamiento;
     private TextView tvNombreResumenEntrenamiento;
     private TextView tvFechaResumenEntrenamiento;
     private TextView tvDuracionResumenEntrenamiento;
@@ -59,9 +80,11 @@ public class ResumenEntrenamientoFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = (MainActivity) requireActivity();
-        // El resumen todavía no se guarda en disco: solo existe mientras la app siga viva.
-        // TODO: Leer el resumen del historial guardado cuando exista la persistencia.
+        // El resumen todavía no se guarda en disco: solo existe mientras la app siga viva,
+        // o se reconstruye con el detalle que devuelve el backend.
         resumen = activity.obtenerResumenEntrenamientoActual();
+        idEntrenamiento = activity.obtenerIdEntrenamientoResumenActual();
+        entrenamientoRepository = new EntrenamientoRepository(requireContext());
     }
 
     @Override
@@ -69,13 +92,17 @@ public class ResumenEntrenamientoFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_resumen_entrenamiento, container, false);
 
-        // Si no hay resumen no hay nada que pintar: onResume devuelve a la pantalla anterior.
+        inicializarVistas(view);
+        btnReintentarResumenEntrenamiento.setOnClickListener(v -> cargarResumenDesdeApi());
+
         if (resumen != null) {
-            inicializarVistas(view);
-            mostrarCabecera();
-            mostrarMetricas();
-            mostrarGruposMusculares();
-            mostrarEjercicios();
+            // El resumen ya venía construido: no hace falta ninguna consulta.
+            mostrarResumen();
+        } else if (idEntrenamiento != null) {
+            cargarResumenDesdeApi();
+        } else {
+            // Sin resumen ni identificador no hay nada que recuperar ni que reintentar.
+            mostrarEstadoError();
         }
 
         return view;
@@ -84,16 +111,15 @@ public class ResumenEntrenamientoFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        if (resumen == null) {
-            activity.regresar();
-            return;
-        }
-
         configurarToolbar();
     }
 
     private void inicializarVistas(View view) {
+        pbCargaResumenEntrenamiento = view.findViewById(R.id.pbCargaResumenEntrenamiento);
+        layoutErrorResumenEntrenamiento = view.findViewById(R.id.layoutErrorResumenEntrenamiento);
+        tvErrorResumenEntrenamiento = view.findViewById(R.id.tvErrorResumenEntrenamiento);
+        btnReintentarResumenEntrenamiento = view.findViewById(R.id.btnReintentarResumenEntrenamiento);
+        svResumenEntrenamiento = view.findViewById(R.id.svResumenEntrenamiento);
         tvNombreResumenEntrenamiento = view.findViewById(R.id.tvNombreResumenEntrenamiento);
         tvFechaResumenEntrenamiento = view.findViewById(R.id.tvFechaResumenEntrenamiento);
         tvDuracionResumenEntrenamiento = view.findViewById(R.id.tvDuracionResumenEntrenamiento);
@@ -119,6 +145,193 @@ public class ResumenEntrenamientoFragment extends Fragment {
         activity.ocultarIslaEntrenamiento();
     }
 
+    // ------------------------------------------------------------------ Estados de la pantalla
+
+    /** Deja visible únicamente el indicador mientras se consulta el detalle. */
+    private void mostrarEstadoCarga() {
+        pbCargaResumenEntrenamiento.setVisibility(View.VISIBLE);
+        layoutErrorResumenEntrenamiento.setVisibility(View.GONE);
+        svResumenEntrenamiento.setVisibility(View.GONE);
+    }
+
+    /** Muestra el mensaje de error y deja el reintento disponible. */
+    private void mostrarEstadoError() {
+        pbCargaResumenEntrenamiento.setVisibility(View.GONE);
+        svResumenEntrenamiento.setVisibility(View.GONE);
+        layoutErrorResumenEntrenamiento.setVisibility(View.VISIBLE);
+    }
+
+    /** Muestra el resumen completo y esconde los estados de carga y error. */
+    private void mostrarResumen() {
+        pbCargaResumenEntrenamiento.setVisibility(View.GONE);
+        layoutErrorResumenEntrenamiento.setVisibility(View.GONE);
+        svResumenEntrenamiento.setVisibility(View.VISIBLE);
+
+        mostrarCabecera();
+        mostrarMetricas();
+        mostrarGruposMusculares();
+        mostrarEjercicios();
+    }
+
+    // ------------------------------------------------------------------ Consulta del detalle
+
+    /**
+     * Consulta el entrenamiento guardado y reconstruye su resumen.
+     * Se usa al abrir un registro del historial, que solo trae el identificador.
+     */
+    private void cargarResumenDesdeApi() {
+        if (idEntrenamiento == null) {
+            mostrarEstadoError();
+            return;
+        }
+
+        mostrarEstadoCarga();
+        currentCallDetalle = entrenamientoRepository.getEntrenamientoById(idEntrenamiento);
+
+        currentCallDetalle.enqueue(new Callback<EntrenamientoDetalleResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<EntrenamientoDetalleResponse> call,
+                                   @NonNull Response<EntrenamientoDetalleResponse> response) {
+                if (!isAdded()) {
+                    return;
+                }
+
+                if (response.isSuccessful() && response.body() != null) {
+                    resumen = convertirAResumen(response.body());
+                    mostrarResumen();
+                    return;
+                }
+
+                mostrarEstadoError();
+                ManejadorErroresApi.obtenerToast(requireContext(), response.code()).show();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<EntrenamientoDetalleResponse> call,
+                                  @NonNull Throwable throwable) {
+                if (call.isCanceled() || !isAdded()) {
+                    return;
+                }
+
+                mostrarEstadoError();
+                ManejadorErroresApi.obtenerToast(requireContext(), throwable).show();
+            }
+        });
+    }
+
+    /**
+     * Arma el resumen de solo lectura a partir del detalle guardado por el backend.
+     *
+     * <p>La lista de series ya llega ordenada por {@code ordenEjercicio} y
+     * {@code numeroSerie}, así que se recorre en ese orden y se cierra un ejercicio cada
+     * vez que cambia el {@code rutinaEjercicioId}. Se agrupa por ese identificador y no por
+     * el del ejercicio porque una misma rutina puede repetir un ejercicio en dos bloques
+     * distintos.
+     */
+    private ResumenEntrenamiento convertirAResumen(EntrenamientoDetalleResponse detalle) {
+        List<RegistroSerieResponse> series = detalle.getSeries() == null
+                ? new ArrayList<>()
+                : detalle.getSeries();
+        List<EjercicioResumen> ejercicios = new ArrayList<>();
+        agruparSeriesEnEjercicios(series, ejercicios);
+
+        // Los entrenamientos antiguos no tienen total guardado: se usa lo que llegó.
+        int seriesTotales = detalle.getSeriesTotales() != null
+                ? detalle.getSeriesTotales()
+                : series.size();
+
+        int duracionMinutos = detalle.getDuracionMinutos() == null
+                ? 0
+                : detalle.getDuracionMinutos();
+        long duracionSegundos = duracionMinutos * 60L;
+
+        // El backend solo conserva el día del entrenamiento, no la hora en que se hizo.
+        return new ResumenEntrenamiento(
+                detalle.getNombreRutina(),
+                convertirFecha(detalle.getFecha()),
+                duracionSegundos,
+                seriesTotales,
+                false,
+                ejercicios);
+    }
+
+    /**
+     * Recorre las series en el orden recibido y crea un ejercicio por cada bloque.
+     *
+     * <p>Un bloque termina cuando cambia el {@code rutinaEjercicioId}, porque una misma
+     * rutina puede repetir un ejercicio en dos lugares distintos y hay que mostrarlos por
+     * separado. Al cambiar se cierra el ejercicio con las series acumuladas y se empieza
+     * el siguiente.
+     */
+    private void agruparSeriesEnEjercicios(List<RegistroSerieResponse> series,
+                                           List<EjercicioResumen> ejercicios) {
+        List<SerieResumen> seriesDelEjercicio = new ArrayList<>();
+        RegistroSerieResponse primeraSerie = null;
+        Long rutinaEjercicioActual = null;
+
+        for (RegistroSerieResponse serie : series) {
+            boolean empiezaNuevoEjercicio = primeraSerie != null
+                    && !Objects.equals(rutinaEjercicioActual, serie.getRutinaEjercicioId());
+
+            if (empiezaNuevoEjercicio) {
+                ejercicios.add(crearEjercicioResumen(primeraSerie, seriesDelEjercicio));
+                seriesDelEjercicio = new ArrayList<>();
+                primeraSerie = null;
+            }
+
+            if (primeraSerie == null) {
+                primeraSerie = serie;
+                rutinaEjercicioActual = serie.getRutinaEjercicioId();
+            }
+
+            double peso = serie.getPeso() == null ? 0 : serie.getPeso();
+            int repeticiones = serie.getRepeticiones() == null ? 0 : serie.getRepeticiones();
+            seriesDelEjercicio.add(new SerieResumen(peso, repeticiones));
+        }
+
+        if (primeraSerie != null) {
+            ejercicios.add(crearEjercicioResumen(primeraSerie, seriesDelEjercicio));
+        }
+    }
+
+    /** Crea un ejercicio del resumen con el nombre y el grupo muscular de su primera serie. */
+    private EjercicioResumen crearEjercicioResumen(RegistroSerieResponse primeraSerie,
+                                                   List<SerieResumen> series) {
+        return new EjercicioResumen(
+                primeraSerie.getNombreEjercicio(),
+                obtenerGrupoMuscular(primeraSerie.getGrupoMuscular()),
+                series);
+    }
+
+    /** @return el grupo muscular recibido, o el de respaldo si el backend no lo envió. */
+    private String obtenerGrupoMuscular(String grupoMuscular) {
+        if (grupoMuscular == null || grupoMuscular.trim().isEmpty()) {
+            return getString(R.string.tvGrupoMuscularResumen_fallback);
+        }
+
+        return grupoMuscular;
+    }
+
+    /**
+     * Convierte la fecha "yyyy-MM-dd" del backend a milisegundos para poder reutilizar el
+     * formateo de la cabecera. La hora de ese valor no se muestra: el resumen reconstruido
+     * no la conoce.
+     */
+    private long convertirFecha(String fecha) {
+        if (fecha == null || fecha.trim().isEmpty()) {
+            return System.currentTimeMillis();
+        }
+
+        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+        try {
+            return formato.parse(fecha).getTime();
+        } catch (ParseException error) {
+            // Si el backend no envía una fecha legible se usa el momento actual como respaldo.
+            return System.currentTimeMillis();
+        }
+    }
+
     // ------------------------------------------------------------------ Cabecera
 
     /** Muestra el nombre del entrenamiento y el día y la hora reales en que se hizo. */
@@ -131,8 +344,16 @@ public class ResumenEntrenamientoFragment extends Fragment {
         }
 
         tvNombreResumenEntrenamiento.setText(nombre);
-        tvFechaResumenEntrenamiento.setText(getString(R.string.tvFechaResumenEntrenamiento,
-                formatearFechaResumen(), formatearHoraResumen()));
+
+        if (resumen.tieneHoraExacta()) {
+            tvFechaResumenEntrenamiento.setText(getString(R.string.tvFechaResumenEntrenamiento,
+                    formatearFechaResumen(), formatearHoraResumen()));
+            return;
+        }
+
+        // Del historial solo se conoce el día, así que no se inventa una hora.
+        tvFechaResumenEntrenamiento.setText(
+                getString(R.string.tvFechaResumenEntrenamiento_sin_hora, formatearFechaResumen()));
     }
 
     /** @return el día del entrenamiento, por ejemplo "Sábado, 26 de septiembre". */
@@ -214,5 +435,13 @@ public class ResumenEntrenamientoFragment extends Fragment {
 
         rvEjerciciosResumen.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvEjerciciosResumen.setAdapter(new ResumenEjercicioAdapter(ejercicios));
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (currentCallDetalle != null) {
+            currentCallDetalle.cancel();
+        }
+        super.onDestroyView();
     }
 }

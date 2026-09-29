@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -20,22 +22,32 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ue.edu.co.fittrackandroid.R;
+import ue.edu.co.fittrackandroid.ejercicios.EjercicioRepository;
+import ue.edu.co.fittrackandroid.ejercicios.EjercicioResponse;
 import ue.edu.co.fittrackandroid.hoy.MainActivity;
+import ue.edu.co.fittrackandroid.remote.SesionManager;
+import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 
 /**
  * Pantalla de perfil: foto, datos personales, ejercicios creados por el usuario, cambio de
- * contraseña y cierre de sesión. El nombre y la foto se guardan localmente con
- * SharedPreferences porque todavía no existe una fuente de datos real.
+ * contraseña y cierre de sesión. El nombre y el correo salen de la sesión guardada en
+ * SharedPreferences, el mismo origen que usa el saludo de Inicio; la foto sí se guarda
+ * localmente en las preferencias del perfil. Los ejercicios se consultan al backend.
  */
 public class PerfilFragment extends Fragment {
 
     private static final String PREFERENCIAS_PERFIL = "preferencias_perfil";
-    private static final String CLAVE_NOMBRE_USUARIO = "nombre_usuario";
     private static final String CLAVE_URI_FOTO_PERFIL = "uri_foto_perfil";
 
     private ActivityResultLauncher<String[]> selectorImagen;
@@ -44,10 +56,18 @@ public class PerfilFragment extends Fragment {
     private ImageButton btnIconoCambiarFoto;
     private Button btnCambiarFoto;
     private EditText etNombrePerfil;
+    private TextView tvCorreoPerfil;
     private Button btnGuardarNombre;
     private Button btnNuevoEjercicio;
     private Button btnCambiarContrasena;
     private Button btnCerrarSesion;
+    private TextView tvTituloLista;
+    private ProgressBar pbCargaEjerciciosPerfil;
+    private TextView tvSinEjerciciosPerfil;
+    private RecyclerView rvEjerciciosPerfil;
+    private SesionManager sesionManager;
+    private EjercicioRepository ejercicioRepository;
+    private Call<List<EjercicioResponse>> currentCallEjercicios;
 
     public PerfilFragment() {
         // Required empty public constructor
@@ -69,10 +89,11 @@ public class PerfilFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_perfil, container, false);
 
         inicializarVistas(view);
+        sesionManager = new SesionManager(requireContext());
+        ejercicioRepository = new EjercicioRepository(requireContext());
 
-        // TODO: Reemplazar los cuatro ejercicios definidos de forma fija en el layout por
-        // los ejercicios creados por el usuario. Debe contemplar carga, estado vacío, error
-        // y el guardado del nuevo orden cuando se habilite la acción de reordenar.
+        // La lista de ejercicios se consulta en onResume, no aquí: cargarDatosPerfil()
+        // sigue siendo el responsable de los datos de la sesión y de la foto local.
         cargarDatosPerfil();
         configurarAcciones();
 
@@ -85,9 +106,9 @@ public class PerfilFragment extends Fragment {
         // El perfil es una pestaña raíz: la toolbar debe verse siempre como la principal.
         ((MainActivity) requireActivity()).mostrarToolbarPrincipal();
 
-        // TODO: Volver a consultar el perfil y los ejercicios creados por el usuario cuando
-        // exista una fuente de datos real, para reflejar cambios hechos desde otras pantallas
-        // o dispositivos.
+        // Se consulta en onResume para que, al volver desde CrearEjercicioFragment,
+        // la lista muestre el ejercicio recién creado.
+        cargarEjercicios();
     }
 
     /** Busca las vistas de la pantalla y las guarda en los campos. */
@@ -96,22 +117,43 @@ public class PerfilFragment extends Fragment {
         btnIconoCambiarFoto = view.findViewById(R.id.btnIconoCambiarFoto);
         btnCambiarFoto = view.findViewById(R.id.btnCambiarFoto);
         etNombrePerfil = view.findViewById(R.id.etNombrePerfil);
+        tvCorreoPerfil = view.findViewById(R.id.tvCorreoPerfil);
         btnGuardarNombre = view.findViewById(R.id.btnGuardarNombre);
         btnNuevoEjercicio = view.findViewById(R.id.btnNuevoEjercicio);
         btnCambiarContrasena = view.findViewById(R.id.btnCambiarContrasena);
         btnCerrarSesion = view.findViewById(R.id.btnCerrarSesion);
+        tvTituloLista = view.findViewById(R.id.tvTituloLista);
+        pbCargaEjerciciosPerfil = view.findViewById(R.id.pbCargaEjerciciosPerfil);
+        tvSinEjerciciosPerfil = view.findViewById(R.id.tvSinEjerciciosPerfil);
+        rvEjerciciosPerfil = view.findViewById(R.id.rvEjerciciosPerfil);
+
+        // La lista vive dentro del desplazamiento general del perfil, por eso no debe
+        // intentar desplazarse por separado.
+        rvEjerciciosPerfil.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvEjerciciosPerfil.setNestedScrollingEnabled(false);
+        rvEjerciciosPerfil.setHasFixedSize(false);
     }
 
-    /** Muestra el nombre guardado e intenta restaurar la foto elegida anteriormente. */
+    /**
+     * Muestra el nombre y el correo guardados en la sesión, e intenta restaurar la foto
+     * elegida anteriormente.
+     */
     private void cargarDatosPerfil() {
-        // TODO: Consultar el nombre, correo y foto del usuario autenticado. El correo que se
-        // muestra actualmente está definido de forma fija en fragment_perfil.xml.
+        // TODO: Consultar la foto del usuario autenticado al backend, cuando exista.
 
         // TODO: Dejar de compartir estas preferencias entre todas las cuentas del dispositivo.
-        // Los datos locales deben asociarse al identificador del usuario o venir del backend.
-        String nombreUsuario = obtenerPreferencias()
-                .getString(CLAVE_NOMBRE_USUARIO, getString(R.string.tvNombreInicialPerfil));
-        etNombrePerfil.setText(nombreUsuario);
+        // La foto local debe asociarse al identificador del usuario.
+
+        // El nombre es editable y vive en la sesión, el mismo origen que usa el saludo de Inicio.
+        etNombrePerfil.setText(sesionManager.obtenerNombre());
+
+        // El correo no es editable: solo se muestra el que se usó para iniciar sesión.
+        String correoUsuario = sesionManager.obtenerCorreo();
+        if (correoUsuario == null || correoUsuario.trim().isEmpty()) {
+            tvCorreoPerfil.setText(R.string.tvCorreoPerfil);
+        } else {
+            tvCorreoPerfil.setText(correoUsuario);
+        }
 
         restaurarFotoPerfil();
     }
@@ -125,6 +167,93 @@ public class PerfilFragment extends Fragment {
         btnNuevoEjercicio.setOnClickListener(v -> abrirCrearEjercicio());
         btnCambiarContrasena.setOnClickListener(v -> abrirCambiarContrasena());
         btnCerrarSesion.setOnClickListener(v -> confirmarCierreSesion());
+    }
+
+    /** Consulta los ejercicios creados por el usuario y los muestra en la tarjeta. */
+    private void cargarEjercicios() {
+        // Una consulta anterior puede seguir en vuelo si la pantalla se abrió de nuevo.
+        if (currentCallEjercicios != null) {
+            currentCallEjercicios.cancel();
+        }
+
+        mostrarCargaEjercicios();
+        currentCallEjercicios = ejercicioRepository.getMisEjercicios();
+        currentCallEjercicios.enqueue(new Callback<List<EjercicioResponse>>() {
+
+            @Override
+            public void onResponse(@NonNull Call<List<EjercicioResponse>> call,
+                                   @NonNull Response<List<EjercicioResponse>> response) {
+                if (!isAdded()) {
+                    return;
+                }
+
+                if (!response.isSuccessful() || response.body() == null) {
+                    mostrarErrorEjercicios();
+                    ManejadorErroresApi
+                            .obtenerToast(requireContext(), response.code())
+                            .show();
+                    return;
+                }
+
+                List<EjercicioResponse> ejerciciosRecibidos = response.body();
+                if (ejerciciosRecibidos.isEmpty()) {
+                    mostrarEjerciciosVacios();
+                    return;
+                }
+
+                mostrarEjercicios(ejerciciosRecibidos);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<EjercicioResponse>> call,
+                                  @NonNull Throwable throwable) {
+                if (call.isCanceled() || !isAdded()) {
+                    return;
+                }
+
+                mostrarErrorEjercicios();
+                ManejadorErroresApi
+                        .obtenerToast(requireContext(), throwable)
+                        .show();
+            }
+        });
+    }
+
+    /** Deja visible únicamente el indicador mientras se consulta la API. */
+    private void mostrarCargaEjercicios() {
+        tvTituloLista.setText(getString(R.string.tvTituloLista, 0));
+        pbCargaEjerciciosPerfil.setVisibility(View.VISIBLE);
+        tvSinEjerciciosPerfil.setVisibility(View.GONE);
+        rvEjerciciosPerfil.setVisibility(View.GONE);
+    }
+
+    /** Muestra los ejercicios recibidos en el RecyclerView. */
+    private void mostrarEjercicios(List<EjercicioResponse> ejerciciosRecibidos) {
+        tvTituloLista.setText(
+                getString(R.string.tvTituloLista, ejerciciosRecibidos.size()));
+        pbCargaEjerciciosPerfil.setVisibility(View.GONE);
+        tvSinEjerciciosPerfil.setVisibility(View.GONE);
+        rvEjerciciosPerfil.setAdapter(new PerfilEjercicioAdapter(ejerciciosRecibidos));
+        rvEjerciciosPerfil.setVisibility(View.VISIBLE);
+    }
+
+    /** Avisa que el usuario todavía no ha creado ningún ejercicio. */
+    private void mostrarEjerciciosVacios() {
+        tvTituloLista.setText(getString(R.string.tvTituloLista, 0));
+        pbCargaEjerciciosPerfil.setVisibility(View.GONE);
+        rvEjerciciosPerfil.setAdapter(null);
+        rvEjerciciosPerfil.setVisibility(View.GONE);
+        tvSinEjerciciosPerfil.setText(R.string.tvSinEjerciciosPerfil);
+        tvSinEjerciciosPerfil.setVisibility(View.VISIBLE);
+    }
+
+    /** Presenta un estado estable cuando no fue posible cargar los ejercicios. */
+    private void mostrarErrorEjercicios() {
+        pbCargaEjerciciosPerfil.setVisibility(View.GONE);
+        rvEjerciciosPerfil.setAdapter(null);
+        rvEjerciciosPerfil.setVisibility(View.GONE);
+        tvSinEjerciciosPerfil.setText(R.string.tvSinEjerciciosPerfil_error);
+        tvSinEjerciciosPerfil.setVisibility(View.VISIBLE);
     }
 
     /** Abre la pantalla de crear un ejercicio nuevo. */
@@ -212,12 +341,13 @@ public class PerfilFragment extends Fragment {
             return;
         }
 
-        // TODO: Actualizar el nombre en la fuente de datos del usuario y guardar localmente
-        // solo después de confirmar el resultado. Mientras se guarda, deshabilitar el botón
+        // TODO: Actualizar el nombre en la fuente de datos del usuario y guardarlo solo
+        // después de confirmar el resultado. Mientras se guarda, deshabilitar el botón
         // para evitar solicitudes duplicadas y conservar el texto si ocurre un error.
-        obtenerPreferencias().edit().putString(CLAVE_NOMBRE_USUARIO, nombreUsuario).apply();
+        // Se guarda junto al correo para no perderlo, porque los dos viven en la sesión.
+        sesionManager.guardarInfoPersonal(nombreUsuario, sesionManager.obtenerCorreo());
 
-        // TODO: Actualizar también el saludo de Home con el nuevo nombre.
+        // El saludo de Inicio lee el mismo nombre, así que ya sale actualizado.
         etNombrePerfil.setError(null);
         Toast.makeText(requireContext(), "Nombre guardado", Toast.LENGTH_SHORT).show();
     }
@@ -235,5 +365,13 @@ public class PerfilFragment extends Fragment {
 
     private SharedPreferences obtenerPreferencias() {
         return requireContext().getSharedPreferences(PREFERENCIAS_PERFIL, Context.MODE_PRIVATE);
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (currentCallEjercicios != null) {
+            currentCallEjercicios.cancel();
+        }
+        super.onDestroyView();
     }
 }

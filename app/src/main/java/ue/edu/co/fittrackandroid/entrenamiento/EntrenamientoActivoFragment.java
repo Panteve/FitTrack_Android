@@ -157,8 +157,6 @@ public class EntrenamientoActivoFragment extends Fragment
     @Override
     public void onPause() {
         super.onPause();
-        // No se restaura la navegación inferior aquí porque la sesión sigue activa aunque
-        // el fragment deje de estar visible.
         detenerActualizacionesVisuales();
     }
 
@@ -574,6 +572,7 @@ public class EntrenamientoActivoFragment extends Fragment
                 fecha,
                 duracionMinutos,
                 entrenamiento.getNotas(),
+                contarSeriesTotales(),
                 seriesCompletadas);
     }
 
@@ -626,9 +625,14 @@ public class EntrenamientoActivoFragment extends Fragment
                 continue;
             }
 
+            String grupoMuscular = ejercicio.getGrupoMuscular();
+            if (grupoMuscular == null || grupoMuscular.isBlank()) {
+                grupoMuscular = getString(R.string.tvGrupoMuscularResumen_fallback);
+            }
+
             ejerciciosResumen.add(new EjercicioResumen(
                     ejercicio.getNombre(),
-                    getString(R.string.tvGrupoMuscularResumen_fallback),
+                    grupoMuscular,
                     seriesResumen));
         }
 
@@ -636,6 +640,7 @@ public class EntrenamientoActivoFragment extends Fragment
                 entrenamiento.getFechaHoraInicio(),
                 entrenamiento.getSegundosTranscurridos(),
                 contarSeriesTotales(),
+                true,
                 ejerciciosResumen);
     }
 

@@ -78,6 +78,13 @@ public class MainActivity extends AppCompatActivity {
      */
     private ResumenEntrenamiento resumenEntrenamientoActual;
 
+    /**
+     * Identificador del entrenamiento guardado que se está mostrando en el resumen.
+     * Sirve para consultar el detalle cuando el resumen no viene ya construido,
+     * por ejemplo al abrir un registro de "Últimos entrenamientos".
+     */
+    private Long idEntrenamientoResumenActual;
+
     /** Reloj de la isla del entrenamiento minimizado. */
     private final Handler handlerIsla = new Handler(Looper.getMainLooper());
 
@@ -133,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
             // Las pestañas del menú inferior son raíces: se descarta cualquier pantalla secundaria abierta.
             limpiarBackStack();
             cargarFragment(fragment);
+            // Ninguna pestaña es el entrenamiento activo, así que la isla puede volver a verse.
+            mostrarIslaEntrenamiento();
             return true;
         });
     }
@@ -231,10 +240,32 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         FragmentManager fm = getSupportFragmentManager();
         if (fm.getBackStackEntryCount() > 0) {
-            fm.popBackStack();
+            fm.popBackStackImmediate();
+            refrescarIslaSegunPantallaVisible();
         } else {
             super.onBackPressed();
         }
+    }
+
+    /**
+     * Vuelve a mostrar la isla del entrenamiento minimizado cuando la pantalla que quedó
+     * visible no es el entrenamiento activo.
+     *
+     * <p>Hace falta porque las pantallas de solo lectura, como el resumen, ocultan la isla.
+     * Si el usuario todavía tiene una sesión abierta, al regresar a Inicio la isla debe
+     * reaparecer con su cronómetro intacto. La decisión vive aquí para no repetirla en
+     * cada pantalla.
+     */
+    private void refrescarIslaSegunPantallaVisible() {
+        Fragment fragmentVisible = getSupportFragmentManager()
+                .findFragmentById(R.id.fragmentContainer);
+
+        if (fragmentVisible instanceof EntrenamientoActivoFragment) {
+            ocultarIslaEntrenamiento();
+            return;
+        }
+
+        mostrarIslaEntrenamiento();
     }
 
     /** Restaura la toolbar principal: solo título "FitTrack", sin volver ni acción. */
@@ -430,6 +461,7 @@ public class MainActivity extends AppCompatActivity {
             EjercicioEntrenamiento ejercicioEntrenamiento = new EjercicioEntrenamiento(
                     ejercicio.getId(),
                     ejercicio.getNombre(),
+                    ejercicio.getGrupoMuscular(),
                     seriesEntrenamiento
             );
 
@@ -517,10 +549,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Abre el resumen de un entrenamiento que ya está guardado en el historial.
+     *
+     * <p>A diferencia de {@link #mostrarResumenEntrenamiento(ResumenEntrenamiento)}, esta
+     * pantalla no borra nada: consultar el pasado nunca puede terminar, descartar ni
+     * pausear el entrenamiento que el usuario puede tener abierto. Si el resumen todavía
+     * no está construido se guarda el identificador para que la propia pantalla del
+     * resumen consulte el detalle del entrenamiento.
+     *
+     * @param idEntrenamiento identificador del entrenamiento guardado.
+     * @param resumen        resumen ya construido, o null si hay que consultarlo.
+     */
+    public void mostrarResumenEntrenamientoHistorial(Long idEntrenamiento,
+                                                     ResumenEntrenamiento resumen) {
+        idEntrenamientoResumenActual = idEntrenamiento;
+        resumenEntrenamientoActual = resumen;
+
+        mostrarNavegacionInferior();
+        cargarFragmentConBackStack(new ResumenEntrenamientoFragment());
+    }
+
+    /**
      * @return el resumen del entrenamiento que se está mostrando, o null si no hay ninguno.
      */
     public ResumenEntrenamiento obtenerResumenEntrenamientoActual() {
         return resumenEntrenamientoActual;
+    }
+
+    /**
+     * @return el identificador del entrenamiento guardado que se está mostrando,
+     *         o null si el resumen actual no viene del historial.
+     */
+    public Long obtenerIdEntrenamientoResumenActual() {
+        return idEntrenamientoResumenActual;
     }
 
     /**
@@ -530,6 +591,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void limpiarResumenEntrenamientoActual() {
         resumenEntrenamientoActual = null;
+        idEntrenamientoResumenActual = null;
     }
 
     /**

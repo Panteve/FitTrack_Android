@@ -11,8 +11,8 @@ public class Ejercicio {
     private final String nombre;
     private final String grupoMuscular;
 
-    // TODO: Incorporar el tipo de equipo, peso y repeticiones sugeridas, y la referencia de
-    // multimedia que se capturan en CrearEjercicioFragment.
+    // TODO: Incorporar el tipo de equipo, peso y repeticiones sugeridas que se capturan en
+    // CrearEjercicioFragment.
 
     public Ejercicio(String nombre, String grupoMuscular) {
         this.nombre = nombre;

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,12 +20,11 @@ import ue.edu.co.fittrackandroid.hoy.MainActivity;
  */
 public class CrearEjercicioFragment extends Fragment {
 
-    private ImageButton btnMultimediaEjercicio;
     private EditText etNombreEjercicio;
     private TextView tvErrorNombreEjercicio;
 
     // TODO: Guardar y restaurar el borrador completo si el Fragment se recrea, incluyendo
-    // el nombre, la multimedia y los valores seleccionados en los campos secundarios.
+    // el nombre y los valores seleccionados en los campos secundarios.
 
     public CrearEjercicioFragment() {
         // Required empty public constructor
@@ -37,7 +35,6 @@ public class CrearEjercicioFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_crear_ejercicio, container, false);
 
-        btnMultimediaEjercicio = view.findViewById(R.id.btnMultimediaEjercicio);
         etNombreEjercicio = view.findViewById(R.id.etNombreEjercicio);
         tvErrorNombreEjercicio = view.findViewById(R.id.tvErrorNombreEjercicio);
 
@@ -45,11 +42,6 @@ public class CrearEjercicioFragment extends Fragment {
         View layoutCampoTipoEquipo = view.findViewById(R.id.layoutCampoTipoEquipo);
         View layoutCampoPeso = view.findViewById(R.id.layoutCampoPeso);
         View layoutCampoRepeticiones = view.findViewById(R.id.layoutCampoRepeticiones);
-
-        // TODO: Abrir el selector de imágenes o videos, validar el archivo elegido, mostrar
-        // una vista previa y conservar su referencia como parte del borrador.
-        btnMultimediaEjercicio.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Agregar multimedia próximamente", Toast.LENGTH_SHORT).show());
 
         // TODO: Reemplazar estos mensajes por selectores que guarden y muestren el grupo
         // muscular, tipo de equipo, peso sugerido y repeticiones sugeridas.
@@ -89,8 +81,8 @@ public class CrearEjercicioFragment extends Fragment {
         // antes de intentar guardar. También se debe comprobar si el usuario ya creó un
         // ejercicio con el mismo nombre.
 
-        // TODO: Subir primero la multimedia, si existe, y guardar el ejercicio con todos sus
-        // datos en la base de datos o backend asociado al usuario autenticado.
+        // TODO: Subir el ejercicio con todos sus datos en la base de datos o backend asociado
+        // al usuario autenticado.
 
         // TODO: Deshabilitar temporalmente la acción de guardar, manejar éxito y error por
         // separado, y regresar solamente cuando se confirme el guardado. Si falla, conservar

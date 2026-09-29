@@ -10,6 +10,7 @@ public class EntrenamientoDetalleResponse {
     private String nombreRutina;
     private String fecha;
     private Integer duracionMinutos;
+    private Integer seriesTotales;
     private String notas;
     private String fotoUrl;
     private List<RegistroSerieResponse> series;
@@ -32,6 +33,15 @@ public class EntrenamientoDetalleResponse {
 
     public Integer getDuracionMinutos() {
         return duracionMinutos;
+    }
+
+    /**
+     * @return las series que tenía la rutina al terminar, completas o pendientes.
+     *         Los entrenamientos guardados antes de que existiera este campo llegan
+     *         como null.
+     */
+    public Integer getSeriesTotales() {
+        return seriesTotales;
     }
 
     public String getNotas() {

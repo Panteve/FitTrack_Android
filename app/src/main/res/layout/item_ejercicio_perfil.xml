@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fila de un ejercicio creado por el usuario. La raíz es vertical para poder
+     colocar el separador debajo de la fila horizontal. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutEjercicioPerfil"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/spacing_md">
+
+        <TextView
+            android:id="@+id/tvNumeroEjercicioPerfil"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/bg_number_badge"
+            android:gravity="center"
+            android:text="@string/tvNumeroEjercicioPerfil"
+            android:textColor="@color/colorTextStrong"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvNombreEjercicioPerfil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tvNombreEjercicioPerfil"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvGrupoMuscularEjercicioPerfil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/tvGrupoMuscularEjercicioPerfil"
+                android:textColor="@color/colorTextTertiary"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/viewSeparadorEjercicioPerfil"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorDivider" />
+</LinearLayout>

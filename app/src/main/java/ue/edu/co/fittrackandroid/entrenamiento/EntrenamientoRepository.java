@@ -19,4 +19,14 @@ public class EntrenamientoRepository {
             EntrenamientoCrearRequest entrenamientoCrearRequest) {
         return entrenamientoApiService.crearEntrenamiento(entrenamientoCrearRequest);
     }
+
+    /**
+     * Devuelve la llamada para consultar un entrenamiento guardado. El repositorio solo
+     * entrega la llamada: ejecutarla con enqueue es responsabilidad de la pantalla.
+     *
+     * @param id identificador del entrenamiento guardado.
+     */
+    public Call<EntrenamientoDetalleResponse> getEntrenamientoById(Long id) {
+        return entrenamientoApiService.getEntrenamientoById(id);
+    }
 }

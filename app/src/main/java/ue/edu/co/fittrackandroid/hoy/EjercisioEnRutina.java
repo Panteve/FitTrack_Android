@@ -8,6 +8,7 @@ public class EjercisioEnRutina {
     private Long id;
     private Long ejercicioId;
     private String nombre;
+    private String grupoMuscular;
     private int orden;
     private List<SerieRutina> series;
 
@@ -33,6 +34,14 @@ public class EjercisioEnRutina {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getGrupoMuscular() {
+        return grupoMuscular;
+    }
+
+    public void setGrupoMuscular(String grupoMuscular) {
+        this.grupoMuscular = grupoMuscular;
     }
 
     public int getOrden() {

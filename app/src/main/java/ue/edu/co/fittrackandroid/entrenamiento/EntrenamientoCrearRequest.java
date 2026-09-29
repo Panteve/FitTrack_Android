@@ -9,6 +9,7 @@ public class EntrenamientoCrearRequest {
     private final String fecha;
     private final int duracionMinutos;
     private final String notas;
+    private final Integer seriesTotales;
     private final List<RegistroSerieRequest> series;
 
     /**
@@ -18,14 +19,17 @@ public class EntrenamientoCrearRequest {
      * @param fecha fecha del entrenamiento en formato ISO
      * @param duracionMinutos duración total redondeada a minutos
      * @param notas notas opcionales
+     * @param seriesTotales series que tenía la rutina, completas o pendientes
      * @param series series completadas
      */
     public EntrenamientoCrearRequest(Long rutinaId, String fecha, int duracionMinutos,
-                                     String notas, List<RegistroSerieRequest> series) {
+                                     String notas, Integer seriesTotales,
+                                     List<RegistroSerieRequest> series) {
         this.rutinaId = rutinaId;
         this.fecha = fecha;
         this.duracionMinutos = duracionMinutos;
         this.notas = notas;
+        this.seriesTotales = seriesTotales;
         this.series = series;
     }
 }

@@ -128,8 +128,9 @@ public class LoginFragment extends Fragment {
                     sesionManager.guardarTokens(
                             response.body().getToken()
                     );
-                    sesionManager.guardarNombre(
-                            response.body().getNombre()
+                    sesionManager.guardarInfoPersonal(
+                            response.body().getNombre(),
+                            correo
                     );
                     ((MainActivity) requireActivity()).mostrarHome();
                     return;

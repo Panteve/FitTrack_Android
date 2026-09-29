@@ -13,6 +13,10 @@ import java.util.List;
  * entrenamiento activo. El volumen y la cantidad de series completadas no se almacenan
  * porque se calculan siempre desde las series copiadas, así no pueden quedar
  * inconsistentes entre sí.
+ *
+ * <p>También se puede reconstruir a partir del detalle guardado en el backend. En ese
+ * caso el backend solo conserva el día, no la hora exacta, y por eso se marca con
+ * {@code tieneHoraExacta} para no mostrar una hora que nunca existió.
  */
 public class ResumenEntrenamiento {
 
@@ -20,6 +24,7 @@ public class ResumenEntrenamiento {
     private final long fechaHoraInicio;
     private final long duracionSegundos;
     private final int seriesTotales;
+    private final boolean tieneHoraExacta;
     private final List<EjercicioResumen> ejercicios;
 
     /**
@@ -29,14 +34,18 @@ public class ResumenEntrenamiento {
      * @param fechaHoraInicio  momento real en que empezó, con {@link System#currentTimeMillis()}.
      * @param duracionSegundos duración final de la sesión, en segundos.
      * @param seriesTotales    series que existían al terminar, completas o pendientes.
+     * @param tieneHoraExacta  true si la fechaHoraInicio es el momento real de la sesión;
+     *                         false si solo se conoce el día guardado por el backend.
      * @param ejercicios       ejercicios realizados con sus series completadas.
      */
     public ResumenEntrenamiento(String nombre, long fechaHoraInicio, long duracionSegundos,
-                                int seriesTotales, List<EjercicioResumen> ejercicios) {
+                                int seriesTotales, boolean tieneHoraExacta,
+                                List<EjercicioResumen> ejercicios) {
         this.nombre = nombre;
         this.fechaHoraInicio = fechaHoraInicio;
         this.duracionSegundos = duracionSegundos;
         this.seriesTotales = seriesTotales;
+        this.tieneHoraExacta = tieneHoraExacta;
         // Se copia la lista para que el resumen no dependa de la sesión que lo creó.
         this.ejercicios = new ArrayList<>(ejercicios);
     }
@@ -67,6 +76,15 @@ public class ResumenEntrenamiento {
      */
     public int getSeriesTotales() {
         return seriesTotales;
+    }
+
+    /**
+     * @return true si se conoce la hora real de la sesión y se puede mostrar junto a la
+     *         fecha; false si el resumen fue reconstruido desde el historial guardado,
+     *         donde el backend solo conserva el día.
+     */
+    public boolean tieneHoraExacta() {
+        return tieneHoraExacta;
     }
 
     /**

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/svPerfil"
     android:layout_width="match_parent"
@@ -132,7 +132,7 @@
                 app:drawableTint="@color/colorTextTertiary" />
         </LinearLayout>
 
-        <!-- Lista de ejercicios de la rutina con divisores -->
+        <!-- Ejercicios creados por el usuario -->
         <LinearLayout
             android:id="@+id/cardListaEjercicios"
             android:layout_width="match_parent"
@@ -157,7 +157,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/tvTituloLista"
                     android:textColor="@color/colorTextStrong"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -176,240 +175,32 @@
                 android:layout_height="1dp"
                 android:background="@color/colorBorder" />
 
-            <!-- Ejercicio 1 -->
-            <LinearLayout
-                android:id="@+id/layoutEjercicio1"
+            <!-- Estados de carga, lista y lista vacía -->
+            <ProgressBar
+                android:id="@+id/pbCargaEjerciciosPerfil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginVertical="@dimen/spacing_xxl"
+                android:indeterminateTint="@color/colorPrimary" />
+
+            <TextView
+                android:id="@+id/tvSinEjerciciosPerfil"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="@dimen/spacing_md">
+                android:layout_marginVertical="@dimen/spacing_xxl"
+                android:text="@string/tvSinEjerciciosPerfil_loading"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="13sp"
+                android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/tvNumeroEjercicio1"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:background="@drawable/bg_number_badge"
-                    android:gravity="center"
-                    android:text="@string/tvNumeroEjercicio1"
-                    android:textColor="@color/colorTextStrong"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/spacing_md"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvNombreEjercicio1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tvNombreEjercicio1"
-                        android:textColor="@color/colorTextPrimary"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvGrupoMuscularEjercicio1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/tvGrupoMuscularEjercicio1"
-                        android:textColor="@color/colorTextTertiary"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/imgReorder1"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:contentDescription="@string/tvNombreEjercicio1"
-                    android:src="@drawable/ic_reorder"
-                    app:tint="@color/colorTextDisabled" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/colorDivider" />
-
-            <!-- Ejercicio 2 -->
-            <LinearLayout
-                android:id="@+id/layoutEjercicio2"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvEjerciciosPerfil"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:id="@+id/tvNumeroEjercicio2"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:background="@drawable/bg_number_badge"
-                    android:gravity="center"
-                    android:text="@string/tvNumeroEjercicio2"
-                    android:textColor="@color/colorTextStrong"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/spacing_md"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvNombreEjercicio2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tvNombreEjercicio2"
-                        android:textColor="@color/colorTextPrimary"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvGrupoMuscularEjercicio2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/tvGrupoMuscularEjercicio2"
-                        android:textColor="@color/colorTextTertiary"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/imgReorder2"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:contentDescription="@string/tvNombreEjercicio2"
-                    android:src="@drawable/ic_reorder"
-                    app:tint="@color/colorTextDisabled" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/colorDivider" />
-
-            <!-- Ejercicio 3 -->
-            <LinearLayout
-                android:id="@+id/layoutEjercicio3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:id="@+id/tvNumeroEjercicio3"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:background="@drawable/bg_number_badge"
-                    android:gravity="center"
-                    android:text="@string/tvNumeroEjercicio3"
-                    android:textColor="@color/colorTextStrong"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/spacing_md"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvNombreEjercicio3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tvNombreEjercicio3"
-                        android:textColor="@color/colorTextPrimary"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvGrupoMuscularEjercicio3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/tvGrupoMuscularEjercicio3"
-                        android:textColor="@color/colorTextTertiary"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/imgReorder3"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:contentDescription="@string/tvNombreEjercicio3"
-                    android:src="@drawable/ic_reorder"
-                    app:tint="@color/colorTextDisabled" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/colorDivider" />
-
-            <!-- Ejercicio 4 -->
-            <LinearLayout
-                android:id="@+id/layoutEjercicio4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:id="@+id/tvNumeroEjercicio4"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:background="@drawable/bg_number_badge"
-                    android:gravity="center"
-                    android:text="@string/tvNumeroEjercicio4"
-                    android:textColor="@color/colorTextStrong"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/spacing_md"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvNombreEjercicio4"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tvNombreEjercicio4"
-                        android:textColor="@color/colorTextPrimary"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvGrupoMuscularEjercicio4"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/tvGrupoMuscularEjercicio4"
-                        android:textColor="@color/colorTextTertiary"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/imgReorder4"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:contentDescription="@string/tvNombreEjercicio4"
-                    android:src="@drawable/ic_reorder"
-                    app:tint="@color/colorTextDisabled" />
-            </LinearLayout>
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                android:visibility="gone" />
         </LinearLayout>
 
         <!-- Crear un ejercicio nuevo -->
@@ -456,4 +247,4 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/spacing_xxl" />
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>
