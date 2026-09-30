@@ -141,7 +141,6 @@
                     android:drawablePadding="@dimen/spacing_sm"
                     app:drawableTint="@color/colorTextTertiary"
                     android:hint="@string/etContrasena_hint"
-                    android:text="12345678"
                     android:maxLines="1"
                     android:paddingStart="@dimen/spacing_md"
                     android:paddingEnd="48dp"
