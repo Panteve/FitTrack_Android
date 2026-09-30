@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Fila de una serie del entrenamiento en curso: número, peso, repeticiones y check,
-     todo en una sola línea. -->
+<!-- Fila de una serie del entrenamiento en curso: número, peso, repeticiones, check y
+     la opción de quitar la serie, todo en una sola línea. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutSerieEntrenamiento"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -66,4 +67,16 @@
         android:gravity="center"
         android:minWidth="0dp"
         android:paddingHorizontal="0dp" />
+
+    <ImageButton
+        android:id="@+id/btnQuitarSerieEntrenamiento"
+        android:layout_width="@dimen/boton_icono_serie_width"
+        android:layout_height="@dimen/button_height_standard"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/cdQuitarSerieEntrenamiento"
+        android:padding="9dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_delete"
+        app:tint="@color/colorErrorText" />
 </LinearLayout>

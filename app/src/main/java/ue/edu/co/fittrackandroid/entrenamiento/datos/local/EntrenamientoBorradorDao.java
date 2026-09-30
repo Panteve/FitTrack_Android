@@ -88,4 +88,12 @@ public interface EntrenamientoBorradorDao {
      */
     @Query("DELETE FROM ejercicio_borrador WHERE id = :ejercicioBorradorId")
     void eliminarEjercicio(long ejercicioBorradorId);
+
+    /**
+     * Elimina una sola serie del borrador, sin tocar las demás de su ejercicio.
+     *
+     * @param serieBorradorId identificador local de la serie.
+     */
+    @Query("DELETE FROM serie_borrador WHERE id = :serieBorradorId")
+    void eliminarSerie(long serieBorradorId);
 }

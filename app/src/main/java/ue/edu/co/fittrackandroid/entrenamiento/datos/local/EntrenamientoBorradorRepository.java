@@ -269,25 +269,33 @@ public class EntrenamientoBorradorRepository {
         long ejercicioId = ejercicio.getIdBorrador();
         EJECUTOR.execute(() -> {
             try {
-                baseDeDatos.runInTransaction(() -> {
-                    List<SerieEntrenamiento> series = ejercicio.getSeries();
-
-                    for (int posicion = 0; posicion < series.size(); posicion++) {
-                        SerieEntrenamiento serie = series.get(posicion);
-                        SerieBorradorEntity fila =
-                                crearSerie(serie.getIdBorrador(), ejercicioId, posicion, serie);
-
-                        if (serie.getIdBorrador() == 0) {
-                            serie.setIdBorrador(dao.insertarSerie(fila));
-                        } else {
-                            dao.actualizarSerie(fila);
-                        }
-                    }
-                });
+                baseDeDatos.runInTransaction(() -> escribirSeries(ejercicio, ejercicioId));
             } catch (RuntimeException excepcion) {
                 Log.e(ETIQUETA, "No se pudieron guardar las series del ejercicio", excepcion);
             }
         });
+    }
+
+    /**
+     * Inserta o actualiza cada serie del ejercicio. Las que todavía no tienen fila propia se
+     * insertan y se les guarda el identificador que Room les asigna.
+     *
+     * @param ejercicio   ejercicio editado, con sus series ya al día en memoria.
+     * @param ejercicioId identificador local del ejercicio.
+     */
+    private void escribirSeries(EjercicioEntrenamiento ejercicio, long ejercicioId) {
+        List<SerieEntrenamiento> series = ejercicio.getSeries();
+
+        for (int posicion = 0; posicion < series.size(); posicion++) {
+            SerieEntrenamiento serie = series.get(posicion);
+            SerieBorradorEntity fila = crearSerie(serie.getIdBorrador(), ejercicioId, posicion, serie);
+
+            if (serie.getIdBorrador() == 0) {
+                serie.setIdBorrador(dao.insertarSerie(fila));
+            } else {
+                dao.actualizarSerie(fila);
+            }
+        }
     }
 
     /**
@@ -336,6 +344,36 @@ public class EntrenamientoBorradorRepository {
                 dao.eliminarEjercicio(ejercicioId);
             } catch (RuntimeException excepcion) {
                 Log.e(ETIQUETA, "No se pudo eliminar el ejercicio del borrador", excepcion);
+            }
+        });
+    }
+
+    /**
+     * Quita una serie del borrador guardado y deja el número de las que quedan seguido.
+     *
+     * <p>Guardar las series otra vez es lo que renumera: {@link #crearSerie} guarda el
+     * número que tiene cada serie en memoria, que el modelo ya dejó consecutivo al quitar
+     * la anterior. El borrado y la reescritura van en la misma transacción, para que el
+     * borrador nunca quede con números repetidos o con un hueco.
+     *
+     * @param ejercicio ejercicio al que pertenecía la serie.
+     * @param serie     serie que el usuario quitó de la pantalla.
+     */
+    public void eliminarSerie(EjercicioEntrenamiento ejercicio, SerieEntrenamiento serie) {
+        if (ejercicio == null || serie == null || serie.getIdBorrador() == 0) {
+            return;
+        }
+
+        long ejercicioId = ejercicio.getIdBorrador();
+        long serieId = serie.getIdBorrador();
+        EJECUTOR.execute(() -> {
+            try {
+                baseDeDatos.runInTransaction(() -> {
+                    dao.eliminarSerie(serieId);
+                    escribirSeries(ejercicio, ejercicioId);
+                });
+            } catch (RuntimeException excepcion) {
+                Log.e(ETIQUETA, "No se pudo eliminar la serie del borrador", excepcion);
             }
         });
     }

@@ -416,6 +416,7 @@
     <string name="etPesoSerieEntrenamiento_error">Ingresa un peso válido (0 o más)</string>
     <string name="etRepeticionesSerieEntrenamiento_error">Ingresa repeticiones (entero mayor que 0)</string>
     <string name="cbSerieCompletada">Marcar la serie como completada</string>
+    <string name="cdQuitarSerieEntrenamiento">Quitar serie</string>
 
     <!-- Panel de descanso -->
     <string name="tvTituloDescansoEntrenamiento">DESCANSO ENTRE SERIES</string>

@@ -580,6 +580,33 @@ public class EntrenamientoActivoFragment extends Fragment
     }
 
     @Override
+    public void onQuitarSerie(int posicionEjercicio, int posicionSerie) {
+        EjercicioEntrenamiento ejercicio = obtenerEjercicio(posicionEjercicio);
+        if (ejercicio == null) {
+            return;
+        }
+
+        // El modelo se encarga de dejar al menos una serie y de renumerar las que quedan.
+        SerieEntrenamiento serieEliminada = ejercicio.eliminarSerie(posicionSerie);
+        if (serieEliminada == null) {
+            return;
+        }
+
+        // Solo se redibuja la tarjeta del ejercicio: si la serie estaba completada, el
+        // volumen y el contador de series del resumen bajan con ella.
+        adapter.actualizarEjercicio(posicionEjercicio);
+        recalcularResumen();
+
+        if (!borradorResuelto) {
+            // La serie quitada se borra del borrador y las que quedan se renumeran solas.
+            // Se cancela además la escritura que estaba esperando este ejercicio, porque
+            // aquí ya se guardó el resultado de la Eliminación.
+            ejerciciosPorGuardar.remove(ejercicio);
+            borradorRepository.eliminarSerie(ejercicio, serieEliminada);
+        }
+    }
+
+    @Override
     public void onEstadoSerieCambiado(int posicionEjercicio, int posicionSerie, boolean completada) {
         recalcularResumen();
 

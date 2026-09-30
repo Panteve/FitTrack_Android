@@ -87,4 +87,42 @@ public class EjercicioEntrenamiento {
     public int getCantidadSeries() {
         return series.size();
     }
+
+    /**
+     * Indica si el ejercicio tiene más de una serie. Un ejercicio siempre necesita al menos
+     * una, así que la última no se puede quitar.
+     *
+     * @return true si se puede quitar alguna serie.
+     */
+    public boolean puedeEliminarSerie() {
+        return series.size() > 1;
+    }
+
+    /**
+     * Quita una serie del ejercicio y renumera las que quedan.
+     *
+     * <p>Aquí el renumerado es obligatorio: a diferencia de la creación de rutinas, el
+     * entrenamiento guarda el número de cada serie y lo manda al backend, así que no basta
+     * con mostrar la posición.
+     *
+     * @param posicionSerie posición de la serie dentro de este ejercicio.
+     * @return la serie quitada, o null si la posición no existe o si era la única.
+     */
+    public SerieEntrenamiento eliminarSerie(int posicionSerie) {
+        if (posicionSerie < 0 || posicionSerie >= series.size() || !puedeEliminarSerie()) {
+            return null;
+        }
+
+        SerieEntrenamiento serieEliminada = series.remove(posicionSerie);
+        renumerarSeries();
+
+        return serieEliminada;
+    }
+
+    /** Vuelve a escribir el número de cada serie según el orden en que quedaron. */
+    private void renumerarSeries() {
+        for (int posicion = 0; posicion < series.size(); posicion++) {
+            series.get(posicion).setNumeroSerie(posicion + 1);
+        }
+    }
 }

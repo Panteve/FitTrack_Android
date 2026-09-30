@@ -58,8 +58,8 @@
             app:tint="@color/colorErrorText" />
     </LinearLayout>
 
-    <!-- Cabecera de las columnas: los espacios del número y del check mantienen las
-         etiquetas alineadas con los campos de la serie. -->
+    <!-- Cabecera de las columnas: los espacios del número, del check y del botón de quitar
+         mantienen las etiquetas alineadas con los campos de la serie. -->
     <LinearLayout
         android:id="@+id/layoutCabeceraSeriesEntrenamiento"
         android:layout_width="match_parent"
@@ -99,6 +99,12 @@
         <View
             android:id="@+id/viewEspacioCheckSerieEntrenamiento"
             android:layout_width="@dimen/check_serie_width"
+            android:layout_height="1dp"
+            android:layout_marginStart="@dimen/spacing_sm" />
+
+        <View
+            android:id="@+id/viewEspacioQuitarSerieEntrenamiento"
+            android:layout_width="@dimen/boton_icono_serie_width"
             android:layout_height="1dp"
             android:layout_marginStart="@dimen/spacing_sm" />
     </LinearLayout>

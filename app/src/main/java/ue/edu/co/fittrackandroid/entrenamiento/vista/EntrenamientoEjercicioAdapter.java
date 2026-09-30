@@ -26,15 +26,13 @@ import ue.edu.co.fittrackandroid.R;
 
 /**
  * Adapter del RecyclerView de ejercicios del entrenamiento en curso.
- * Cada tarjeta muestra el nombre del ejercicio, sus series y el botón para agregar otra.
+ * Cada tarjeta muestra el nombre del ejercicio, sus series, el botón para agregar otra y
+ * las opciones para quitar el ejercicio o una de sus series.
  * Las series no usan un RecyclerView propio: se inflan como filas dentro de un LinearLayout,
  * igual que en la creación de rutinas.
  */
 public class EntrenamientoEjercicioAdapter
         extends RecyclerView.Adapter<EntrenamientoEjercicioAdapter.EjercicioViewHolder> {
-
-    // TODO: Agregar una acción para eliminar una serie individual agregada por error,
-    // manteniendo por lo menos una serie por ejercicio y actualizando el resumen.
 
     /**
      * Callbacks que el fragment necesita para mantener el resumen y la lista al día.
@@ -43,6 +41,9 @@ public class EntrenamientoEjercicioAdapter
 
         /** El usuario pidió quitar un ejercicio de la pantalla. */
         void onQuitarEjercicio(int posicionEjercicio);
+
+        /** El usuario pidió quitar una serie del ejercicio indicado. */
+        void onQuitarSerie(int posicionEjercicio, int posicionSerie);
 
         /** El usuario pidió agregar una serie al ejercicio indicado. */
         void onAgregarSerie(int posicionEjercicio);
@@ -169,11 +170,24 @@ public class EntrenamientoEjercicioAdapter
             EditText etPeso = filaSerie.findViewById(R.id.etPesoSerieEntrenamiento);
             EditText etRepeticiones = filaSerie.findViewById(R.id.etRepeticionesSerieEntrenamiento);
             CheckBox cbSerieCompletada = filaSerie.findViewById(R.id.cbSerieCompletada);
+            ImageButton btnQuitarSerie = filaSerie.findViewById(R.id.btnQuitarSerieEntrenamiento);
 
             int numeroSerie = serie.getNumeroSerie() > 0
                     ? serie.getNumeroSerie()
                     : posicionSerie + 1;
             tvNumeroSerie.setText(String.valueOf(numeroSerie));
+
+            // La única serie del ejercicio no se puede quitar. El botón queda visible pero
+            // apagado para que los campos no se corran al ocultarlo.
+            boolean puedeQuitarSerie = ejercicio.puedeEliminarSerie();
+            btnQuitarSerie.setEnabled(puedeQuitarSerie);
+            btnQuitarSerie.setAlpha(puedeQuitarSerie ? 1f : 0.25f);
+            btnQuitarSerie.setOnClickListener(v -> {
+                int posicionEjercicio = getBindingAdapterPosition();
+                if (puedeQuitarSerie && posicionEjercicio != RecyclerView.NO_POSITION) {
+                    escucha.onQuitarSerie(posicionEjercicio, posicionSerie);
+                }
+            });
 
             etPeso.setText(formatearPeso(serie.getPeso()));
             if (serie.getRepeticiones() > 0) {
