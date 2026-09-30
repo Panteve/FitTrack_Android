@@ -15,23 +15,19 @@ public class EntrenamientoRepository {
 
     private final EntrenamientoApiService entrenamientoApiService;
 
+    /** Crea el repositorio conectando el servicio de entrenamientos al cliente Retrofit de la aplicación. */
     public EntrenamientoRepository(Context context) {
         entrenamientoApiService = RetrofitClient.getInstance(context)
                 .create(EntrenamientoApiService.class);
     }
 
+    /** Crea la llamada que registra un entrenamiento terminado con sus ejercicios y series. */
     public Call<EntrenamientoDetalleResponse> crearEntrenamiento(
             EntrenamientoCrearRequest entrenamientoCrearRequest) {
         return entrenamientoApiService.crearEntrenamiento(entrenamientoCrearRequest);
     }
 
-    /**
-     * Prepara la actualización de las notas de un entrenamiento guardado.
-     *
-     * @param entrenamientoId identificador del entrenamiento
-     * @param request notas nuevas del entrenamiento
-     * @return llamada que devuelve el detalle actualizado
-     */
+    /** Prepara la actualización de las notas de un entrenamiento guardado. */
     public Call<EntrenamientoDetalleResponse> actualizarNotas(
             Long entrenamientoId,
             EntrenamientoActualizarNotasRequest request) {
@@ -44,19 +40,12 @@ public class EntrenamientoRepository {
     /**
      * Devuelve la llamada para consultar un entrenamiento guardado. El repositorio solo
      * entrega la llamada: ejecutarla con enqueue es responsabilidad de la pantalla.
-     *
-     * @param id identificador del entrenamiento guardado.
      */
     public Call<EntrenamientoDetalleResponse> getEntrenamientoById(Long id) {
         return entrenamientoApiService.getEntrenamientoById(id);
     }
 
-    /**
-     * Prepara la eliminación lógica de un entrenamiento guardado.
-     *
-     * @param entrenamientoId identificador del entrenamiento
-     * @return llamada sin contenido de respuesta
-     */
+    /** Prepara la eliminación lógica de un entrenamiento guardado. */
     public Call<Void> eliminarEntrenamiento(Long entrenamientoId) {
         return entrenamientoApiService.eliminarEntrenamiento(
                 entrenamientoId
@@ -66,10 +55,6 @@ public class EntrenamientoRepository {
     /**
      * Prepara el envío de la fotografía de un entrenamiento guardado. Si el
      * entrenamiento ya tenía una foto, el backend la reemplaza por esta.
-     *
-     * @param entrenamientoId identificador del entrenamiento
-     * @param foto parte multipart con la imagen ya comprimida
-     * @return llamada que devuelve la dirección de la foto guardada
      */
     public Call<EntrenamientoFotoResponse> subirFoto(
             Long entrenamientoId,

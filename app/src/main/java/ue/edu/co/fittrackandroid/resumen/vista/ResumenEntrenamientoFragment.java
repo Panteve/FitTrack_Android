@@ -147,15 +147,14 @@ public class ResumenEntrenamientoFragment extends Fragment {
     private LinearLayout layoutGruposMuscularesResumen;
     private RecyclerView rvEjerciciosResumen;
 
+    /** Crea el fragment vacío; Android lo reconstruye al restaurar el estado de la pantalla. */
     public ResumenEntrenamientoFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Crea la pantalla preparada para consultar un entrenamiento guardado.
-     *
-     * @param idEntrenamiento identificador asignado por el backend
-     * @return Fragment con el identificador dentro de sus argumentos
+     * Crea la pantalla preparada para consultar un entrenamiento guardado, dejando su
+     * identificador dentro de los argumentos del fragment.
      */
     public static ResumenEntrenamientoFragment newInstance(Long idEntrenamiento) {
         ResumenEntrenamientoFragment fragment = new ResumenEntrenamientoFragment();
@@ -215,7 +214,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
     }
 
     /**
-     * Escucha el resultado que devuelve {@link GaleriaImagenesFragment} cuando el usuario
+     * Escucha el resultado que devuelve la galería de imágenes de FitTrack cuando el usuario
      * elige una imagen. Solo se procesa cuando el destino es el entrenamiento.
      */
     private void registrarResultadoImagenSeleccionada() {
@@ -263,6 +262,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
         configurarToolbar();
     }
 
+    /** Busca en la vista inflada todas las piezas que la pantalla va a usar. */
     private void inicializarVistas(View view) {
         pbCargaResumenEntrenamiento = view.findViewById(R.id.pbCargaResumenEntrenamiento);
         layoutErrorResumenEntrenamiento = view.findViewById(R.id.layoutErrorResumenEntrenamiento);
@@ -538,8 +538,6 @@ public class ResumenEntrenamientoFragment extends Fragment {
      * (completo o parcial) se abre la galería; sin acceso se explica por qué FitTrack
      * necesita leer las imágenes y, si ya no se puede volver a preguntar, se ofrecen los
      * ajustes de la aplicación.
-     *
-     * @param resultados permiso o permisos solicitados con su estado final
      */
     private void procesarResultadoPermisoGaleria(Map<String, Boolean> resultados) {
         if (PermisosImagenes.tienePermisoLectura(requireContext())) {
@@ -582,9 +580,9 @@ public class ResumenEntrenamientoFragment extends Fragment {
     }
 
     /**
-     * @return true si Android todavía permite volver a preguntar por el permiso, porque
-     *         el usuario no lo rechazó de forma definitiva. En Android 14 se revisan los
-     *         dos permisos: basta con que alguno de los dos pueda volver a preguntarse.
+     * Indica si Android todavía permite volver a preguntar por el permiso, porque el
+     * usuario no lo rechazó de forma definitiva. En Android 14 se revisan los dos
+     * permisos: basta con que alguno de los dos pueda volver a preguntarse.
      */
     private boolean puedeVolverAPreguntarPermisoGaleria() {
         for (String permiso : PermisosImagenes.permisosSolicitados()) {
@@ -679,8 +677,8 @@ public class ResumenEntrenamientoFragment extends Fragment {
     }
 
     /**
-     * @return true si el dispositivo tiene alguna aplicación capaz de tomar la foto.
-     *         No todos los dispositivos con cámara la traen instalada.
+     * Indica si el dispositivo tiene alguna aplicación capaz de tomar la foto.
+     * No todos los dispositivos con cámara la traen instalada.
      */
     private boolean hayAplicacionDeCamara() {
         Intent intencion = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -753,9 +751,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
      * <p>Se copia primero a un archivo del caché porque es la única forma de pasar por
      * la misma preparación que usa la cámara: enderezar, reducir y comprimir. Así una
      * foto de galería que venga girada o muy grande llega al backend en el mismo formato
-     * que una captura.
-     *
-     * @param uri dirección {@code content://} del archivo elegido, o null si el usuario canceló
+     * que una captura. Si el usuario cancela, la dirección llega nula y no se hace nada.
      */
     private void procesarFotoSeleccionada(@Nullable Uri uri) {
         if (uri == null || subiendoFoto) {
@@ -826,11 +822,9 @@ public class ResumenEntrenamientoFragment extends Fragment {
     }
 
     /**
-     * Envía la fotografía al backend con la petición
-     * {@code POST /entrenamientos/{id}/foto}. Mientras está en vuelo los dos botones
+     * Envía la fotografía al backend con la petición de la ruta de fotos del
+     * entrenamiento. Mientras está en vuelo los dos botones
      * de la tarjeta quedan apagados para que no se pueda tomar otra foto encima.
-     *
-     * @param contenidoFoto JPEG ya comprimido y preparado
      */
     private void subirFoto(byte[] contenidoFoto) {
         if (subiendoFoto || idEntrenamiento == null || idEntrenamiento <= 0) {
@@ -887,9 +881,8 @@ public class ResumenEntrenamientoFragment extends Fragment {
     /**
      * Muestra un aviso propio para los rechazos de tamaño y de formato. La imagen ya
      * se validó en el teléfono, pero el backend puede rechazarla igual: por eso no
-     * alcanza con el error genérico de cada código.
-     *
-     * @param codigoRespuesta código HTTP devuelto por el servidor
+     * alcanza con el error genérico de cada código. El código recibido decide cuál
+     * de los dos avisos propios se muestra.
      */
     private void mostrarErrorSubidaFoto(int codigoRespuesta) {
         if (codigoRespuesta == 413) {
@@ -921,8 +914,6 @@ public class ResumenEntrenamientoFragment extends Fragment {
      * intacta, tanto en pantalla como en el caché. Si el servidor rechaza la imagen no
      * se reemplaza nada, así que nunca se muestra una foto que el usuario no llegó a
      * guardar.
-     *
-     * @param contenidoFoto JPEG que el backend confirmó
      */
     private void procesarFotoGuardada(byte[] contenidoFoto) {
         contenidoFotoPendiente = null;
@@ -952,9 +943,8 @@ public class ResumenEntrenamientoFragment extends Fragment {
 
     /**
      * Vuelve a enviar la fotografía que ya se tenía en pantalla. Se usa cuando la
-     * subida anterior falló, para no obligar al usuario a tomarla de nuevo.
-     *
-     * @return true si había una foto pendiente y se empezó a reenviar
+     * subida anterior falló, para no obligar al usuario a tomarla de nuevo. Indica si
+     * había una foto pendiente y se empezó a reenviar.
      */
     private boolean reintentarSubidaFoto() {
         if (contenidoFotoPendiente == null) {
@@ -970,9 +960,8 @@ public class ResumenEntrenamientoFragment extends Fragment {
 
     /**
      * Deja la fotografía a la vista y ofrece reenviarla. El error concreto ya lo
-     * muestra la pantalla, así que aquí solo se restaura el estado de los botones.
-     *
-     * @param contenidoFoto JPEG que no se pudo enviar
+     * muestra la pantalla, así que aquí solo se restaura el estado de los botones. El JPEG
+     * recibido es el que no se pudo enviar y se conserva para intentar de nuevo.
      */
     private void conservarFotoParaReintento(byte[] contenidoFoto) {
         contenidoFotoPendiente = contenidoFoto;
@@ -983,9 +972,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
 
     /**
      * Cambia el estado de la tarjeta de fotografía mientras la imagen viaja al
-     * backend, o cuando se deja de subir.
-     *
-     * @param subiendo true mientras la petición está en vuelo
+     * backend, o cuando se deja de subir. Lo recibido indica si la petición sigue en vuelo.
      */
     private void mostrarSubiendoFoto(boolean subiendo) {
         subiendoFoto = subiendo;
@@ -1091,8 +1078,8 @@ public class ResumenEntrenamientoFragment extends Fragment {
     }
 
     /**
-     * @return el nombre del entrenamiento tal como lo muestra la cabecera. Si el nombre
-     *         llegó vacío se usa el mismo nombre de respaldo que ella.
+     * Obtiene el nombre del entrenamiento tal como lo muestra la cabecera. Si el nombre
+     * llegó vacío se usa el mismo nombre de respaldo que ella.
      */
     private String obtenerNombreEntrenamiento() {
         if (resumen == null) {
@@ -1109,7 +1096,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
     }
 
     /**
-     * Pide al backend eliminar el entrenamiento con {@code DELETE /entrenamientos/{id}}.
+     * Pide al backend eliminar el entrenamiento con la petición de borrado de la API.
      * La eliminación es lógica: el registro deja de aparecer en el historial y ya no se
      * puede consultar, pero sigue existiendo en la base de datos.
      */
@@ -1182,9 +1169,8 @@ public class ResumenEntrenamientoFragment extends Fragment {
 
     /**
      * Muestra u oculta el indicador de proceso. Reutiliza el mismo indicador de carga
-     * del detalle: mientras se borra no tiene sentido dejar el resumen en pantalla.
-     *
-     * @param eliminando true mientras la petición de borrado está en vuelo.
+     * del detalle: mientras se borra no tiene sentido dejar el resumen en pantalla. Lo
+     * recibido indica si la petición de borrado está en vuelo.
      */
     private void mostrarEliminando(boolean eliminando) {
         eliminandoEntrenamiento = eliminando;
@@ -1244,9 +1230,10 @@ public class ResumenEntrenamientoFragment extends Fragment {
     /**
      * Arma el resumen de solo lectura a partir del detalle guardado por el backend.
      *
-     * <p>La lista de series ya llega ordenada por {@code ordenEjercicio} y
-     * {@code numeroSerie}, así que se recorre en ese orden y se cierra un ejercicio cada
-     * vez que cambia el {@code rutinaEjercicioId}. Se agrupa por ese identificador y no por
+     * <p>La lista de series ya llega ordenada por el orden del ejercicio y por el número
+     * de serie, así que se recorre en ese orden y se cierra un ejercicio cada
+     * vez que cambia el identificador del ejercicio dentro de la rutina. Se agrupa por ese
+     * identificador y no por
      * el del ejercicio porque una misma rutina puede repetir un ejercicio en dos bloques
      * distintos.
      */
@@ -1280,7 +1267,8 @@ public class ResumenEntrenamientoFragment extends Fragment {
     /**
      * Recorre las series en el orden recibido y crea un ejercicio por cada bloque.
      *
-     * <p>Un bloque termina cuando cambia el {@code rutinaEjercicioId}, porque una misma
+     * <p>Un bloque termina cuando cambia el identificador del ejercicio dentro de la rutina,
+     * porque una misma
      * rutina puede repetir un ejercicio en dos lugares distintos y hay que mostrarlos por
      * separado. Al cambiar se cierra el ejercicio con las series acumuladas y se empieza
      * el siguiente.
@@ -1325,7 +1313,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
                 series);
     }
 
-    /** @return el grupo muscular recibido, o el de respaldo si el backend no lo envió. */
+    /** Obtiene el grupo muscular recibido, o el de respaldo si el backend no lo envió. */
     private String obtenerGrupoMuscular(String grupoMuscular) {
         if (grupoMuscular == null || grupoMuscular.trim().isEmpty()) {
             return getString(R.string.tvGrupoMuscularResumen_fallback);
@@ -1378,7 +1366,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
                 getString(R.string.tvFechaResumenEntrenamiento_sin_hora, formatearFechaResumen()));
     }
 
-    /** @return el día del entrenamiento, por ejemplo "Sábado, 26 de septiembre". */
+    /** Formatea el día del entrenamiento, por ejemplo "Sábado, 26 de septiembre". */
     private String formatearFechaResumen() {
         SimpleDateFormat formato = new SimpleDateFormat(
                 "EEEE, d 'de' MMMM", new Locale("es", "CO"));
@@ -1386,7 +1374,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
         return fecha.substring(0, 1).toUpperCase(Locale.getDefault()) + fecha.substring(1);
     }
 
-    /** @return la hora del entrenamiento, por ejemplo "6:30 p. m.". */
+    /** Formatea la hora del entrenamiento, por ejemplo "6:30 p. m.". */
     private String formatearHoraResumen() {
         SimpleDateFormat formato = new SimpleDateFormat("h:mm a", new Locale("es", "CO"));
         return formato.format(new Date(resumen.getFechaHoraInicio()));

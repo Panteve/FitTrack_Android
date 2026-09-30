@@ -90,7 +90,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:maxLines="1"
-                        android:text="@string/tvVolumenEntrenamiento"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -123,7 +122,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:maxLines="1"
-                        android:text="@string/tvSeriesEntrenamiento"
                         android:textSize="18sp" />
                 </LinearLayout>
             </LinearLayout>

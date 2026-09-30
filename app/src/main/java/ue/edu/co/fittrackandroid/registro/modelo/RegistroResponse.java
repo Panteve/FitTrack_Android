@@ -10,10 +10,9 @@ import ue.edu.co.fittrackandroid.login.modelo.LoginResponse;
 public class RegistroResponse extends LoginResponse {
 
     /**
-     * @param token  token de acceso entregado por el backend.
-     * @param usuarioId identificador de la cuenta creada.
-     * @param nombre nombre confirmado por el backend.
-     * @param fotoPerfilUrl URL temporal de la foto, normalmente null en una cuenta nueva.
+     * Crea la respuesta con el token de acceso, el identificador y el nombre
+     * confirmados por el backend, más la URL de la foto, que normalmente es null en
+     * una cuenta recién creada.
      */
     public RegistroResponse(String token, Long usuarioId, String nombre,
                             String fotoPerfilUrl) {

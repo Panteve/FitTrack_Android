@@ -13,9 +13,9 @@ public class RegistroRequest {
     private String contrasena;
 
     /**
-     * @param nombre      nombre mostrado en el perfil.
-     * @param correo      correo con el que se inicia sesión.
-     * @param contrasena  contraseña sin recortar, tal como la escribió el usuario.
+     * Crea el cuerpo del registro con el nombre que se mostrará en el perfil, el correo
+     * con el que se iniciará sesión y la contraseña sin recortar tal como la escribió
+     * el usuario.
      */
     public RegistroRequest(String nombre, String correo, String contrasena) {
         this.nombre = nombre;
@@ -23,26 +23,32 @@ public class RegistroRequest {
         this.contrasena = contrasena;
     }
 
+    /** Obtiene el nombre que se mostrará en el perfil del usuario nuevo. */
     public String getNombre() {
         return nombre;
     }
 
+    /** Cambia el nombre que se mostrará en el perfil del usuario nuevo. */
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
+    /** Obtiene el correo con el que se iniciará sesión la cuenta creada. */
     public String getCorreo() {
         return correo;
     }
 
+    /** Cambia el correo con el que se iniciará sesión la cuenta creada. */
     public void setCorreo(String correo) {
         this.correo = correo;
     }
 
+    /** Obtiene la contraseña que se envía al servidor, sin recortar. */
     public String getContrasena() {
         return contrasena;
     }
 
+    /** Cambia la contraseña que se enviará al servidor. */
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
     }

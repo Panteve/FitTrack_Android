@@ -42,6 +42,7 @@ public class EntrenamientoBorradorEntity {
     /** Vale true mientras el borrador se pueda recuperar. */
     public boolean activa;
 
+    /** Crea la fila del borrador con todos los campos que Room guarda en la tabla. */
     public EntrenamientoBorradorEntity(long id, String correoUsuario, Long idRutina,
                                        String nombreRutina, String notas, long fechaHoraInicio,
                                        long fechaHoraFinDescanso, boolean activa) {
@@ -57,15 +58,8 @@ public class EntrenamientoBorradorEntity {
 
     /**
      * Prepara la fila de un entrenamiento que recién empieza: todavía no tiene identificador
-     * local y queda marcada como activa para poder recuperarla.
-     *
-     * @param correoUsuario      cuenta que está entrenando
-     * @param idRutina           identificador de la rutina en el backend, o nulo
-     * @param nombreRutina       nombre de la rutina que se está entrenando
-     * @param notas              notas iniciales del entrenamiento
-     * @param fechaHoraInicio    momento real de inicio del entrenamiento
-     * @param fechaHoraFinDescanso momento real en que termina el descanso, o cero
-     * @return la entidad lista para insertarse.
+     * local, hereda la rutina y las notas iniciales indicadas y queda marcada como activa
+     * para poder recuperarla.
      */
     public static EntrenamientoBorradorEntity nuevoBorrador(
             String correoUsuario,

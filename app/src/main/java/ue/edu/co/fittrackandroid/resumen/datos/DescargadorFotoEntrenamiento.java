@@ -30,17 +30,14 @@ public final class DescargadorFotoEntrenamiento {
     private static final String TIPO_JPEG = "image/jpeg";
     private static final String TIPO_PNG = "image/png";
 
+    /** Impide instanciar la clase: todos sus métodos son estáticos. */
     private DescargadorFotoEntrenamiento() {
     }
 
     /**
-     * Descarga la foto y la entrega ya en el hilo principal, donde sí se puede tocar
-     * la vista previa.
-     *
-     * @param context contexto de la aplicación
-     * @param entrenamientoId entrenamiento dueño de la foto, para nombrar la copia local
-     * @param fotoUrl dirección de la foto guardada en el backend
-     * @param alTerminar callback que recibe el contenido JPEG, o null si falló
+     * Descarga la foto en segundo plano, guarda una copia local y la entrega ya en el hilo
+     * principal, donde sí se puede tocar la vista previa. Si la dirección está vacía o el
+     * entrenamiento no es válido, no se hace nada.
      */
     public static void descargar(
             Context context,
@@ -79,7 +76,7 @@ public final class DescargadorFotoEntrenamiento {
         });
     }
 
-    /** @return contenido de la foto, o null si no se pudo descargar. */
+    /** Devuelve el contenido de la foto, o nulo si no se pudo descargar. */
     private static byte[] leerFoto(String fotoUrl) {
         HttpURLConnection conexion = null;
 
@@ -125,6 +122,7 @@ public final class DescargadorFotoEntrenamiento {
         }
     }
 
+    /** Revisa que la respuesta sea una imagen JPEG o PNG, o que no declare tipo. */
     private static boolean tipoPermitido(String contentType) {
         if (contentType == null || contentType.isBlank()) {
             return true;
@@ -147,9 +145,7 @@ public final class DescargadorFotoEntrenamiento {
      */
     public interface ConsumerFoto {
 
-        /**
-         * @param contenido foto descargada, o null si la descarga no sirvió
-         */
+        /** Avisa que terminó la descarga, con el contenido de la foto o con nulo si no sirvió. */
         void entregar(byte[] contenido);
     }
 }

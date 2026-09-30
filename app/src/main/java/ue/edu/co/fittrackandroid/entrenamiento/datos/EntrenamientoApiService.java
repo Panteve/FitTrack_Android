@@ -18,16 +18,13 @@ import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoFotoResponse;
 /** Endpoints disponibles para los entrenamientos del usuario autenticado. */
 public interface EntrenamientoApiService {
 
+    /** Registra un entrenamiento terminado con sus ejercicios, series y notas. */
     @POST("entrenamientos")
     Call<EntrenamientoDetalleResponse> crearEntrenamiento(
             @Body EntrenamientoCrearRequest entrenamientoCrearRequest);
 
     /**
      * Actualiza únicamente las notas de un entrenamiento guardado.
-     *
-     * @param entrenamientoId identificador del entrenamiento
-     * @param request notas nuevas del entrenamiento
-     * @return llamada que devuelve el detalle actualizado
      */
     @PATCH("entrenamientos/{id}")
     Call<EntrenamientoDetalleResponse> actualizarNotas(
@@ -37,8 +34,6 @@ public interface EntrenamientoApiService {
     /**
      * Recupera el detalle completo de un entrenamiento ya guardado, incluidas sus series.
      * El token lo agrega automáticamente el interceptor de autenticación.
-     *
-     * @param id identificador del entrenamiento guardado.
      */
     @GET("entrenamientos/{id}")
     Call<EntrenamientoDetalleResponse> getEntrenamientoById(@Path("id") Long id);
@@ -46,8 +41,6 @@ public interface EntrenamientoApiService {
     /**
      * Elimina lógicamente un entrenamiento ya guardado. El backend lo desactiva, así que
      * deja de aparecer en el historial y ya no se puede consultar. Responde 204 sin cuerpo.
-     *
-     * @param entrenamientoId identificador del entrenamiento guardado.
      */
     @DELETE("entrenamientos/{id}")
     Call<Void> eliminarEntrenamiento(
@@ -59,10 +52,6 @@ public interface EntrenamientoApiService {
      *
      * <p>El backend acepta JPEG y PNG de hasta 5 MB, y si el entrenamiento ya tenía
      * una foto la sustituye por esta.
-     *
-     * @param entrenamientoId identificador del entrenamiento
-     * @param foto parte multipart con la imagen llamada {@code foto}
-     * @return llamada con el identificador y la dirección de la foto guardada
      */
     @Multipart
     @POST("entrenamientos/{id}/foto")

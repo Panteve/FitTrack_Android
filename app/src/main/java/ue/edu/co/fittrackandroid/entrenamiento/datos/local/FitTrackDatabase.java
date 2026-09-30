@@ -31,15 +31,12 @@ public abstract class FitTrackDatabase extends RoomDatabase {
 
     private static FitTrackDatabase instancia;
 
-    /** @return el DAO con todas las consultas del borrador del entrenamiento. */
+    /** Devuelve el DAO con todas las consultas del borrador del entrenamiento. */
     public abstract EntrenamientoBorradorDao borradorDao();
 
     /**
      * Abre la base de datos la primera vez y devuelve la misma instancia en las siguientes
-     * llamadas. Se usa {@code synchronized} porque varias pantallas pueden pedirla a la vez.
-     *
-     * @param contexto contexto de la aplicación, para que la base sobreviva a los fragments.
-     * @return la instancia única de la base de datos.
+     * llamadas. El método está sincronizado porque varias pantallas pueden pedirla a la vez.
      */
     public static synchronized FitTrackDatabase obtenerInstancia(Context contexto) {
         if (instancia == null) {

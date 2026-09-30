@@ -17,12 +17,9 @@ public class ImagenDispositivo {
     private final Uri uri;
 
     /**
-     * @param id                    identificador de la imagen en MediaStore
-     * @param nombre                nombre con el que aparece guardada la imagen
-     * @param tipoContenido         tipo MIME, {@code image/jpeg} o {@code image/png}
-     * @param tamanoBytes           tamaño del archivo en bytes
-     * @param fechaCreacionSegundos fecha de creación en segundos desde la época
-     * @param uri                   dirección {@code content://} de la imagen
+     * Crea la imagen con los datos leídos de MediaStore: su identificador, nombre, tipo
+     * MIME, tamaño en bytes, fecha de creación en segundos desde la época y la dirección
+     * de tipo content:// desde la que se puede leer.
      */
     public ImagenDispositivo(long id, String nombre, String tipoContenido,
                              long tamanoBytes, long fechaCreacionSegundos, Uri uri) {
@@ -34,26 +31,32 @@ public class ImagenDispositivo {
         this.uri = uri;
     }
 
+    /** Obtiene el identificador con el que la imagen aparece registrada en MediaStore. */
     public long getId() {
         return id;
     }
 
+    /** Obtiene el nombre con el que aparece guardada la imagen en el dispositivo. */
     public String getNombre() {
         return nombre;
     }
 
+    /** Obtiene el tipo MIME de la imagen, como image/jpeg o image/png. */
     public String getTipoContenido() {
         return tipoContenido;
     }
 
+    /** Obtiene el tamaño del archivo de la imagen en bytes. */
     public long getTamanoBytes() {
         return tamanoBytes;
     }
 
+    /** Obtiene la fecha de creación de la imagen en segundos desde la época. */
     public long getFechaCreacionSegundos() {
         return fechaCreacionSegundos;
     }
 
+    /** Obtiene la dirección de tipo content:// desde la que se puede leer la imagen. */
     public Uri getUri() {
         return uri;
     }

@@ -16,11 +16,7 @@ public class AutenticacionInterceptor implements Interceptor {
 
     private final SesionManager sesionManager;
 
-    /**
-     * Crea el interceptor con acceso a la sesión guardada.
-     *
-     * @param sesionManager administrador que proporciona el token actual
-     */
+    /** Crea el interceptor guardando el administrador de sesión del que extraerá el token actual en cada solicitud. */
     public AutenticacionInterceptor(SesionManager sesionManager) {
         this.sesionManager = sesionManager;
     }
@@ -47,12 +43,7 @@ public class AutenticacionInterceptor implements Interceptor {
         return chain.proceed(solicitudConToken);
     }
 
-    /**
-     * Indica si la solicitud corresponde al inicio de sesión, que debe enviarse sin token.
-     *
-     * @param solicitud solicitud HTTP que se va a enviar
-     * @return {@code true} cuando la ruta termina en {@code /auth/login}
-     */
+    /** Indica si la solicitud corresponde al inicio de sesión, que debe enviarse sin token. */
     private boolean esSolicitudLogin(Request solicitud) {
         return solicitud.url().encodedPath().endsWith(RUTA_LOGIN);
     }

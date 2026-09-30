@@ -82,9 +82,6 @@ public class ModificarEjercicioFragment extends Fragment {
     /**
      * Crea la pantalla para un ejercicio concreto. El identificador viaja en los argumentos
      * porque el Fragment lo reconstruye Android cuando rota el dispositivo.
-     *
-     * @param ejercicioId identificador del ejercicio que se quiere modificar.
-     * @return instancia lista para abrir.
      */
     public static ModificarEjercicioFragment newInstance(Long ejercicioId) {
         ModificarEjercicioFragment fragment = new ModificarEjercicioFragment();
@@ -251,8 +248,6 @@ public class ModificarEjercicioFragment extends Fragment {
 
     /**
      * Muestra o quita la capa que cubre la pantalla mientras espera una respuesta.
-     *
-     * @param procesando true mientras la petición está en vuelo.
      */
     private void mostrarProcesando(boolean procesando) {
         procesandoPeticion = procesando;
@@ -279,8 +274,8 @@ public class ModificarEjercicioFragment extends Fragment {
     }
 
     /**
-     * @return true si el ejercicio ya llegó y hay un grupo muscular válido elegido, para
-     *         que la acción de la toolbar quede disponible.
+     * Indica si el ejercicio ya llegó y hay un grupo muscular válido elegido, para
+     * que la acción de la toolbar quede disponible.
      */
     private boolean puedeGuardar() {
         return ejercicioCargado
@@ -292,7 +287,7 @@ public class ModificarEjercicioFragment extends Fragment {
 
     /**
      * Consulta el ejercicio por su identificador y llena el formulario con lo que devuelve
-     * {@code GET /ejercicios/{id}}. El backend solo deja consultar los ejercicios del usuario
+     * la API. El backend solo deja consultar los ejercicios del usuario
      * autenticado, por eso un identificador inválido se trata como un error de carga.
      */
     private void cargarEjercicio() {
@@ -345,8 +340,6 @@ public class ModificarEjercicioFragment extends Fragment {
      * Escribe en el formulario lo que tiene el ejercicio guardado: el nombre y el grupo
      * muscular. El grupo se busca por texto entre las opciones del desplegable, porque sus
      * posiciones dependen del arreglo de recursos.
-     *
-     * @param ejercicio detalle del ejercicio consultado.
      */
     private void cargarDatosEnFormulario(EjercicioResponse ejercicio) {
         nombreEjercicio = ejercicio.getNombre();
@@ -361,8 +354,6 @@ public class ModificarEjercicioFragment extends Fragment {
      * Marca en el Spinner el grupo muscular que ya tenía el ejercicio. Se recorre la lista
      * de opciones y se compara el texto, no la posición, para que funcione aunque el arreglo
      * de grupos cambie de orden.
-     *
-     * @param grupoMuscular grupo que tenía guardado el ejercicio.
      */
     private void seleccionarGrupoMuscular(String grupoMuscular) {
         if (grupoMuscular != null) {
@@ -389,9 +380,7 @@ public class ModificarEjercicioFragment extends Fragment {
      * Las reglas son las mismas de Crear ejercicio: el nombre es obligatorio, no puede
      * superar los 100 caracteres y el grupo muscular tiene que ser uno de los permitidos.
      * Los nombres repetidos no se revisan aquí porque el backend los admite.
-     *
-     * @param nombre nombre del ejercicio ya recortado.
-     * @return true si se puede enviar la petición al backend.
+     * Devuelve true solo si se puede enviar la petición al backend.
      */
     private boolean validarFormulario(String nombre) {
         if (nombre.isEmpty()) {
@@ -420,7 +409,7 @@ public class ModificarEjercicioFragment extends Fragment {
         etNombreEjercicio.requestFocus();
     }
 
-    /** @return el grupo muscular elegido, escrito como lo espera el backend. */
+    /** Obtiene el grupo muscular elegido, escrito como lo espera el backend. */
     private String obtenerGrupoMuscularSeleccionado() {
         CharSequence grupoMuscular = (CharSequence) spGrupoMuscular.getSelectedItem();
         return grupoMuscular.toString();
@@ -492,8 +481,6 @@ public class ModificarEjercicioFragment extends Fragment {
     /**
      * Avisa que el ejercicio quedó actualizado y regresa al perfil. No hace falta avisar
      * con un FragmentResult: PerfilFragment vuelve a consultar sus ejercicios en onResume.
-     *
-     * @param ejercicioActualizado ejercicio tal como lo devolvió el backend.
      */
     private void procesarEjercicioActualizado(EjercicioResponse ejercicioActualizado) {
         Toast.makeText(

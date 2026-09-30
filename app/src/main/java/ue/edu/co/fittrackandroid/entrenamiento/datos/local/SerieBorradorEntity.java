@@ -38,6 +38,7 @@ public class SerieBorradorEntity {
     /** Indica si el usuario ya completó la serie. */
     public boolean completada;
 
+    /** Crea la fila de la serie con el peso, las repeticiones y si el usuario ya la completó. */
     public SerieBorradorEntity(long id, long ejercicioBorradorId, int numeroSerie, double peso,
                                int repeticiones, boolean completada) {
         this.id = id;

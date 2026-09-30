@@ -21,16 +21,11 @@ public final class ManejadorErroresApi {
     private static final int PRIMER_ERROR_SERVIDOR = 500;
     private static final int ULTIMO_ERROR_SERVIDOR = 599;
 
+    /** Impide crear instancias de esta clase, que solo ofrece métodos estáticos para traducir errores de la API. */
     private ManejadorErroresApi() {
     }
 
-    /**
-     * Crea un Toast para un código de respuesta HTTP.
-     *
-     * @param context contexto utilizado para crear el Toast
-     * @param codigoRespuesta código HTTP devuelto por el servidor
-     * @return Toast preparado para mostrar el error
-     */
+    /** Crea un Toast corto con el mensaje que corresponde al código HTTP recibido del servidor. */
     public static Toast obtenerToast(@NonNull Context context, int codigoRespuesta) {
         return Toast.makeText(
                 context.getApplicationContext(),
@@ -39,13 +34,7 @@ public final class ManejadorErroresApi {
         );
     }
 
-    /**
-     * Crea un Toast para un fallo sin respuesta HTTP.
-     *
-     * @param context contexto utilizado para crear el Toast
-     * @param throwable fallo recibido por Retrofit
-     * @return Toast preparado para mostrar el error
-     */
+    /** Crea un Toast corto con el mensaje que corresponde al fallo recibido, distinguiendo el tiempo de espera agotado de la falta de conexión. */
     public static Toast obtenerToast(
             @NonNull Context context,
             @NonNull Throwable throwable
@@ -57,6 +46,7 @@ public final class ManejadorErroresApi {
         );
     }
 
+    /** Traduce el código HTTP recibido al recurso de string que explica el fallo al usuario. */
     @StringRes
     private static int obtenerMensaje(int codigoRespuesta) {
         switch (codigoRespuesta) {
@@ -82,6 +72,7 @@ public final class ManejadorErroresApi {
         }
     }
 
+    /** Traduce el fallo de red recibido al recurso de string que explica el error al usuario. */
     @StringRes
     private static int obtenerMensaje(@NonNull Throwable throwable) {
         if (throwable instanceof SocketTimeoutException) {

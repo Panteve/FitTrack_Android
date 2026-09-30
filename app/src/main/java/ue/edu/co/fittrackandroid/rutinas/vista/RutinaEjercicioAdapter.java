@@ -18,6 +18,7 @@ public class RutinaEjercicioAdapter extends RecyclerView.Adapter<RutinaEjercicio
 
     private final List<String> ejercicios;
 
+    /** Crea el adapter con los nombres de los ejercicios que se muestran dentro de la tarjeta del plan. */
     public RutinaEjercicioAdapter(List<String> ejercicios) {
         this.ejercicios = ejercicios;
     }
@@ -45,12 +46,14 @@ public class RutinaEjercicioAdapter extends RecyclerView.Adapter<RutinaEjercicio
         private final TextView tvNombre;
         private final TextView tvSeries;
 
+        /** Crea el contenedor de una fila y busca las vistas del nombre y de las series. */
         EjercicioRutinaViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombre = itemView.findViewById(R.id.tvNombreEjercicioRutina);
             tvSeries = itemView.findViewById(R.id.tvSeriesEjercicioRutina);
         }
 
+        /** Muestra el nombre del ejercicio y deja el texto de series vacío. */
         void asignar(String ejercicio) {
             tvNombre.setText(ejercicio);
             tvSeries.setText("");

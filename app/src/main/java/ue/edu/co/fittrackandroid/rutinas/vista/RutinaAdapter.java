@@ -27,6 +27,7 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
      * Callback que avisa qué plan se quiere iniciar.
      */
     public interface OnIniciarRutinaListener {
+        /** Avisa que el usuario quiere iniciar el entrenamiento del plan seleccionado. */
         void onIniciarRutina(RutinasResponse rutina);
     }
 
@@ -34,6 +35,7 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
      * Callback que avisa qué plan se quiere consultar y modificar.
      */
     public interface OnVerDetallesRutinaListener {
+        /** Avisa que el usuario quiere consultar y modificar el plan seleccionado. */
         void onVerDetallesRutina(RutinasResponse rutina);
     }
 
@@ -41,6 +43,7 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
     private final OnIniciarRutinaListener listenerIniciarRutina;
     private final OnVerDetallesRutinaListener listenerVerDetallesRutina;
 
+    /** Crea el adapter con la lista de planes y los dos avisos, uno para iniciar y otro para ver el detalle. */
     public RutinaAdapter(List<RutinasResponse> rutinas,
                          OnIniciarRutinaListener listenerIniciarRutina,
                          OnVerDetallesRutinaListener listenerVerDetallesRutina) {
@@ -77,6 +80,7 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
         private final OnIniciarRutinaListener listenerIniciarRutina;
         private final OnVerDetallesRutinaListener listenerVerDetallesRutina;
 
+        /** Crea el contenedor de una tarjeta y busca sus textos, su lista de ejercicios y sus dos botones. */
         RutinaViewHolder(@NonNull View itemView, OnIniciarRutinaListener listenerIniciarRutina,
                          OnVerDetallesRutinaListener listenerVerDetallesRutina) {
             super(itemView);
@@ -90,6 +94,7 @@ public class RutinaAdapter extends RecyclerView.Adapter<RutinaAdapter.RutinaView
             btnIniciar = itemView.findViewById(R.id.btnIniciarRutina);
         }
 
+        /** Rellena la tarjeta con el nombre del plan, su cantidad de ejercicios y los dos botones de la tarjeta. */
         void asignar(RutinasResponse rutina) {
             tvNombre.setText(rutina.getNombre());
             tvResumen.setText(itemView.getContext().getString(

@@ -37,10 +37,8 @@ public class FotoEntrenamientoDialogFragment extends DialogFragment {
     private static final String ARG_ENTRENAMIENTO_ID = "entrenamientoId";
 
     /**
-     * Crea la pantalla con el entrenamiento cuya foto se quiere ampliar.
-     *
-     * @param entrenamientoId identificador del entrenamiento
-     * @return fragmento listo para mostrar
+     * Crea la pantalla pasando por argumentos solo el entrenamiento cuya foto se
+     * quiere ampliar, nunca los bytes de la imagen.
      */
     public static FotoEntrenamientoDialogFragment newInstance(Long entrenamientoId) {
         FotoEntrenamientoDialogFragment fragmento = new FotoEntrenamientoDialogFragment();

@@ -172,10 +172,8 @@ public class CrearEjercicioFragment extends Fragment {
     // ------------------------------------------------------------------ Validación
 
     /**
-     * Revisa los datos escritos y deja visible el error del campo que falló.
-     *
-     * @param nombre nombre del ejercicio ya recortado.
-     * @return true si se puede enviar la petición al backend.
+     * Revisa el nombre recortado y el grupo muscular elegido, deja visible el error del
+     * campo que falló y devuelve true solo si se puede enviar la petición al backend.
      */
     private boolean validarFormulario(String nombre) {
         if (nombre.isEmpty()) {
@@ -258,7 +256,7 @@ public class CrearEjercicioFragment extends Fragment {
         });
     }
 
-    /** @return el grupo muscular elegido, escrito como lo espera el backend. */
+    /** Obtiene el grupo muscular elegido, escrito como lo espera el backend. */
     private String obtenerGrupoMuscularSeleccionado() {
         CharSequence grupoMuscular = (CharSequence) spGrupoMuscular.getSelectedItem();
         return grupoMuscular.toString();

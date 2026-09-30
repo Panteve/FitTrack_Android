@@ -13,14 +13,10 @@ public class EntrenamientoCrearRequest {
     private final List<RegistroSerieRequest> series;
 
     /**
-     * Crea la solicitud que espera {@code POST /entrenamientos}.
-     *
-     * @param rutinaId identificador de la rutina realizada
-     * @param fecha fecha del entrenamiento en formato ISO
-     * @param duracionMinutos duración total redondeada a minutos
-     * @param notas notas opcionales
-     * @param seriesTotales series que tenía la rutina, completas o pendientes
-     * @param series series completadas
+     * Crea la solicitud que espera la API al guardar un entrenamiento, con la rutina
+     * realizada,
+     * la fecha en formato ISO, la duración ya redondeada a minutos, las notas opcionales
+     * y el detalle de las series completadas.
      */
     public EntrenamientoCrearRequest(Long rutinaId, String fecha, int duracionMinutos,
                                      String notas, Integer seriesTotales,

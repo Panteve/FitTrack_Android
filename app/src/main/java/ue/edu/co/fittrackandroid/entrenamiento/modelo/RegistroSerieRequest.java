@@ -9,12 +9,8 @@ public class RegistroSerieRequest {
     private final double peso;
 
     /**
-     * Crea el registro de una serie terminada.
-     *
-     * @param rutinaEjercicioId identificador del bloque de la rutina
-     * @param numeroSerie número de la serie dentro del bloque
-     * @param repeticiones repeticiones realizadas
-     * @param peso peso utilizado
+     * Crea el registro de una serie terminada, con el bloque de la rutina al que pertenece
+     * y los valores que el usuario escribió.
      */
     public RegistroSerieRequest(Long rutinaEjercicioId, int numeroSerie,
                                 int repeticiones, double peso) {

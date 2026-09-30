@@ -49,6 +49,7 @@ public class CambiarContrasenaFragment extends Fragment {
     private Call<Void> currentCallCambiarContrasena;
     private boolean cambiandoContrasena;
 
+    /** Crea el fragmento vacío, tal como lo exige el sistema al reconstruir la pantalla. */
     public CambiarContrasenaFragment() {
         // Required empty public constructor
     }
@@ -85,8 +86,8 @@ public class CambiarContrasenaFragment extends Fragment {
     /**
      * Deja la toolbar lista para esta pantalla. Mientras se espera la respuesta la acción
      * GUARDAR muestra otro texto, para que el usuario vea que el toque sí fue recibido.
-     *
-     * @param guardando true si la petición está en vuelo, false si la pantalla está libre.
+     * Si la petición está en vuelo la acción se dibuja como ocupada y se deshabilita, y
+     * si la pantalla está libre se vuelve a habilitar para permitir nuevos intentos.
      */
     private void configurarToolbar(boolean guardando) {
         MainActivity activity = (MainActivity) requireActivity();
@@ -171,12 +172,10 @@ public class CambiarContrasenaFragment extends Fragment {
     }
 
     /**
-     * Revisa los tres campos en orden y muestra el primer error que encuentre.
-     *
-     * @param contrasenaActual         contraseña actual escrita, sin recortar.
-     * @param nuevaContrasena          contraseña nueva escrita, sin recortar.
-     * @param repetirNuevaContrasena   confirmación escrita, sin recortar.
-     * @return true si el cambio se puede enviar al backend.
+     * Revisa los tres campos en orden y muestra el primer error que encuentre, usando los
+     * tres textos escritos tal cual, sin recortar espacios. Devuelve verdadero solo cuando
+     * la contraseña nueva tiene la longitud correcta, coincide con su confirmación y
+     * además es distinta de la actual, porque en ese caso el cambio se puede enviar.
      */
     private boolean validarCampos(String contrasenaActual, String nuevaContrasena,
                                   String repetirNuevaContrasena) {
@@ -228,8 +227,7 @@ public class CambiarContrasenaFragment extends Fragment {
      * Muestra el estado de espera: el spinner aparece y la acción de la toolbar pasa a
      * "GUARDANDO…" mientras la petición está en vuelo, y todo vuelve a su estado normal
      * cuando termina. El texto escrito se conserva para poder reintentar.
-     *
-     * @param cambiando true si la llamada está en vuelo, false si ya terminó.
+     * Si la llamada sigue en vuelo los campos se bloquean, y si ya terminó se liberan.
      */
     private void mostrarCambiandoContrasena(boolean cambiando) {
         cambiandoContrasena = cambiando;
@@ -241,11 +239,9 @@ public class CambiarContrasenaFragment extends Fragment {
     }
 
     /**
-     * Muestra el mensaje de error del campo y pide el foco en él.
-     *
-     * @param campo      campo que falló la validación.
-     * @param textoError mensaje de error que ya está en la pantalla.
-     * @param mensajeId  texto del mensaje que además se muestra en un Toast.
+     * Muestra el mensaje de error del campo y pide el foco en él. El campo recibido es el
+     * que falló la validación, su etiqueta de error es la que ya está en la pantalla, y el
+     * identificador recibido es el texto que además se muestra en un Toast.
      */
     private void mostrarError(EditText campo, TextView textoError, @StringRes int mensajeId) {
         textoError.setText(mensajeId);

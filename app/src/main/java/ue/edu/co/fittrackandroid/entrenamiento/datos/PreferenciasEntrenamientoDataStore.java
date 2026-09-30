@@ -56,6 +56,10 @@ public class PreferenciasEntrenamientoDataStore {
 
     private final RxDataStore<Preferences> dataStore;
 
+    /**
+     * Crea las preferencias abriendo el archivo de DataStore sobre el contexto de la
+     * aplicación, porque el archivo debe sobrevivir a los fragments que lo consultan.
+     */
     private PreferenciasEntrenamientoDataStore(Context contexto) {
         // Se usa el contexto de la aplicación: el DataStore debe sobrevivir a los fragments.
         dataStore = new RxPreferenceDataStoreBuilder(
@@ -66,10 +70,7 @@ public class PreferenciasEntrenamientoDataStore {
 
     /**
      * Crea el DataStore la primera vez y devuelve la misma instancia en las siguientes
-     * llamadas. Se usa {@code synchronized} porque varias pantallas pueden pedirla a la vez.
-     *
-     * @param contexto contexto de la aplicación.
-     * @return la instancia única de las preferencias de entrenamiento.
+     * llamadas. El método está sincronizado porque varias pantallas pueden pedirla a la vez.
      */
     public static synchronized PreferenciasEntrenamientoDataStore obtenerInstancia(
             Context contexto) {
@@ -80,8 +81,8 @@ public class PreferenciasEntrenamientoDataStore {
     }
 
     /**
-     * @return los segundos de descanso guardados, ya limitados al rango permitido. Si el
-     *         usuario nunca ajustó la preferencia se devuelve el valor predeterminado.
+     * Lee los segundos de descanso guardados, ya limitados al rango permitido. Si el
+     * usuario nunca ajustó la preferencia se devuelve el valor predeterminado.
      */
     public Single<Integer> obtenerSegundosDescanso() {
         return dataStore.data()
@@ -98,9 +99,7 @@ public class PreferenciasEntrenamientoDataStore {
     /**
      * Guarda la duración del descanso predeterminado. El valor se limita al rango
      * permitido antes de escribirlo, así no puede quedar un descanso negativo o excesivo.
-     *
-     * @param segundosDescanso duración elegida por el usuario, en segundos.
-     * @return la escritura, que se confirma cuando el dato quedó en el archivo.
+     * La operación se confirma cuando el dato quedó en el archivo.
      */
     public Completable guardarSegundosDescanso(int segundosDescanso) {
         int segundosLimitados = limitarASeRangoPermitido(segundosDescanso);
@@ -114,10 +113,8 @@ public class PreferenciasEntrenamientoDataStore {
     }
 
     /**
-     * Deja el descanso dentro del rango que la pantalla de perfil permite elegir.
-     *
-     * @param segundosDescanso valor recibido, que puede venir de una versión antigua.
-     * @return el mismo valor si es válido, o el límite más cercano si no lo es.
+     * Deja el descanso dentro del rango que la pantalla de perfil permite elegir,
+     * devolviendo el mismo valor si es válido o el límite más cercano si no lo es.
      */
     private static int limitarASeRangoPermitido(int segundosDescanso) {
         if (segundosDescanso < SEGUNDOS_DESCANSO_MINIMO) {

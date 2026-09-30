@@ -29,11 +29,7 @@ public class ResumenEjercicioAdapter
 
     private final List<EjercicioResumen> listaEjercicios;
 
-    /**
-     * Crea el adapter con los ejercicios que se realizaron.
-     *
-     * @param listaEjercicios ejercicios del resumen, cada uno con sus series completadas.
-     */
+    /** Crea el adapter con los ejercicios que se realizaron. */
     public ResumenEjercicioAdapter(List<EjercicioResumen> listaEjercicios) {
         this.listaEjercicios = listaEjercicios;
     }
@@ -63,6 +59,7 @@ public class ResumenEjercicioAdapter
         private final LinearLayout layoutSeries;
         private final LayoutInflater inflater;
 
+        /** Crea la tarjeta del ejercicio, guardando las vistas y el inflater que usará. */
         EjercicioViewHolder(@NonNull View itemView, LayoutInflater inflater) {
             super(itemView);
             this.inflater = inflater;
@@ -72,11 +69,7 @@ public class ResumenEjercicioAdapter
             layoutSeries = itemView.findViewById(R.id.layoutSeriesEjercicioResumen);
         }
 
-        /**
-         * Rellena la tarjeta con los datos de un ejercicio del resumen.
-         *
-         * @param ejercicio ejercicio realizado, con sus series completadas.
-         */
+        /** Rellena la tarjeta con el nombre y el grupo muscular de un ejercicio del resumen. */
         void asignar(EjercicioResumen ejercicio) {
             tvNombre.setText(ejercicio.getNombre());
             tvGrupoMuscular.setText(ejercicio.getGrupoMuscular());
@@ -94,6 +87,7 @@ public class ResumenEjercicioAdapter
             }
         }
 
+        /** Crea la fila de solo lectura que muestra el número de la serie, su peso y sus repeticiones. */
         private View crearFilaSerie(SerieResumen serie, int posicionSerie) {
             View filaSerie = inflater.inflate(R.layout.item_serie_resumen, layoutSeries, false);
 

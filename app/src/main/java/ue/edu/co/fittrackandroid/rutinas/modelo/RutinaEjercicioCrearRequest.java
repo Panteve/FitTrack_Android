@@ -14,9 +14,9 @@ public class RutinaEjercicioCrearRequest {
     private final List<RutinaSerieCrearRequest> series;
 
     /**
-     * @param ejercicioId identificador del ejercicio elegido en el selector.
-     * @param orden posición del ejercicio dentro de la rutina, empezando en 1.
-     * @param series series del ejercicio, con su número y sus valores objetivo.
+     * Crea el ejercicio del envío con el identificador del ejercicio elegido en el
+     * selector, la posición que tendrá dentro de la rutina empezando en 1 y sus
+     * series con su número y sus valores objetivo.
      */
     public RutinaEjercicioCrearRequest(Long ejercicioId, int orden,
                                        List<RutinaSerieCrearRequest> series) {
@@ -25,14 +25,17 @@ public class RutinaEjercicioCrearRequest {
         this.series = series;
     }
 
+    /** Obtiene el identificador del ejercicio elegido en el selector. */
     public Long getEjercicioId() {
         return ejercicioId;
     }
 
+    /** Obtiene la posición del ejercicio dentro de la rutina, empezando en 1. */
     public int getOrden() {
         return orden;
     }
 
+    /** Obtiene las series del ejercicio con su número y sus valores objetivo. */
     public List<RutinaSerieCrearRequest> getSeries() {
         return series;
     }

@@ -6,6 +6,7 @@ import ue.edu.co.fittrackandroid.hoy.modelo.HomeResponse;
 
 public interface HomeApiService {
 
+    /** Solicita al servidor los datos de la pantalla de inicio: la próxima rutina y los últimos entrenamientos. */
     @GET("home")
     Call<HomeResponse> getInfoHome();
 

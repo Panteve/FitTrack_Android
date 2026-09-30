@@ -23,6 +23,7 @@ public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.Ejer
 
     /** Callback que recibe el ejercicio que el usuario tocó en la lista. */
     public interface OnEjercicioClickListener {
+        /** Avisa que el usuario tocó el ejercicio recibido en la lista. */
         void onEjercicioClick(Ejercicio ejercicio);
     }
 
@@ -30,6 +31,7 @@ public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.Ejer
     private final List<Ejercicio> listaFiltrada = new ArrayList<>();
     private final OnEjercicioClickListener listener;
 
+    /** Crea el adapter con la lista completa de ejercicios y el aviso para cuando se toca uno. */
     public EjercicioAdapter(List<Ejercicio> lista, OnEjercicioClickListener listener) {
         this.listaCompleta = lista;
         this.listener = listener;
@@ -81,12 +83,14 @@ public class EjercicioAdapter extends RecyclerView.Adapter<EjercicioAdapter.Ejer
         private final TextView tvNombre;
         private final TextView tvGrupoMuscular;
 
+        /** Crea el contenedor de una fila y busca las vistas del nombre y del grupo muscular. */
         EjercicioViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombre = itemView.findViewById(R.id.tvNombreEjercicio);
             tvGrupoMuscular = itemView.findViewById(R.id.tvGrupoMuscularEjercicio);
         }
 
+        /** Muestra el nombre y el grupo del ejercicio y conecta el toque con el callback. */
         void asignar(Ejercicio ejercicio, OnEjercicioClickListener listener) {
             tvNombre.setText(ejercicio.getNombre());
             tvGrupoMuscular.setText(ejercicio.getGrupoMuscular());

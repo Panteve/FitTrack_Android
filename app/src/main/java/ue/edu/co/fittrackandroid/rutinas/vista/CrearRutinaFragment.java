@@ -156,12 +156,14 @@ public class CrearRutinaFragment extends Fragment
         layoutCargaGuardarRutina = view.findViewById(R.id.layoutCargaGuardarRutina);
     }
 
+    /** Crea el adapter de ejercicios y lo conecta con la lista vertical de la pantalla. */
     private void configurarRecyclerView() {
         adapter = new CrearRutinaEjercicioAdapter(listaEjercicios, this);
         rvEjerciciosRutina.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvEjerciciosRutina.setAdapter(adapter);
     }
 
+    /** Conecta los botones para agregar ejercicios y deja escuchando el nombre y el día. */
     private void configurarAcciones() {
         btnAgregarPrimerEjercicio.setOnClickListener(v -> abrirSelectorEjercicios());
         btnAgregarEjercicio.setOnClickListener(v -> abrirSelectorEjercicios());
@@ -186,6 +188,7 @@ public class CrearRutinaFragment extends Fragment
                 });
     }
 
+    /** Abre la pantalla de ejercicios para que el usuario elija cuál agregar a la rutina. */
     private void abrirSelectorEjercicios() {
         ((MainActivity) requireActivity()).mostrarSelectorEjercicios();
     }
@@ -239,8 +242,6 @@ public class CrearRutinaFragment extends Fragment
     /**
      * Pide confirmación antes de quitar un ejercicio. Solo se quita del formulario: la
      * rutina todavía no está guardada, así que no se llama al backend.
-     *
-     * @param ejercicio ejercicio que el usuario quiere quitar.
      */
     private void confirmarQuitarEjercicio(EjercicioRutinaEditable ejercicio) {
         new AlertDialog.Builder(requireContext())
@@ -252,6 +253,7 @@ public class CrearRutinaFragment extends Fragment
                 .show();
     }
 
+    /** Quita la tarjeta del ejercicio del formulario y vuelve a decidir qué estado mostrar. */
     private void quitarEjercicio(EjercicioRutinaEditable ejercicio) {
         int posicionEjercicio = listaEjercicios.indexOf(ejercicio);
 
@@ -267,7 +269,7 @@ public class CrearRutinaFragment extends Fragment
 
     /**
      * Busca un ejercicio por su posición. Devuelve null si la posición ya no corresponde
-     * a ningún ejercicio, por ejemplo cuando la tarjeta se recycló al quitar otra.
+     * a ningún ejercicio, por ejemplo cuando la tarjeta se recicló al quitar otra.
      */
     private EjercicioRutinaEditable obtenerEjercicio(int posicionEjercicio) {
         if (posicionEjercicio < 0 || posicionEjercicio >= listaEjercicios.size()) {
@@ -284,6 +286,7 @@ public class CrearRutinaFragment extends Fragment
         layoutRutinaConEjercicios.setVisibility(hayEjercicios ? View.VISIBLE : View.GONE);
     }
 
+    /** Vuelve a escribir el nombre de la rutina cuando la vista se recreó y el campo quedó vacío. */
     private void restaurarNombreEnVista() {
         if (etNombreRutinaNueva.getText().length() == 0 && !nombreRutina.isEmpty()) {
             etNombreRutinaNueva.setText(nombreRutina);
@@ -317,6 +320,7 @@ public class CrearRutinaFragment extends Fragment
         });
     }
 
+    /** Guarda lo que el usuario escribe en el nombre para no perderlo y oculta el error del campo. */
     private void limpiarErrorNombreAlEscribir() {
         etNombreRutinaNueva.addTextChangedListener(new TextWatcher() {
             @Override
@@ -420,8 +424,6 @@ public class CrearRutinaFragment extends Fragment
     /**
      * Muestra el estado de guardado: la capa oscura cubre la pantalla y bloquea la
      * acción GUARDAR mientras espera la respuesta, y todo se devuelve si la petición falla.
-     *
-     * @param guardando true mientras la petición está en vuelo.
      */
     private void mostrarGuardando(boolean guardando) {
         guardandoRutina = guardando;
@@ -446,8 +448,7 @@ public class CrearRutinaFragment extends Fragment
      * cada serie son opcionales: si el usuario no escribió nada se envían en cero, y si
      * escribió tiene que ser un valor válido. Los nombres repetidos no se revisan aquí:
      * el backend los rechaza con un 409 cuando ya existe una rutina con ese nombre.
-     *
-     * @return true si la rutina se puede enviar al backend.
+     * Devuelve verdadero solo cuando la rutina ya se puede enviar al backend.
      */
     private boolean validarRutina() {
         if (nombreRutina.trim().isEmpty()) {
@@ -566,8 +567,6 @@ public class CrearRutinaFragment extends Fragment
      * la posición de cada elemento, por eso siempre empiezan en uno y nunca se repiten.
      * Una serie vacía sí se envía: el usuario la agregó a propósito y va con peso y
      * repeticiones en cero.
-     *
-     * @return datos listos para enviar a {@code POST /rutinas}.
      */
     private RutinaCrearRequest crearRutinaRequest() {
         List<RutinaEjercicioCrearRequest> ejerciciosRequest = new ArrayList<>();
@@ -606,7 +605,7 @@ public class CrearRutinaFragment extends Fragment
     }
 
     /**
-     * @return el día escrito por el usuario, o null si sigue en la opción inicial.
+     * Obtiene el día escrito por el usuario, o null si sigue en la opción inicial.
      */
     private DiaSemana obtenerDiaSeleccionado() {
         int posicionSeleccionada = spDiaRutina.getSelectedItemPosition();
@@ -619,11 +618,9 @@ public class CrearRutinaFragment extends Fragment
     }
 
     /**
-     * Convierte el peso escrito en un número para la petición. Un campo vacío vale cero
-     * porque el backend no admite nulos. Solo se llama después de validar el formulario.
-     *
-     * @param pesoEscrito peso tal como lo escribió el usuario.
-     * @return peso listo para enviar.
+     * Convierte el peso escrito en un número para la petición, reemplazando la coma
+     * decimal por punto. Un campo vacío vale cero porque el backend no admite nulos.
+     * Solo se llama después de validar el formulario.
      */
     private double convertirPeso(String pesoEscrito) {
         String pesoNormalizado = pesoEscrito.trim().replace(',', '.');
@@ -639,9 +636,6 @@ public class CrearRutinaFragment extends Fragment
      * Convierte las repeticiones escritas en un número para la petición. Un campo vacío
      * vale cero porque el backend no admite nulos. Solo se llama después de validar el
      * formulario.
-     *
-     * @param repeticionesEscritas repeticiones tal como las escribió el usuario.
-     * @return repeticiones listas para enviar.
      */
     private int convertirRepeticiones(String repeticionesEscritas) {
         String repeticionesNormalizadas = repeticionesEscritas.trim();

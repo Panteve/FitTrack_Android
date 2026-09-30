@@ -28,8 +28,6 @@ public class UltimoEntrenamientoAdapter extends RecyclerView.Adapter<UltimoEntre
 
         /**
          * El usuario pulsó un entrenamiento de la lista.
-         *
-         * @param entrenamiento entrenamiento seleccionado.
          */
         void onEntrenamientoClick(UltimoEntrenamiento entrenamiento);
     }
@@ -38,10 +36,8 @@ public class UltimoEntrenamientoAdapter extends RecyclerView.Adapter<UltimoEntre
     private final OnEntrenamientoClickListener escucha;
 
     /**
-     * Crea el adapter con la lista de entrenamientos a mostrar.
-     *
-     * @param entrenamientos lista con máximo tres entrenamientos, ordenados del más reciente al más antiguo.
-     * @param escucha         callback que se ejecuta al pulsar una fila.
+     * Crea el adapter con la lista de entrenamientos a mostrar, ordenados del más
+     * reciente al más antiguo, y el callback que se ejecuta al pulsar una fila.
      */
     public UltimoEntrenamientoAdapter(List<UltimoEntrenamiento> entrenamientos,
                                       OnEntrenamientoClickListener escucha) {
@@ -74,6 +70,7 @@ public class UltimoEntrenamientoAdapter extends RecyclerView.Adapter<UltimoEntre
         private final View separador;
         private final OnEntrenamientoClickListener escucha;
 
+        /** Crea el contenedor de una fila y busca las vistas donde se pintarán el nombre y el detalle. */
         EntrenamientoViewHolder(@NonNull View itemView, OnEntrenamientoClickListener escucha) {
             super(itemView);
             this.escucha = escucha;
@@ -84,10 +81,8 @@ public class UltimoEntrenamientoAdapter extends RecyclerView.Adapter<UltimoEntre
         }
 
         /**
-         * Rellena la fila con los datos de un entrenamiento.
-         *
-         * @param entrenamiento        datos a mostrar.
-         * @param esUltimoItem         true si es la última fila, para ocultar el separador.
+         * Rellena la fila con los datos de un entrenamiento, oculta el separador cuando
+         * es la última y conecta el toque con el callback de la pantalla.
          */
         void asignar(UltimoEntrenamiento entrenamiento, boolean esUltimoItem) {
             tvNombre.setText(entrenamiento.getNombre());

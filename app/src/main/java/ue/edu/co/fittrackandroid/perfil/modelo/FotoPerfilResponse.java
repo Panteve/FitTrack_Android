@@ -5,7 +5,7 @@ public class FotoPerfilResponse {
 
     private String fotoPerfilUrl;
 
-    /** @return la URL temporal de la foto guardada. */
+    /** Devuelve la URL temporal de la foto guardada. */
     public String getFotoPerfilUrl() {
         return fotoPerfilUrl;
     }

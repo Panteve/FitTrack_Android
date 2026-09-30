@@ -88,7 +88,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_xs"
-                    android:text="@string/tvFechaResumenEntrenamiento"
                     android:textColor="@color/colorTextSecondary"
                     android:textSize="13sp" />
             </LinearLayout>
@@ -160,7 +159,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:maxLines="1"
-                        android:text="@string/tvVolumenResumenEntrenamiento"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -193,7 +191,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:maxLines="1"
-                        android:text="@string/tvSeriesResumenEntrenamiento"
                         android:textSize="18sp" />
                 </LinearLayout>
             </LinearLayout>

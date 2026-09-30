@@ -12,36 +12,24 @@ public class GrupoMuscularResumen {
     private final int seriesCompletadas;
     private final int porcentaje;
 
-    /**
-     * Crea un grupo muscular del resumen.
-     *
-     * @param nombre            nombre del grupo muscular.
-     * @param seriesCompletadas series completadas que se le adjudicaron.
-     * @param porcentaje        porcentaje sobre el total de series completadas.
-     */
+    /** Crea un grupo muscular del resumen con las series que se le adjudicaron y su porcentaje. */
     public GrupoMuscularResumen(String nombre, int seriesCompletadas, int porcentaje) {
         this.nombre = nombre;
         this.seriesCompletadas = seriesCompletadas;
         this.porcentaje = porcentaje;
     }
 
-    /**
-     * @return el nombre del grupo muscular.
-     */
+    /** Devuelve el nombre del grupo muscular. */
     public String getNombre() {
         return nombre;
     }
 
-    /**
-     * @return las series completadas de este grupo.
-     */
+    /** Devuelve las series completadas de este grupo. */
     public int getSeriesCompletadas() {
         return seriesCompletadas;
     }
 
-    /**
-     * @return el porcentaje de series completadas de este grupo, ya redondeado.
-     */
+    /** Devuelve el porcentaje de series completadas de este grupo, ya redondeado. */
     public int getPorcentaje() {
         return porcentaje;
     }

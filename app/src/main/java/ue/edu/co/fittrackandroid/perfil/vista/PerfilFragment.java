@@ -134,6 +134,7 @@ public class PerfilFragment extends Fragment {
      */
     private final Handler handler = new Handler(Looper.getMainLooper());
 
+    /** Crea el fragmento vacío, tal como lo exige el sistema al reconstruir la pantalla. */
     public PerfilFragment() {
         // Required empty public constructor
     }
@@ -214,8 +215,13 @@ public class PerfilFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        MainActivity activity = (MainActivity) requireActivity();
         // El perfil es una pestaña raíz: la toolbar debe verse siempre como la principal.
-        ((MainActivity) requireActivity()).mostrarToolbarPrincipal();
+        activity.mostrarToolbarPrincipal();
+        // La navegación inferior también se restaura aquí. La galería propia la oculta
+        // mientras se elige la foto, y como es un Fragment de la misma Activity no hay
+        // ningún onResume de MainActivity que la vuelva a mostrar por nosotros.
+        activity.mostrarNavegacionInferior();
 
         // Se consulta en onResume para que, al volver desde CrearEjercicioFragment o desde
         // ModificarEjercicioFragment, la lista muestre los cambios o el ejercicio borrado.
@@ -318,10 +324,8 @@ public class PerfilFragment extends Fragment {
     }
 
     /**
-     * Pone en pantalla el descanso que DataStore devolvió y habilita los botones según
-     * los límites permitidos.
-     *
-     * @param segundosDescanso duración guardada, en segundos.
+     * Pone en pantalla el descanso que DataStore devolvió, en segundos, y habilita los
+     * botones según los límites permitidos.
      */
     private void mostrarDescansoLeido(int segundosDescanso) {
         segundosDescansoSeleccionados = segundosDescanso;
@@ -333,9 +337,8 @@ public class PerfilFragment extends Fragment {
     /**
      * Suma o resta el paso indicado, respeta el rango permitido, actualiza la pantalla y
      * guarda el resultado de inmediato. No hay botón de guardar: cada cambio queda
-     * escrito en DataStore.
-     *
-     * @param cambioSegundos cuántos segundos suma o resta la pulsación.
+     * escrito en DataStore. El cambio recibido indica cuántos segundos suma o resta
+     * la pulsación, y puede ser negativo.
      */
     private void cambiarDescansoPredeterminado(int cambioSegundos) {
         segundosDescansoSeleccionados = limitarDescansoSeleccionado(
@@ -348,8 +351,9 @@ public class PerfilFragment extends Fragment {
     }
 
     /**
-     * @param segundosDescanso valor elegido por el usuario, que puede pasarse del límite.
-     * @return el mismo valor si es válido, o el límite más cercano si no lo es.
+     * Corrige el descanso elegido por el usuario cuando se pasó del límite. Recibe el
+     * valor tal como salió de la pulsación y devuelve el mismo valor si es válido, o el
+     * mínimo o el máximo permitido si quedó fuera del rango.
      */
     private int limitarDescansoSeleccionado(int segundosDescanso) {
         if (segundosDescanso < PreferenciasEntrenamientoDataStore.SEGUNDOS_DESCANSO_MINIMO) {
@@ -363,7 +367,10 @@ public class PerfilFragment extends Fragment {
         return segundosDescanso;
     }
 
-    /** Escribe el descanso en DataStore y recuerda el valor cuando queda confirmado. */
+    /**
+     * Escribe el descanso recibido, en segundos, en DataStore y recuerda el valor cuando
+     * queda confirmado.
+     */
     private void guardarDescansoPredeterminado(int segundosDescanso) {
         suscripcionesDescanso.add(
                 preferenciasEntrenamiento.guardarSegundosDescanso(segundosDescanso).subscribe(
@@ -409,11 +416,10 @@ public class PerfilFragment extends Fragment {
     }
 
     /**
-     * Habilita o deshabilita un botón de descanso. Un botón deshabilitado además se ve
-     * más claro, porque el tema no cambia la apariencia de los botones al apagarlos.
-     *
-     * @param botonDescanso botón de restar o de sumar.
-     * @param habilitado true si el usuario todavía puede pulsarlo.
+     * Habilita o deshabilita un botón de descanso, que es el de restar o el de sumar. Un
+     * botón deshabilitado además se ve más claro, porque el tema no cambia la apariencia
+     * de los botones al apagarlos. Lo habilitado indica si el usuario todavía puede
+     * pulsarlo.
      */
     private void mostrarBotonDescanso(Button botonDescanso, boolean habilitado) {
         botonDescanso.setEnabled(habilitado);
@@ -421,8 +427,8 @@ public class PerfilFragment extends Fragment {
     }
 
     /**
-     * @param segundosDescanso duración a mostrar, en segundos.
-     * @return el tiempo con el formato mm:ss, por ejemplo 03:00 o 00:30.
+     * Convierte una duración expresada en segundos en el texto con el formato mm:ss que ve
+     * el usuario, por ejemplo 03:00 o 00:30.
      */
     private String formatearTiempoDescanso(int segundosDescanso) {
         return String.format(Locale.getDefault(), "%02d:%02d",
@@ -432,9 +438,8 @@ public class PerfilFragment extends Fragment {
     /**
      * Ejecuta la acción en el hilo principal y solo si la vista del perfil sigue viva.
      * Las lecturas y escrituras de DataStore terminan en un hilo de trabajo, así que
-     * nunca se tocan las vistas directamente desde allí.
-     *
-     * @param accion cambio que se debe aplicar a la pantalla.
+     * nunca se tocan las vistas directamente desde allí. La acción recibida es el cambio
+     * que se debe aplicar a la pantalla.
      */
     private void enPantalla(Runnable accion) {
         handler.post(() -> {
@@ -583,9 +588,8 @@ public class PerfilFragment extends Fragment {
      * Revisa el resultado de pedir el permiso de almacenamiento. Con cualquier acceso
      * (completo o parcial) se abre la galería; sin acceso se explica por qué FitTrack
      * necesita leer las imágenes y, si ya no se puede volver a preguntar, se ofrecen
-     * los ajustes de la aplicación.
-     *
-     * @param resultados permiso o permisos solicitados con su estado final
+     * los ajustes de la aplicación. El resultado recibido trae cada permiso solicitado
+     * con su estado final, aunque la decisión final se toma preguntando al contexto.
      */
     private void procesarResultadoPermisoGaleria(Map<String, Boolean> resultados) {
         if (!isAdded()) {
@@ -637,9 +641,8 @@ public class PerfilFragment extends Fragment {
 
     /**
      * Valida la imagen elegida y la sube como multipart. La copia local cambia
-     * únicamente después de que el backend confirma que la guardó.
-     *
-     * @param uri dirección de la imagen elegida, o null si el usuario canceló
+     * únicamente después de que el backend confirma que la guardó. La dirección recibida
+     * es la de la imagen elegida, o llega nula si el usuario canceló.
      */
     private void subirFotoPerfil(Uri uri) {
         if (uri == null || actualizandoFoto) {
@@ -772,11 +775,10 @@ public class PerfilFragment extends Fragment {
     }
 
     /**
-     * Lee la imagen sin permitir que se mantenga en memoria un archivo mayor de 5 MB.
-     *
-     * @param uri dirección entregada por el selector de documentos
-     * @return contenido de la imagen, o null cuando supera el tamaño permitido
-     * @throws IOException si el proveedor no permite leer la imagen
+     * Lee la imagen indicada por la dirección entregada por el selector de documentos, sin
+     * permitir que se mantenga en memoria un archivo mayor de 5 MB. Devuelve el contenido
+     * de la imagen, o nulo cuando supera el tamaño permitido, y lanza una IOException si
+     * el proveedor no permite leerla.
      */
     @Nullable
     private byte[] leerContenidoFoto(Uri uri) throws IOException {
@@ -878,10 +880,10 @@ public class PerfilFragment extends Fragment {
     }
 
     /**
-     * Bloquea las tres acciones de fotografía mientras una petición está en vuelo.
-     *
-     * @param actualizando true mientras se espera la respuesta del backend
-     * @param quitando true cuando la operación actual es la eliminación
+     * Bloquea las tres acciones de fotografía mientras una petición está en vuelo, y
+     * desbloquea todo cuando ya no hay nada en curso. Lo recibido indica si se está
+     * esperando la respuesta del backend y si la operación actual es la eliminación, para
+     * saber qué botón debe mostrar el texto de carga.
      */
     private void mostrarActualizandoFoto(boolean actualizando, boolean quitando) {
         actualizandoFoto = actualizando;
@@ -902,7 +904,11 @@ public class PerfilFragment extends Fragment {
         );
     }
 
-    /** Muestra mensajes específicos para los rechazos de formato o tamaño. */
+    /**
+     * Muestra mensajes específicos para los rechazos de formato o tamaño. El código
+     * recibido es el que devolvió el backend, y cualquier otro se traduce con el manejo
+     * genérico de errores de la API.
+     */
     private void mostrarErrorFoto(int codigoRespuesta) {
         if (codigoRespuesta == 413) {
             Toast.makeText(
@@ -955,6 +961,7 @@ public class PerfilFragment extends Fragment {
         imgFotoPerfil.setImageBitmap(fotoPerfil);
     }
 
+    /** Sustituye la foto por el ícono de usuario, con el relleno que lo centra en el círculo. */
     private void mostrarFotoPorDefecto() {
         int relleno = getResources().getDimensionPixelSize(R.dimen.avatar_icon_padding);
         imgFotoPerfil.setPadding(relleno, relleno, relleno, relleno);
@@ -1020,10 +1027,8 @@ public class PerfilFragment extends Fragment {
     }
 
     /**
-     * Revisa el nombre ya recortado y muestra el error correspondiente si no sirve.
-     *
-     * @param nombreUsuario nombre escrito por el usuario, sin espacios de los extremos.
-     * @return true si el nombre se puede enviar al backend.
+     * Revisa el nombre ya recortado de los extremos y muestra el error correspondiente si
+     * no sirve. Devuelve verdadero solo cuando el nombre se puede enviar al backend.
      */
     private boolean validarNombre(String nombreUsuario) {
         if (nombreUsuario.isEmpty()) {
@@ -1044,9 +1049,8 @@ public class PerfilFragment extends Fragment {
 
     /**
      * Bloquea el formulario mientras se guarda el nombre, para no enviar dos veces, y
-     * cambia el texto del botón para que se vea que la petición está en curso.
-     *
-     * @param guardando true si la llamada está en vuelo, false si ya terminó.
+     * cambia el texto del botón para que se vea que la petición está en curso. Lo recibido
+     * indica si la llamada está en vuelo o si ya terminó.
      */
     private void mostrarGuardandoNombre(boolean guardando) {
         guardandoNombre = guardando;
@@ -1062,9 +1066,8 @@ public class PerfilFragment extends Fragment {
     /**
      * Guarda en la sesión el nombre que el backend ya confirmó y lo deja visible.
      * El saludo de Inicio lee el mismo nombre, así que ya sale actualizado al volver.
-     * El usuario se queda en el perfil, no se regresa a otra pantalla.
-     *
-     * @param nombreUsuario nombre ya validado y confirmado por el backend.
+     * El usuario se queda en el perfil, no se regresa a otra pantalla. El nombre recibido
+     * es el que ya fue validado y confirmado por el backend.
      */
     private void procesarNombreActualizado(String nombreUsuario) {
         sesionManager.guardarNombre(nombreUsuario);
@@ -1113,6 +1116,11 @@ public class PerfilFragment extends Fragment {
                 .show();
     }
 
+    /**
+     * Envía la petición de borrado de la cuenta al backend y deshabilita el botón mientras
+     * espera. Si el backend responde bien se da por eliminada, y ante cualquier error se
+     * vuelve a habilitar el botón para que el usuario pueda reintentar.
+     */
     private void eliminarCuenta() {
 
         if (eliminandoCuenta) {
@@ -1167,6 +1175,10 @@ public class PerfilFragment extends Fragment {
         });
     }
 
+    /**
+     * Avisa que la cuenta se eliminó y cierra la sesión, dejando al usuario en la pantalla
+     * de inicio como si nunca hubiera iniciado sesión.
+     */
     private void procesarCuentaEliminada() {
 
         Toast.makeText(

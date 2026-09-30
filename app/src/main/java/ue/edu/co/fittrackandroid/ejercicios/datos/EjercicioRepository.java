@@ -14,6 +14,7 @@ public class EjercicioRepository {
 
     private final EjercicioApiService ejercicioApiService;
 
+    /** Crea el repositorio obteniendo el servicio de ejercicios del cliente de Retrofit. */
     public EjercicioRepository(Context context) {
         this.ejercicioApiService = RetrofitClient.getInstance(context)
                 .create(EjercicioApiService.class);
@@ -36,9 +37,6 @@ public class EjercicioRepository {
 
     /**
      * Prepara la consulta de un ejercicio propio por su identificador.
-     *
-     * @param ejercicioId identificador del ejercicio que se quiere modificar.
-     * @return llamada con el detalle del ejercicio.
      */
     public Call<EjercicioResponse> getEjercicioById(Long ejercicioId) {
         return ejercicioApiService.getEjercicioById(ejercicioId);
@@ -48,10 +46,6 @@ public class EjercicioRepository {
      * Prepara el envío de los cambios de un ejercicio propio.
      * El cuerpo es el mismo de la creación porque el backend reemplaza el nombre y el
      * grupo muscular por los que se envían.
-     *
-     * @param ejercicioId identificador del ejercicio que se está modificando.
-     * @param ejercicioRequest nombre y grupo muscular con los cambios.
-     * @return llamada con el ejercicio ya actualizado.
      */
     public Call<EjercicioResponse> actualizarEjercicio(
             Long ejercicioId,
@@ -63,9 +57,6 @@ public class EjercicioRepository {
     /**
      * Prepara el borrado lógico de un ejercicio propio. La respuesta no trae cuerpo,
      * por eso la llamada es de tipo Void.
-     *
-     * @param ejercicioId identificador del ejercicio que se quiere borrar.
-     * @return llamada que termina con un 204 cuando el ejercicio quedó borrado.
      */
     public Call<Void> eliminarEjercicio(Long ejercicioId) {
         return ejercicioApiService.eliminarEjercicio(ejercicioId);

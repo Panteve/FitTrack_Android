@@ -39,6 +39,7 @@ public class ImagenDispositivoAdapter extends RecyclerView.Adapter<ImagenDisposi
 
     /** Interfaz para avisar que el usuario tocó una imagen. */
     public interface OnImagenClickListener {
+        /** Avisa que el usuario tocó la imagen recibida en la cuadrícula. */
         void onImagenClick(ImagenDispositivo imagen);
     }
 
@@ -50,9 +51,9 @@ public class ImagenDispositivoAdapter extends RecyclerView.Adapter<ImagenDisposi
     private final LruCache<Long, Bitmap> cacheMiniaturas;
 
     /**
-     * @param contexto contexto para leer las miniaturas y medir la pantalla
-     * @param imagenes lista inicial de imágenes; se actualiza con {@link #actualizarImagenes}
-     * @param escucha  acción a ejecutar cuando se toca una imagen
+     * Crea el adaptador con la lista inicial de imágenes, el aviso para cuando se toca
+     * una de ellas, el acceso a MediaStore para leer miniaturas y el ancho de celda
+     * medido sobre el ancho de pantalla.
      */
     public ImagenDispositivoAdapter(Context contexto, List<ImagenDispositivo> imagenes,
                                     OnImagenClickListener escucha) {
@@ -80,6 +81,7 @@ public class ImagenDispositivoAdapter extends RecyclerView.Adapter<ImagenDisposi
         /** Identificador de la imagen que debe mostrar el contenedor en este momento. */
         long imagenEsperada = -1;
 
+        /** Crea el contenedor de una celda y busca la imagen donde se pintará la miniatura. */
         VistaImagen(@NonNull View itemView) {
             super(itemView);
             imgImagenDispositivo = itemView.findViewById(R.id.imgImagenDispositivo);
@@ -158,12 +160,10 @@ public class ImagenDispositivoAdapter extends RecyclerView.Adapter<ImagenDisposi
     }
 
     /**
-     * Lee una miniatura pequeña. Desde Android 10 se usa la miniatura que el propio
-     * sistema genera con {@code ContentResolver.loadThumbnail}; en versiones anteriores
-     * se decodifica una copia reducida con BitmapFactory.
-     *
-     * @param imagen imagen de la que se quiere la miniatura
-     * @return miniatura lista para la celda, o null si no se pudo leer
+     * Lee una miniatura pequeña, o devuelve null si no se pudo leer. Desde Android 10 se
+     * usa la miniatura que el propio sistema genera con el método loadThumbnail del
+     * ContentResolver; en versiones anteriores se decodifica una
+     * copia reducida con BitmapFactory.
      */
     private Bitmap leerMiniatura(ImagenDispositivo imagen) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -182,11 +182,10 @@ public class ImagenDispositivoAdapter extends RecyclerView.Adapter<ImagenDisposi
     }
 
     /**
-     * Decodifica la imagen con un divisor que la deja cerca de {@link #LADO_MINIATURA},
-     * en lugar de cargar la fotografía completa en memoria.
-     *
-     * @param imagen imagen de la que se quiere la miniatura
-     * @return miniatura reducida, o null si no se pudo decodificar
+     * Decodifica la imagen con un divisor que la deja cerca del lado de miniatura definido
+     * en esta clase,
+     * en lugar de cargar la fotografía completa en memoria. Devuelve null si no se
+     * pudo decodificar.
      */
     private Bitmap decodificarReducida(ImagenDispositivo imagen) {
         BitmapFactory.Options medidas = new BitmapFactory.Options();
@@ -218,9 +217,7 @@ public class ImagenDispositivoAdapter extends RecyclerView.Adapter<ImagenDisposi
         }
     }
 
-    /**
-     * @return el divisor de decodificación que deja la imagen cerca del tamaño de miniatura.
-     */
+    /** Calcula el divisor de decodificación que deja la imagen cerca del tamaño de miniatura. */
     private int calcularMuestra(int anchoOriginal, int altoOriginal) {
         int ladoMayor = Math.max(anchoOriginal, altoOriginal);
         int muestra = 1;

@@ -18,6 +18,7 @@ public class EjercicioRutinaEditable {
     private final String grupoMuscular;
     private final List<SerieRutina> series = new ArrayList<>();
 
+    /** Crea el ejercicio con su identificador, nombre y grupo muscular, y le agrega la primera serie vacía. */
     public EjercicioRutinaEditable(Long idEjercicio, String nombre, String grupoMuscular) {
         this.idEjercicio = idEjercicio;
         this.nombre = nombre;
@@ -31,11 +32,6 @@ public class EjercicioRutinaEditable {
      * la rutina llegó sin ninguna, porque en ese caso el usuario necesita una fila donde
      * escribir. Los identificadores internos de la rutina no se guardan: al actualizar,
      * el backend reemplaza la configuración completa de la rutina.
-     *
-     * @param idEjercicio identificador del ejercicio que ya existe.
-     * @param nombre nombre del ejercicio.
-     * @param grupoMuscular grupo muscular del ejercicio.
-     * @param seriesExistentes series que ya tenía la rutina, con sus valores objetivo.
      */
     public EjercicioRutinaEditable(Long idEjercicio, String nombre, String grupoMuscular,
                                   List<SerieRutina> seriesExistentes) {
@@ -52,26 +48,29 @@ public class EjercicioRutinaEditable {
         }
     }
 
+    /** Obtiene el identificador del ejercicio del catálogo, necesario para guardar la rutina. */
     public Long getIdEjercicio() {
         return idEjercicio;
     }
 
+    /** Obtiene el nombre del ejercicio que se muestra en la tarjeta. */
     public String getNombre() {
         return nombre;
     }
 
+    /** Obtiene el grupo muscular del ejercicio. */
     public String getGrupoMuscular() {
         return grupoMuscular;
     }
 
+    /** Obtiene la lista viva de series del ejercicio, para leerlas y modificarlas mientras se edita. */
     public List<SerieRutina> getSeries() {
         return series;
     }
 
     /**
-     * Agrega una serie vacía al final del ejercicio.
-     *
-     * @return la serie recién agregada.
+     * Agrega una serie vacía al final del ejercicio y la devuelve para que la pantalla
+     * la pueda rellenar.
      */
     public SerieRutina agregarSerie() {
         SerieRutina serieNueva = new SerieRutina();
@@ -82,19 +81,15 @@ public class EjercicioRutinaEditable {
     /**
      * Indica si el ejercicio tiene más de una serie. El backend exige que cada ejercicio
      * tenga al menos una, así que la última no se puede quitar.
-     *
-     * @return true si se puede quitar alguna serie.
      */
     public boolean puedeEliminarSerie() {
         return series.size() > 1;
     }
 
     /**
-     * Quita una serie del ejercicio. Como el número de serie sale de la posición, las que
-     * quedan se renumeran solas al redibujarse.
-     *
-     * @param posicionSerie posición de la serie dentro de este ejercicio.
-     * @return true si la serie se eliminó, false si la posición no existe o si era la única.
+     * Quita una serie del ejercicio y devuelve si pudo hacerlo. Como el número de serie
+     * sale de la posición, las que quedan se renumeran solas al redibujarse. Devuelve
+     * false si la posición no existe o si se intentó quitar la única serie.
      */
     public boolean eliminarSerie(int posicionSerie) {
         if (posicionSerie < 0 || posicionSerie >= series.size() || !puedeEliminarSerie()) {

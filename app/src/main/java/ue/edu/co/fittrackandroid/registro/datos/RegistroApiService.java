@@ -13,10 +13,8 @@ import ue.edu.co.fittrackandroid.registro.modelo.RegistroResponse;
 public interface RegistroApiService {
 
     /**
-     * Crea una cuenta nueva.
-     *
-     * @param registroRequest cuerpo JSON con nombre, correo y contrasena.
-     * @return llamada que entrega el token y el nombre cuando el backend responde 201.
+     * Crea una cuenta nueva enviando el nombre, el correo y la contraseña, y devuelve
+     * el token y el nombre cuando el backend responde que la cuenta fue creada.
      */
     @POST("auth/register")
     Call<RegistroResponse> registerUser(@Body RegistroRequest registroRequest);

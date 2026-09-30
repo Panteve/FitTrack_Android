@@ -102,6 +102,7 @@ public class RutinasFragment extends Fragment {
                 });
     }
 
+    /** Busca las vistas de la pantalla y prepara la lista vertical de planes. */
     private void initObjects(View view){
         btnNuevaRutina = view.findViewById(R.id.btnNuevaRutina);
         tvCantidadPlanes = view.findViewById(R.id.tvCantidadPlanes);
@@ -111,6 +112,7 @@ public class RutinasFragment extends Fragment {
         rvPlanes.setLayoutManager(new LinearLayoutManager(requireContext()));
     }
 
+    /** Consulta el servidor las rutinas del usuario y las presenta, o avisa el error si la consulta falla. */
     private void obtenerRutinas() {
         // Una consulta anterior puede seguir en vuelo si llega una rutina nueva
         // o si la pantalla se vuelve a abrir.
@@ -191,7 +193,11 @@ public class RutinasFragment extends Fragment {
     public void onResume() {
         super.onResume();
         // Al volver desde Ejercicios o Crear ejercicio, la toolbar debe quedar como la principal.
-        ((MainActivity) requireActivity()).mostrarToolbarPrincipal();
+        MainActivity activity = (MainActivity) requireActivity();
+        activity.mostrarToolbarPrincipal();
+        // También se restaura la navegación inferior: Rutinas es una pestaña raíz y hay
+        // pantallas, como la galería o el entrenamiento activo, que la ocultan.
+        activity.mostrarNavegacionInferior();
 
     }
 

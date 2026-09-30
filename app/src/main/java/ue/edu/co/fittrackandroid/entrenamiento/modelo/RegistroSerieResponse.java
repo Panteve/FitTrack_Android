@@ -13,36 +13,42 @@ public class RegistroSerieResponse {
     private Integer repeticiones;
     private Double peso;
 
+    /** Devuelve el identificador del bloque de la rutina al que pertenece la serie. */
     public Long getRutinaEjercicioId() {
         return rutinaEjercicioId;
     }
 
+    /** Devuelve el identificador del ejercicio guardado en el backend. */
     public Long getEjercicioId() {
         return ejercicioId;
     }
 
+    /** Devuelve el nombre del ejercicio al que pertenece la serie. */
     public String getNombreEjercicio() {
         return nombreEjercicio;
     }
 
-    /** @return el grupo muscular principal del ejercicio, o null si el backend no lo envía. */
+    /** Devuelve el grupo muscular principal del ejercicio, o nulo si el backend no lo envía. */
     public String getGrupoMuscular() {
         return grupoMuscular;
     }
 
-    /** @return la posición del ejercicio dentro de la rutina, con la que llega la lista. */
+    /** Devuelve la posición del ejercicio dentro de la rutina, con la que llega la lista. */
     public Integer getOrdenEjercicio() {
         return ordenEjercicio;
     }
 
+    /** Devuelve el número que ocupa la serie dentro del ejercicio. */
     public Integer getNumeroSerie() {
         return numeroSerie;
     }
 
+    /** Devuelve las repeticiones registradas en la serie. */
     public Integer getRepeticiones() {
         return repeticiones;
     }
 
+    /** Devuelve el peso registrado en la serie. */
     public Double getPeso() {
         return peso;
     }

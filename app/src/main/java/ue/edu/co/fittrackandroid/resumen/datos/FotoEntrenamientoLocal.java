@@ -52,6 +52,7 @@ public final class FotoEntrenamientoLocal {
     private final File directorioFotos;
     private final String autoridadProveedor;
 
+    /** Crea el administrador preparando el directorio del caché y la autoridad del FileProvider. */
     public FotoEntrenamientoLocal(Context context) {
         contextoAplicacion = context.getApplicationContext();
         directorioFotos = new File(contextoAplicacion.getCacheDir(), DIRECTORIO_FOTOS);
@@ -61,9 +62,8 @@ public final class FotoEntrenamientoLocal {
     }
 
     /**
-     * Crea el archivo donde la cámara va a escribir la fotografía.
-     *
-     * @return archivo vacío listo para la cámara, o null si no se pudo crear
+     * Crea el archivo donde la cámara va a escribir la fotografía, devolviendo nulo
+     * si no se pudo crear.
      */
     public File crearArchivoCaptura() {
         if (!directorioFotos.isDirectory() && !directorioFotos.mkdirs()) {
@@ -85,11 +85,7 @@ public final class FotoEntrenamientoLocal {
 
     /**
      * Traduce el archivo de la captura a una dirección segura que la aplicación de
-     * cámara puede escribir.
-     *
-     * @param archivoCaptura archivo creado con {@link #crearArchivoCaptura()}
-     * @return dirección temporal entregada a la cámara
-     * @throws IllegalArgumentException si el archivo está fuera de la ruta compartida
+     * cámara puede escribir. Falla si el archivo está fuera de la ruta compartida.
      */
     public Uri obtenerUriParaCamara(File archivoCaptura) {
         return FileProvider.getUriForFile(
@@ -100,10 +96,8 @@ public final class FotoEntrenamientoLocal {
     }
 
     /**
-     * Comprueba que la cámara sí escribió algo y que se puede decodificar.
-     *
-     * @param archivoCaptura archivo donde la cámara guardó la fotografía
-     * @return true si existe, no está vacío y es una imagen legible
+     * Comprueba que la cámara sí escribió algo y que se puede decodificar: el archivo
+     * tiene que existir, no estar vacío y ser una imagen legible.
      */
     public boolean esCapturaValida(File archivoCaptura) {
         if (archivoCaptura == null
@@ -124,10 +118,7 @@ public final class FotoEntrenamientoLocal {
      * reduce el tamaño si excede el límite y la vuelve a guardar como JPEG.
      *
      * <p>La captura original no se toca. Se escribe una copia y solo cuando esa copia
-     * quedó bien se devuelve como resultado.
-     *
-     * @param archivoCaptura archivo con la fotografía tomada
-     * @return contenido JPEG listo para enviar, o null si no se pudo preparar
+     * quedó bien se devuelve como resultado. Si algo sale mal se devuelve nulo.
      */
     public byte[] prepararParaSubir(File archivoCaptura) {
         if (!esCapturaValida(archivoCaptura)) {
@@ -157,10 +148,8 @@ public final class FotoEntrenamientoLocal {
 
     /**
      * Decodifica una copia reducida en lugar de la imagen original completa, para no
-     * cargar en memoria una fotografía de la cámara de varios megapíxeles.
-     *
-     * @param archivoCaptura archivo con la fotografía
-     * @return bitmap reducido, o null si no se pudo decodificar
+     * cargar en memoria una fotografía de la cámara de varios megapíxeles. Devuelve
+     * nulo si la imagen no se pudo decodificar.
      */
     private Bitmap decodificarReducida(File archivoCaptura) {
         BitmapFactory.Options medidas = new BitmapFactory.Options();
@@ -181,22 +170,16 @@ public final class FotoEntrenamientoLocal {
     }
 
     /**
-     * @param anchoOriginal ancho de la imagen
-     * @param altoOriginal alto de la imagen
-     * @return el divisor más cercano que deja la imagen dentro de {@link #LADO_MAXIMO}
-     *         sin quedarse demasiado pequeña
+     * Calcula el divisor más cercano que deja la imagen dentro del lado máximo
+     * permitido sin quedarse demasiado pequeña.
      */
     private int calcularMuestra(int anchoOriginal, int altoOriginal) {
         return calcularMuestra(anchoOriginal, altoOriginal, LADO_MAXIMO);
     }
 
     /**
-     * Calcula el divisor de decodificación para un tamaño de vista concreto.
-     *
-     * @param anchoOriginal ancho de la imagen
-     * @param altoOriginal alto de la imagen
-     * @param ladoObjetivo lado mayor aproximado del espacio donde se va a ver
-     * @return divisor que reduce la imagen sin quedarnos sin resolución
+     * Calcula el divisor de decodificación para un tamaño de vista concreto, reduciendo
+     * la imagen sin quedarnos sin resolución.
      */
     private int calcularMuestra(int anchoOriginal, int altoOriginal, int ladoObjetivo) {
         int ladoMayor = Math.max(anchoOriginal, altoOriginal);
@@ -217,9 +200,8 @@ public final class FotoEntrenamientoLocal {
      * acceso únicamente a ese documento. La copia vive en el caché porque es privada
      * y el sistema puede limpiarla sin perder la foto que ya está en el backend.
      *
-     * @param uri dirección entregada por el selector de documentos
-     * @return archivo con una copia de la imagen, o null si supera el tamaño permitido
-     * @throws IOException si el proveedor no deja leer la imagen o si está vacía
+     * <p>Devuelve el archivo con la copia, o nulo si la imagen supera el tamaño permitido.
+     * Si el proveedor no deja leerla o llegó vacía, avisa con una excepción de entrada y salida.
      */
     @Nullable
     public File copiarDesdeUri(Uri uri) throws IOException {
@@ -248,12 +230,8 @@ public final class FotoEntrenamientoLocal {
 
     /**
      * Escribe en el archivo de destino todo lo que el proveedor entregue, sin dejar
-     * que pase del límite del backend.
-     *
-     * @param uri dirección de la imagen elegida
-     * @param destino archivo del caché donde se copia
-     * @return true si la imagen cabe en el límite, false si es demasiado grande
-     * @throws IOException si no se puede leer la imagen o si llegó vacía
+     * que pase del límite del backend. Indica si la imagen cabe, y avisa con una
+     * excepción de entrada y salida si no se puede leer o si llegó vacía.
      */
     private boolean copiarContenido(Uri uri, File destino) throws IOException {
         int bytesTotales = 0;
@@ -288,11 +266,8 @@ public final class FotoEntrenamientoLocal {
 
     /**
      * La cámara guarda la orientación en los metadatos, no en los píxeles. Si no se
-     * aplica, una foto tomada en horizontal aparece de lado.
-     *
-     * @param archivoCaptura archivo con la fotografía
-     * @param imagen bitmap ya decodificado
-     * @return bitmap enderezado; puede ser el mismo si la orientación era normal
+     * aplica, una foto tomada en horizontal aparece de lado. Devuelve el mismo bitmap
+     * cuando la foto ya estaba derecha.
      */
     private Bitmap aplicarOrientacion(File archivoCaptura, Bitmap imagen) {
         int rotacion = leerRotacion(archivoCaptura);
@@ -316,10 +291,8 @@ public final class FotoEntrenamientoLocal {
     }
 
     /**
-     * Lee el metadato de orientación y lo traduce a grados.
-     *
-     * @param archivoCaptura archivo con la fotografía
-     * @return grados a girar, o 0 si la foto ya estaba derecha o no se pudo leer
+     * Lee el metadato de orientación y lo traduce a grados, devolviendo cero si la foto
+     * ya estaba derecha o si no se pudo leer el metadato.
      */
     private int leerRotacion(File archivoCaptura) {
         int orientacion;
@@ -351,10 +324,7 @@ public final class FotoEntrenamientoLocal {
 
     /**
      * Comprime la imagen como JPEG, reduciendo la calidad si todavía no cabe en el
-     * límite del backend.
-     *
-     * @param imagen bitmap ya enderezado
-     * @return contenido JPEG, o null si no se pudo comprimir
+     * límite del backend. Devuelve el contenido JPEG, o nulo si no se pudo comprimir.
      */
     private byte[] comprimirComoJpeg(Bitmap imagen) {
         int calidad = CALIDAD_INICIAL;
@@ -378,11 +348,8 @@ public final class FotoEntrenamientoLocal {
     }
 
     /**
-     * Decodifica una copia pequeña para mostrarla en la vista previa.
-     *
-     * @param contenido JPEG ya preparado
-     * @param ladoMaximo lado aproximado del espacio donde se va a ver
-     * @return bitmap reducido, o null si el contenido no es una imagen legible
+     * Decodifica una copia pequeña del contenido JPEG para mostrarla en la vista previa,
+     * ajustada al espacio disponible. Devuelve nulo si el contenido no es una imagen legible.
      */
     public Bitmap cargarBitmapParaVistaPrevia(byte[] contenido, int ladoMaximo) {
         if (contenido == null || contenido.length == 0) {
@@ -419,9 +386,8 @@ public final class FotoEntrenamientoLocal {
      * <p>Cada entrenamiento tiene su propio archivo: la copia se llama con el
      * identificador para que la foto de uno no aparezca en el resumen de otro.
      *
-     * @param entrenamientoId identificador del entrenamiento dueño de la foto
-     * @param contenido JPEG recibido del backend
-     * @throws IOException si la copia no puede escribirse o no es una imagen válida
+     * <p>Si la copia no puede escribirse o no resulta ser una imagen válida, avisa con
+     * una excepción de entrada y salida.
      */
     public void guardarCopiaLocal(Long entrenamientoId, byte[] contenido)
             throws IOException {
@@ -466,9 +432,6 @@ public final class FotoEntrenamientoLocal {
     /**
      * Revisa si hay copia local sin cargarla. Sirve para no abrir un visor vacío:
      * solo mira el archivo en disco, no lee su contenido.
-     *
-     * @param entrenamientoId identificador del entrenamiento
-     * @return true si hay una copia utilizable de ese entrenamiento
      */
     public boolean existeCopiaLocal(Long entrenamientoId) {
         if (entrenamientoId == null || entrenamientoId <= 0) {
@@ -482,10 +445,7 @@ public final class FotoEntrenamientoLocal {
                 && archivo.length() <= TAMANO_MAXIMO_BYTES;
     }
 
-    /**
-     * @param entrenamientoId identificador del entrenamiento
-     * @return contenido de la copia local de ese entrenamiento, o null si no hay
-     */
+    /** Devuelve el contenido de la copia local de ese entrenamiento, o nulo si no hay. */
     public byte[] leerCopiaLocal(Long entrenamientoId) {
         if (entrenamientoId == null || entrenamientoId <= 0) {
             return null;
@@ -513,7 +473,7 @@ public final class FotoEntrenamientoLocal {
         }
     }
 
-    /** @return archivo donde se guarda la copia local de un entrenamiento. */
+    /** Devuelve el archivo donde se guarda la copia local de un entrenamiento. */
     private File obtenerArchivoCopia(Long entrenamientoId) {
         return new File(
                 directorioFotos,
@@ -521,6 +481,7 @@ public final class FotoEntrenamientoLocal {
         );
     }
 
+    /** Escribe el contenido en el archivo y fuerza a disco para que la copia no se pierda. */
     private void escribir(byte[] contenido, File destino) throws IOException {
         try (FileOutputStream salida = new FileOutputStream(destino, false)) {
             salida.write(contenido);
@@ -529,6 +490,7 @@ public final class FotoEntrenamientoLocal {
         }
     }
 
+    /** Revisa que el archivo contenga una imagen decodificable y avisa si no lo es. */
     private void validarImagen(File archivo) throws IOException {
         BitmapFactory.Options opciones = new BitmapFactory.Options();
         opciones.inJustDecodeBounds = true;

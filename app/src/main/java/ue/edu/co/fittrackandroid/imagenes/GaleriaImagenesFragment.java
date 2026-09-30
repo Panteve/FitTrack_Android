@@ -82,7 +82,9 @@ public class GaleriaImagenesFragment extends Fragment {
     private ImagenDispositivoAdapter adaptador;
 
     /**
-     * @param destino {@link #DESTINO_PERFIL} o {@link #DESTINO_ENTRENAMIENTO}
+     * Crea la galería indicando si la imagen elegida será la foto de perfil
+     * (la constante DESTINO_PERFIL) o la fotografía del entrenamiento
+     * (la constante DESTINO_ENTRENAMIENTO).
      */
     public static GaleriaImagenesFragment newInstance(String destino) {
         GaleriaImagenesFragment fragmento = new GaleriaImagenesFragment();
@@ -92,6 +94,7 @@ public class GaleriaImagenesFragment extends Fragment {
         return fragmento;
     }
 
+    /** Crea el fragmento vacío, tal como lo exige el sistema al reconstruir la pantalla. */
     public GaleriaImagenesFragment() {
         // Required empty public constructor
     }
@@ -246,11 +249,8 @@ public class GaleriaImagenesFragment extends Fragment {
     }
 
     /**
-     * Recupera los campos que la galería necesita y construye la {@code content://Uri}
-     * de cada fotografía.
-     *
-     * @param contexto contexto con el que se abre el proveedor de MediaStore
-     * @return las imágenes encontradas, o null si el permiso impidió la lectura
+     * Recupera los campos que la galería necesita y construye la dirección de tipo
+     * content:// de cada fotografía, o devuelve nulo si el permiso impidió la lectura.
      */
     @Nullable
     private List<ImagenDispositivo> leerImagenesDelDispositivo(Context contexto) {
@@ -311,8 +311,6 @@ public class GaleriaImagenesFragment extends Fragment {
     /**
      * Devuelve la imagen elegida mediante Fragment Results y regresa a la pantalla
      * anterior automáticamente.
-     *
-     * @param imagen fotografía tocada por el usuario
      */
     private void seleccionarImagen(ImagenDispositivo imagen) {
         if (!isAdded()) {

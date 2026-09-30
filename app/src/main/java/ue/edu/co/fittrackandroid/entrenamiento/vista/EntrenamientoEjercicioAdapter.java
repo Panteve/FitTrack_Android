@@ -58,6 +58,7 @@ public class EntrenamientoEjercicioAdapter
     private final List<EjercicioEntrenamiento> listaEjercicios;
     private final EscuchaEntrenamiento escucha;
 
+    /** Crea el adapter con la lista de ejercicios de la sesión y el fragment que atiende los callbacks. */
     public EntrenamientoEjercicioAdapter(List<EjercicioEntrenamiento> listaEjercicios,
                                         EscuchaEntrenamiento escucha) {
         this.listaEjercicios = listaEjercicios;
@@ -117,6 +118,7 @@ public class EntrenamientoEjercicioAdapter
          */
         private boolean revirtiendoCheck;
 
+        /** Crea la tarjeta del ejercicio, guardando las vistas y los colaboradores que usará. */
         EjercicioViewHolder(@NonNull View itemView, LayoutInflater inflater,
                             EscuchaEntrenamiento escucha) {
             super(itemView);
@@ -130,6 +132,7 @@ public class EntrenamientoEjercicioAdapter
             btnAgregarSerie = itemView.findViewById(R.id.btnAgregarSerieEntrenamiento);
         }
 
+        /** Dibuja una tarjeta completa: nombre del ejercicio, sus series y los botones de quitar y agregar. */
         void asignar(EjercicioEntrenamiento ejercicio) {
             this.ejercicio = ejercicio;
 
@@ -163,6 +166,7 @@ public class EntrenamientoEjercicioAdapter
             }
         }
 
+        /** Crea la fila editables de una serie, con sus campos, su check y el botón de quitar. */
         private View crearFilaSerie(SerieEntrenamiento serie, int posicionSerie) {
             View filaSerie = inflater.inflate(R.layout.item_serie_entrenamiento, layoutSeries, false);
 
@@ -314,7 +318,7 @@ public class EntrenamientoEjercicioAdapter
             }
         }
 
-        /** @return la posición de la serie dentro de su ejercicio, para avisar al fragment. */
+        /** Devuelve la posición de la serie dentro de su ejercicio, para avisar al fragment. */
         private int posicionSerieDe(SerieEntrenamiento serie) {
             return ejercicio.getSeries().indexOf(serie);
         }
@@ -331,10 +335,8 @@ public class EntrenamientoEjercicioAdapter
         }
 
         /**
-         * Convierte el peso escrito al tipo numérico del modelo.
-         *
-         * @param texto peso escrito por el usuario
-         * @return el peso convertido, o -1 si el campo está vacío o no es válido
+         * Convierte el peso escrito al tipo numérico del modelo, devolviendo menos uno
+         * si el campo está vacío o el texto no es un número.
          */
         private double convertirPeso(String texto) {
             String pesoEscrito = texto.trim();
@@ -350,10 +352,8 @@ public class EntrenamientoEjercicioAdapter
         }
 
         /**
-         * Convierte las repeticiones escritas al tipo numérico del modelo.
-         *
-         * @param texto repeticiones escritas por el usuario
-         * @return las repeticiones convertidas o cero si el valor no es válido
+         * Convierte las repeticiones escritas al tipo numérico del modelo, devolviendo cero
+         * si el campo está vacío o el texto no es un número entero.
          */
         private int convertirRepeticiones(String texto) {
             String repeticionesEscritas = texto.trim();

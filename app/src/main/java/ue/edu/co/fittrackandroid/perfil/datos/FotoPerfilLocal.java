@@ -24,11 +24,7 @@ public final class FotoPerfilLocal {
 
     private final File directorioPerfil;
 
-    /**
-     * Crea el administrador dentro del almacenamiento interno de la aplicación.
-     *
-     * @param context contexto usado para obtener {@code filesDir}
-     */
+    /** Crea el administrador dentro del almacenamiento interno de la aplicación. */
     public FotoPerfilLocal(Context context) {
         directorioPerfil = new File(
                 context.getApplicationContext().getFilesDir(),
@@ -36,30 +32,21 @@ public final class FotoPerfilLocal {
         );
     }
 
-    /**
-     * @param usuarioId identificador de la cuenta
-     * @return archivo definitivo de la foto del usuario
-     */
+    /** Devuelve el archivo definitivo donde se guarda la foto de esa cuenta. */
     public File obtenerArchivo(Long usuarioId) {
         validarUsuarioId(usuarioId);
         return new File(directorioPerfil, "foto_perfil_" + usuarioId + ".jpg");
     }
 
-    /**
-     * @param usuarioId identificador de la cuenta
-     * @return true cuando existe una copia local no vacía
-     */
+    /** Indica si existe una copia local de la foto de esa cuenta que no esté vacía. */
     public boolean existeFoto(Long usuarioId) {
         File archivoFoto = obtenerArchivo(usuarioId);
         return archivoFoto.isFile() && archivoFoto.length() > 0;
     }
 
     /**
-     * Guarda bytes ya validados mediante un archivo temporal.
-     *
-     * @param usuarioId identificador de la cuenta
-     * @param contenido bytes de la imagen
-     * @throws IOException si la copia no puede escribirse o no es una imagen válida
+     * Guarda bytes ya validados mediante un archivo temporal. Avisa con una excepción de
+     * entrada y salida si la copia no puede escribirse o no es una imagen válida.
      */
     public void guardarDesdeBytes(Long usuarioId, byte[] contenido) throws IOException {
         if (contenido == null || contenido.length == 0
@@ -74,11 +61,8 @@ public final class FotoPerfilLocal {
 
     /**
      * Escribe la imagen en un temporal, valida que pueda decodificarse y después reemplaza
-     * la copia anterior. Una interrupción conserva el último archivo válido.
-     *
-     * @param usuarioId identificador de la cuenta
-     * @param datos contenido de la imagen
-     * @throws IOException si la descarga es inválida o no puede guardarse
+     * la copia anterior. Una interrupción conserva el último archivo válido. Avisa con
+     * una excepción de entrada y salida si la imagen es inválida o no puede guardarse.
      */
     public void guardarDesdeStream(Long usuarioId, InputStream datos) throws IOException {
         validarUsuarioId(usuarioId);
@@ -99,12 +83,9 @@ public final class FotoPerfilLocal {
     }
 
     /**
-     * Decodifica una copia reducida para evitar cargar la imagen original completa en memoria.
-     *
-     * @param usuarioId identificador de la cuenta
-     * @param anchoMaximo ancho aproximado requerido por la vista
-     * @param altoMaximo alto aproximado requerido por la vista
-     * @return bitmap reducido, o null si no hay una copia legible
+     * Decodifica una copia reducida para evitar cargar la imagen original completa en
+     * memoria, ajustada al tamaño que pide la vista. Devuelve el bitmap reducido, o nulo
+     * si no hay una copia legible.
      */
     @Nullable
     public Bitmap cargarBitmap(Long usuarioId, int anchoMaximo, int altoMaximo) {
@@ -147,6 +128,7 @@ public final class FotoPerfilLocal {
         }
     }
 
+    /** Crea el directorio de las fotos de perfil y avisa si no se pudo crear. */
     private void prepararDirectorio() throws IOException {
         if (directorioPerfil.isDirectory()) {
             return;
@@ -156,10 +138,15 @@ public final class FotoPerfilLocal {
         }
     }
 
+    /** Devuelve el archivo temporal donde se escribe la foto antes de validarla. */
     private File obtenerArchivoTemporal(Long usuarioId) {
         return new File(directorioPerfil, "foto_perfil_" + usuarioId + ".tmp");
     }
 
+    /**
+     * Escribe la imagen en el archivo temporal sin dejar que pase del tamaño permitido,
+     * y avisa si llegó vacía o sin datos.
+     */
     private void escribirTemporal(InputStream datos, File archivoTemporal) throws IOException {
         if (datos == null) {
             throw new IOException("La foto no contiene datos");
@@ -185,6 +172,7 @@ public final class FotoPerfilLocal {
         }
     }
 
+    /** Revisa que el temporal contenga una imagen decodificable y avisa si no lo es. */
     private void validarImagen(File archivoTemporal) throws IOException {
         BitmapFactory.Options opciones = new BitmapFactory.Options();
         opciones.inJustDecodeBounds = true;
@@ -194,6 +182,7 @@ public final class FotoPerfilLocal {
         }
     }
 
+    /** Mueve el temporal sobre el archivo definitivo, de forma atómica cuando el sistema lo permite. */
     private void reemplazarArchivo(File temporal, File definitivo) throws IOException {
         try {
             Files.move(
@@ -211,6 +200,7 @@ public final class FotoPerfilLocal {
         }
     }
 
+    /** Calcula el divisor de decodificación que reduce la imagen al tamaño que pide la vista. */
     private int calcularMuestra(int anchoOriginal, int altoOriginal,
                                 int anchoMaximo, int altoMaximo) {
         int anchoObjetivo = Math.max(1, anchoMaximo);
@@ -224,6 +214,7 @@ public final class FotoPerfilLocal {
         return muestra;
     }
 
+    /** Avisa si el identificador de la cuenta no sirve para nombrar un archivo. */
     private void validarUsuarioId(Long usuarioId) {
         if (usuarioId == null || usuarioId <= 0) {
             throw new IllegalArgumentException("El identificador del usuario no es válido");

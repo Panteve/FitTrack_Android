@@ -142,6 +142,7 @@ public class EntrenamientoActivoFragment extends Fragment
         }
     };
 
+    /** Crea el fragment vacío; Android lo reconstruye al restaurar el estado de la pantalla. */
     public EntrenamientoActivoFragment() {
         // Required empty public constructor
     }
@@ -257,6 +258,7 @@ public class EntrenamientoActivoFragment extends Fragment
         });
     }
 
+    /** Busca en la vista inflada todas las piezas que la pantalla va a usar. */
     private void inicializarVistas(View view) {
         tvDuracionEntrenamiento = view.findViewById(R.id.tvDuracionEntrenamiento);
         tvVolumenEntrenamiento = view.findViewById(R.id.tvVolumenEntrenamiento);
@@ -270,12 +272,14 @@ public class EntrenamientoActivoFragment extends Fragment
         btnOmitirDescanso = view.findViewById(R.id.btnOmitirDescanso);
     }
 
+    /** Crea el adapter de ejercicios y lo conecta al RecyclerView con una lista vertical. */
     private void configurarRecyclerView() {
         adapter = new EntrenamientoEjercicioAdapter(entrenamiento.getEjercicios(), this);
         rvEjerciciosEntrenamiento.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvEjerciciosEntrenamiento.setAdapter(adapter);
     }
 
+    /** Conecta el botón de descartar y los tres controles del panel de descanso. */
     private void configurarAcciones() {
         btnDescartarEntrenamiento.setOnClickListener(v -> confirmarDescartarEntrenamiento());
         btnRestarDescanso.setOnClickListener(v -> restarTiempoDescanso());
@@ -319,17 +323,20 @@ public class EntrenamientoActivoFragment extends Fragment
         actualizarEstadoDescanso();
     }
 
+    /** Quita de la pantalla los tres relojes que la mantenían actualizada al ocultarse el fragment. */
     private void detenerActualizacionesVisuales() {
         handler.removeCallbacks(runnableRelojEntrenamiento);
         handler.removeCallbacks(runnableDescanso);
     }
 
+    /** Borra cualquier mensaje pendiente en el handler, por ejemplo al destruirse la vista. */
     private void cancelarCallbacks() {
         handler.removeCallbacksAndMessages(null);
     }
 
     // ------------------------------------------------------------------ Reloj general
 
+    /** Pinta en pantalla la duración del entrenamiento con el formato HH:MM:SS. */
     private void actualizarDuracion() {
         tvDuracionEntrenamiento.setText(entrenamiento.getTiempoTranscurrido());
     }
@@ -349,7 +356,7 @@ public class EntrenamientoActivoFragment extends Fragment
                 contarSeriesCompletadas(), contarSeriesTotales()));
     }
 
-    /** @return el volumen de todas las series completadas, en kilogramos. */
+    /** Devuelve el volumen de todas las series completadas, en kilogramos. */
     private double sumarVolumen() {
         double volumenTotal = 0;
 
@@ -362,6 +369,7 @@ public class EntrenamientoActivoFragment extends Fragment
         return volumenTotal;
     }
 
+    /** Cuenta cuántas series de la sesión están marcadas como completadas. */
     private int contarSeriesCompletadas() {
         int seriesCompletadas = 0;
 
@@ -376,6 +384,7 @@ public class EntrenamientoActivoFragment extends Fragment
         return seriesCompletadas;
     }
 
+    /** Cuenta cuántas series tiene la sesión en total, sin importar si están completadas. */
     private int contarSeriesTotales() {
         int seriesTotales = 0;
 
@@ -480,6 +489,7 @@ public class EntrenamientoActivoFragment extends Fragment
         handler.post(runnableDescanso);
     }
 
+    /** Cancela el descanso en curso, guarda el cambio y esconde el panel. */
     private void detenerDescanso() {
         handler.removeCallbacks(runnableDescanso);
 
@@ -511,8 +521,6 @@ public class EntrenamientoActivoFragment extends Fragment
     /**
      * Espera a que el usuario termine de escribir antes de guardar el peso y las repeticiones,
      * para no escribir en la base de datos por cada tecla.
-     *
-     * @param ejercicio ejercicio cuyas series cambiaron.
      */
     private void programarGuardadoSeries(EjercicioEntrenamiento ejercicio) {
         if (!ejerciciosPorGuardar.contains(ejercicio)) {
@@ -634,8 +642,8 @@ public class EntrenamientoActivoFragment extends Fragment
     }
 
     /**
-     * @return el ejercicio que está en la posición indicada, o null si la lista ya cambió y
-     *         esa posición ya no corresponde a ningún ejercicio.
+     * Devuelve el ejercicio que está en la posición indicada, o nulo si la lista ya cambió y
+     * esa posición ya no corresponde a ningún ejercicio.
      */
     private EjercicioEntrenamiento obtenerEjercicio(int posicionEjercicio) {
         List<EjercicioEntrenamiento> ejercicios = entrenamiento.getEjercicios();
@@ -646,8 +654,8 @@ public class EntrenamientoActivoFragment extends Fragment
     }
 
     /**
-     * @return la serie que está en la posición indicada, o null si en ese lugar ya no hay
-     *         ninguna serie.
+     * Devuelve la serie que está en la posición indicada, o nulo si en ese lugar ya no hay
+     * ninguna serie.
      */
     private SerieEntrenamiento obtenerSerie(EjercicioEntrenamiento ejercicio, int posicionSerie) {
         if (ejercicio == null) {
@@ -674,6 +682,7 @@ public class EntrenamientoActivoFragment extends Fragment
                 .show();
     }
 
+    /** Quita de la sesión el ejercicio indicado y borra también sus series del borrador local. */
     private void quitarEjercicio(EjercicioEntrenamiento ejercicio) {
         int posicionEjercicio = entrenamiento.getEjercicios().indexOf(ejercicio);
         if (posicionEjercicio < 0) {
@@ -719,6 +728,10 @@ public class EntrenamientoActivoFragment extends Fragment
                 .show();
     }
 
+    /**
+     * Envía la sesión terminada al backend y, si el guardado es exitoso, abre el resumen del
+     * entrenamiento con el identificador que creó el servidor.
+     */
     private void terminarEntrenamiento() {
         EntrenamientoCrearRequest request = crearSolicitudEntrenamiento();
 
@@ -837,6 +850,7 @@ public class EntrenamientoActivoFragment extends Fragment
                 .show();
     }
 
+    /** Cierra la sesión en curso y deja que MainActivity borre su borrador local. */
     private void descartarEntrenamiento() {
         // MainActivity borra el borrador local de esta cuenta al cerrar la sesión.
         borradorResuelto = true;

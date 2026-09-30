@@ -39,6 +39,7 @@ public class EjercicioBorradorEntity {
     /** Orden del ejercicio dentro del entrenamiento, empezando en cero. */
     public int posicion;
 
+    /** Crea la fila del ejercicio con los datos que Room guarda en la tabla, sin ninguno calculado por la app. */
     public EjercicioBorradorEntity(long id, long entrenamientoId, Long rutinaEjercicioId,
                                    String nombre, String grupoMuscular, int posicion) {
         this.id = id;

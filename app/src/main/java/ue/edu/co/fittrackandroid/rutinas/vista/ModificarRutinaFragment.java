@@ -38,6 +38,7 @@ import ue.edu.co.fittrackandroid.rutinas.modelo.EjercicioRutinaEditable;
 import ue.edu.co.fittrackandroid.rutinas.modelo.RutinaCrearRequest;
 import ue.edu.co.fittrackandroid.rutinas.modelo.RutinaEjercicioCrearRequest;
 import ue.edu.co.fittrackandroid.rutinas.modelo.RutinaSerieCrearRequest;
+import ue.edu.co.fittrackandroid.rutinas.modelo.RutinaSerieResponse;
 import ue.edu.co.fittrackandroid.rutinas.modelo.SerieRutina;
 import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 
@@ -115,9 +116,6 @@ public class ModificarRutinaFragment extends Fragment
     /**
      * Crea la pantalla para una rutina concreta. El identificador viaja en los argumentos
      * porque el Fragment lo reconstruye Android cuando rota el dispositivo.
-     *
-     * @param rutinaId identificador de la rutina que se quiere modificar.
-     * @return instancia lista para abrir.
      */
     public static ModificarRutinaFragment newInstance(Long rutinaId) {
         ModificarRutinaFragment fragment = new ModificarRutinaFragment();
@@ -207,12 +205,14 @@ public class ModificarRutinaFragment extends Fragment
         layoutCargaModificarRutina = view.findViewById(R.id.layoutCargaModificarRutina);
     }
 
+    /** Crea el adapter de ejercicios y lo conecta con la lista vertical de la pantalla. */
     private void configurarRecyclerView() {
         adapter = new CrearRutinaEjercicioAdapter(listaEjercicios, this);
         rvEjerciciosRutina.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvEjerciciosRutina.setAdapter(adapter);
     }
 
+    /** Conecta los botones de la pantalla, incluido el de borrar y el de reintentar la consulta. */
     private void configurarAcciones() {
         btnAgregarPrimerEjercicio.setOnClickListener(v -> abrirSelectorEjercicios());
         btnAgregarEjercicio.setOnClickListener(v -> abrirSelectorEjercicios());
@@ -251,6 +251,7 @@ public class ModificarRutinaFragment extends Fragment
                 });
     }
 
+    /** Abre la pantalla de ejercicios para que el usuario elija cuál agregar a la rutina. */
     private void abrirSelectorEjercicios() {
         ((MainActivity) requireActivity()).mostrarSelectorEjercicios();
     }
@@ -307,8 +308,6 @@ public class ModificarRutinaFragment extends Fragment
      * Pide confirmación antes de quitar un ejercicio con todas sus series. El cambio queda
      * solo en el formulario: el backend se entera cuando el usuario pulsa GUARDAR, así que
      * si sale de la pantalla sin guardar la rutina sigue como estaba.
-     *
-     * @param ejercicio ejercicio que el usuario quiere quitar.
      */
     private void confirmarQuitarEjercicio(EjercicioRutinaEditable ejercicio) {
         new AlertDialog.Builder(requireContext())
@@ -320,6 +319,7 @@ public class ModificarRutinaFragment extends Fragment
                 .show();
     }
 
+    /** Quita la tarjeta del ejercicio del formulario y vuelve a decidir qué estado mostrar. */
     private void quitarEjercicio(EjercicioRutinaEditable ejercicio) {
         int posicionEjercicio = listaEjercicios.indexOf(ejercicio);
 
@@ -350,6 +350,7 @@ public class ModificarRutinaFragment extends Fragment
         layoutRutinaConEjercicios.setVisibility(hayEjercicios ? View.VISIBLE : View.GONE);
     }
 
+    /** Vuelve a escribir el nombre de la rutina cuando la vista se recreó y el campo quedó vacío. */
     private void restaurarNombreEnVista() {
         if (etNombreRutina.getText().length() == 0 && !nombreRutina.isEmpty()) {
             etNombreRutina.setText(nombreRutina);
@@ -383,6 +384,7 @@ public class ModificarRutinaFragment extends Fragment
         });
     }
 
+    /** Guarda lo que el usuario escribe en el nombre para no perderlo y oculta el error del campo. */
     private void limpiarErrorNombreAlEscribir() {
         etNombreRutina.addTextChangedListener(new TextWatcher() {
             @Override
@@ -433,8 +435,6 @@ public class ModificarRutinaFragment extends Fragment
      * Coloca la toolbar de la pantalla: título, flecha de volver y la acción de guardar.
      * Guardar queda deshabilitado mientras la rutina no está cargada o hay una petición en
      * vuelo, para no mandar datos a medias.
-     *
-     * @param procesando true mientras se está guardando o borrando la rutina.
      */
     private void configurarToolbar(boolean procesando) {
         MainActivity activity = (MainActivity) requireActivity();
@@ -451,7 +451,7 @@ public class ModificarRutinaFragment extends Fragment
 
     /**
      * Consulta la rutina por su identificador y llena el formulario con lo que devuelve
-     * {@code GET /rutinas/{id}}.
+     * la API.
      */
     private void cargarRutina() {
         mostrarEstadoCargaInicial();
@@ -502,8 +502,6 @@ public class ModificarRutinaFragment extends Fragment
     /**
      * Escribe en el formulario lo que tiene la rutina guardada: nombre, día, ejercicios y
      * series. El orden es el mismo que envía el backend.
-     *
-     * @param rutina detalle de la rutina consultada.
      */
     private void cargarDatosEnFormulario(RutinaResponse rutina) {
         nombreRutina = rutina.getNombre();
@@ -545,19 +543,16 @@ public class ModificarRutinaFragment extends Fragment
      * Convierte las series que llegaron del backend en las series que edita la pantalla.
      * El peso y las repeticiones viajan como números y aquí se escriben como texto en los
      * campos; un cero se muestra tal cual para que la serie se vea siempre.
-     *
-     * @param seriesRecibidas series del ejercicio en la respuesta del backend.
-     * @return series listas para editar en pantalla.
      */
     private List<SerieRutina> convertirSeries(
-            List<ue.edu.co.fittrackandroid.utils.SerieRutina> seriesRecibidas) {
+            List<RutinaSerieResponse> seriesRecibidas) {
         List<SerieRutina> seriesConvertidas = new ArrayList<>();
 
         if (seriesRecibidas == null) {
             return seriesConvertidas;
         }
 
-        for (ue.edu.co.fittrackandroid.utils.SerieRutina serieRecibida : seriesRecibidas) {
+        for (RutinaSerieResponse serieRecibida : seriesRecibidas) {
             SerieRutina serie = new SerieRutina();
             serie.setRepeticiones(String.valueOf(serieRecibida.getRepeticionesObjetivo()));
             serie.setPesoObjetivo(convertirPesoATexto(serieRecibida.getPesoObjetivo()));
@@ -739,8 +734,6 @@ public class ModificarRutinaFragment extends Fragment
 
     /**
      * Muestra o quita la capa que cubre la pantalla mientras espera una respuesta.
-     *
-     * @param procesando true mientras la petición está en vuelo.
      */
     private void mostrarProcesando(boolean procesando) {
         procesandoPeticion = procesando;
@@ -757,8 +750,7 @@ public class ModificarRutinaFragment extends Fragment
      * cada serie son opcionales: si el usuario no escribió nada se envían en cero, y si
      * escribió tiene que ser un valor válido. Los nombres repetidos no se revisan aquí:
      * el backend los rechaza con un 409 cuando ya existe una rutina con ese nombre.
-     *
-     * @return true si la rutina se puede enviar al backend.
+     * Devuelve true solo si la rutina se puede enviar.
      */
     private boolean validarRutina() {
         if (nombreRutina.trim().isEmpty()) {
@@ -881,8 +873,6 @@ public class ModificarRutinaFragment extends Fragment
      * posición de cada elemento, por eso siempre empiezan en uno y nunca se repiten.
      * Una serie vacía sí se envía: el usuario la agregó a propósito y va con peso y
      * repeticiones en cero.
-     *
-     * @return datos listos para enviar a {@code PUT /rutinas/{id}}.
      */
     private RutinaCrearRequest crearRutinaRequest() {
         List<RutinaEjercicioCrearRequest> ejerciciosRequest = new ArrayList<>();
@@ -921,7 +911,7 @@ public class ModificarRutinaFragment extends Fragment
     }
 
     /**
-     * @return el día escrito por el usuario, o null si sigue en la opción inicial.
+     * Obtiene el día escrito por el usuario, o null si sigue en la opción inicial.
      */
     private DiaSemana obtenerDiaSeleccionado() {
         int posicionSeleccionada = spDiaRutina.getSelectedItemPosition();
@@ -934,11 +924,9 @@ public class ModificarRutinaFragment extends Fragment
     }
 
     /**
-     * Convierte el peso escrito en un número para la petición. Un campo vacío vale cero
-     * porque el backend no admite nulos. Solo se llama después de validar el formulario.
-     *
-     * @param pesoEscrito peso tal como lo escribió el usuario.
-     * @return peso listo para enviar.
+     * Convierte el peso escrito en un número para la petición, reemplazando la coma
+     * decimal por punto. Un campo vacío vale cero porque el backend no admite nulos.
+     * Solo se llama después de validar el formulario.
      */
     private double convertirPeso(String pesoEscrito) {
         String pesoNormalizado = pesoEscrito.trim().replace(',', '.');
@@ -954,9 +942,6 @@ public class ModificarRutinaFragment extends Fragment
      * Convierte las repeticiones escritas en un número para la petición. Un campo vacío
      * vale cero porque el backend no admite nulos. Solo se llama después de validar el
      * formulario.
-     *
-     * @param repeticionesEscritas repeticiones tal como las escribió el usuario.
-     * @return repeticiones listas para enviar.
      */
     private int convertirRepeticiones(String repeticionesEscritas) {
         String repeticionesNormalizadas = repeticionesEscritas.trim();

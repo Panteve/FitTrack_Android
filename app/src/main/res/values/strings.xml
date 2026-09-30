@@ -29,11 +29,9 @@
     <string name="tvSeparador">— O —</string>
     <string name="btnCrearCuenta">CREAR CUENTA</string>
     <string name="tvVersion">v1.0 • Proyecto universitario</string>
-    <string name="error_login">No fue posible iniciar sesión</string>
     <string name="error_usuario_no_encontrado">Usuario no encontrado</string>
     <string name="error_correo_vacio">Correo vacio</string>
     <string name="error_correo_invalido">Correo invalido</string>
-    <string name="error_contrasena_vacia">Contraseña vacia</string>
 
     <!-- CrearCuentaFragment -->
     <string name="tvToolbarTituloCrearCuenta">Crear cuenta</string>
@@ -55,37 +53,18 @@
     <!-- MainActivity (Hoy) -->
     <string name="tvToolbarTituloMain">FitTrack</string>
     <string name="cdBuscar">Buscar</string>
-    <string name="cdOpciones">Opciones</string>
     <string name="tvFecha">Fecha: %1$s</string>
-    <string name="tvBienvenida">Bienvenido: Sin nombre</string>
-
-    <string name="tvTituloRegistroSemanal">REGISTRO SEMANAL</string>
-    <string name="tvDiaLunes">LUN</string>
-    <string name="tvNumeroLunes">27</string>
-    <string name="tvDiaMartes">MAR</string>
-    <string name="tvNumeroMartes">28</string>
-    <string name="tvDiaMiercoles">MIE</string>
-    <string name="tvNumeroMiercoles">29</string>
-    <string name="tvDiaJueves">JUE</string>
-    <string name="tvNumeroJueves">30</string>
-    <string name="tvDiaViernes">VIE</string>
-    <string name="tvNumeroViernes">31</string>
-    <string name="tvDiaSabado">SAB</string>
-    <string name="tvNumeroSabado">01</string>
-    <string name="tvDiaDomingo">DOM</string>
-    <string name="tvNumeroDomingo">02</string>
+    <string name="tvBienvenida">Bienvenido: %1$s</string>
 
     <string name="tvLabelRutina">RUTINA RECOMENDADA</string>
     <string name="tvNombreRutina">Piernas &amp; Abdomen</string>
     <string name="tvNombreRutina_loading">Cargando rutina…</string>
     <string name="tvNombreRutina_vacia">No tienes una rutina recomendada</string>
     <string name="tvNombreRutina_error">No pudimos cargar tu rutina</string>
-    <string name="tvDuracionRutina">45 min</string>
     <string name="tvEjerciciosRutina">%1$d ejercicios</string>
     <string name="tvEjerciciosRutina_loading">Estamos buscando tu próximo entrenamiento</string>
     <string name="tvEjerciciosRutina_vacia">Explora tus rutinas para elegir cómo entrenar</string>
     <string name="tvEjerciciosRutina_error">Inténtalo nuevamente en unos momentos</string>
-    <string name="tvSeparador1">|</string>
     <string name="btnIniciarEntrenamiento">COMENZAR ENTRENAMIENTO</string>
     <string name="btnIniciarEntrenamiento_loading">CARGANDO…</string>
 
@@ -114,8 +93,6 @@
     <string name="tvNombreEjercicioPerfil">Press de banca</string>
     <string name="tvGrupoMuscularEjercicioPerfil">Pecho</string>
 
-    <string name="tvConsejo">Consejo: Mantén los descansos de 90 segundos para optimizar la hipertrofia hoy.</string>
-
     <!-- RutinasFragment -->
     <string name="btnNuevaRutina">NUEVA RUTINA</string>
 
@@ -134,42 +111,6 @@
     <!-- item_rutina_ejercicio.xml -->
     <string name="tvNombreEjercicioRutina">Nombre del ejercicio</string>
     <string name="tvSeriesEjercicioRutina">4 × 8-10</string>
-
-    <!-- Datos de ejemplo de los planes -->
-    <string name="tvNombreRutina1">Día A: Pecho y Tríceps</string>
-    <string name="tvResumenRutina1">4 ejercicios  •  45 min</string>
-    <string name="tvNombreEjercicio1_1">Press de Banca Plano con Barra</string>
-    <string name="tvSeriesEjercicio1_1">4 × 8-10</string>
-    <string name="tvNombreEjercicio1_2">Press Inclinado con Mancuernas</string>
-    <string name="tvSeriesEjercicio1_2">3 × 10</string>
-    <string name="tvNombreEjercicio1_3">Fondos en Paralelas (Dips)</string>
-    <string name="tvSeriesEjercicio1_3">3 × 12</string>
-    <string name="tvNombreEjercicio1_4">Extensión de Tríceps en Polea</string>
-    <string name="tvSeriesEjercicio1_4">4 × 12-15</string>
-
-    <string name="tvNombreRutina2">Día B: Espalda y Bíceps</string>
-    <string name="tvResumenRutina2">4 ejercicios  •  50 min</string>
-    <string name="tvNombreEjercicio2_1">Dominadas Pronas (Pull-ups)</string>
-    <string name="tvSeriesEjercicio2_1">4 × 6-8</string>
-    <string name="tvNombreEjercicio2_2">Remo con Barra Pendlay</string>
-    <string name="tvSeriesEjercicio2_2">4 × 8</string>
-    <string name="tvNombreEjercicio2_3">Jalón al Pecho Agarre Neutro</string>
-    <string name="tvSeriesEjercicio2_3">3 × 12</string>
-    <string name="tvNombreEjercicio2_4">Curl Bíceps Barra Z</string>
-    <string name="tvSeriesEjercicio2_4">3 × 12</string>
-
-    <string name="tvNombreRutina3">Día C: Pierna y Hombro</string>
-    <string name="tvResumenRutina3">5 ejercicios  •  55 min</string>
-    <string name="tvNombreEjercicio3_1">Sentadilla Trasera Profunda</string>
-    <string name="tvSeriesEjercicio3_1">4 × 6</string>
-    <string name="tvNombreEjercicio3_2">Prensa Inclinada 45°</string>
-    <string name="tvSeriesEjercicio3_2">3 × 12</string>
-    <string name="tvNombreEjercicio3_3">Curl Femoral Tumbado</string>
-    <string name="tvSeriesEjercicio3_3">4 × 12</string>
-    <string name="tvNombreEjercicio3_4">Press Militar con Mancuernas</string>
-    <string name="tvSeriesEjercicio3_4">4 × 8-10</string>
-    <string name="tvNombreEjercicio3_5">Elevaciones Laterales</string>
-    <string name="tvSeriesEjercicio3_5">3 × 15</string>
 
     <!-- CrearRutinaFragment -->
     <string name="tvToolbarTituloCrearRutina">Crear rutina</string>
@@ -242,7 +183,6 @@
 
     <!-- Barra de herramientas (MainActivity) -->
     <string name="cdVolver">Volver</string>
-    <string name="tvToolbarTituloEjercicios">Ejercicios</string>
     <string name="btnCrearEjercicio">CREAR</string>
     <string name="tvToolbarTituloCrearEjercicio">Crear ejercicio</string>
     <string name="btnGuardar">GUARDAR</string>
@@ -521,21 +461,4 @@
     <!-- item_serie_resumen.xml -->
     <string name="tvNumeroSerieResumen">1</string>
     <string name="tvDetalleSerieResumen">%1$s kg × %2$d reps</string>
-
-    <!-- Datos de ejemplo de los últimos entrenamientos -->
-    <string name="tvNombreUltimoEntrenamiento1">Pierna y abdomen</string>
-    <string name="tvFechaUltimoEntrenamiento1">24 de mayo</string>
-    <string name="duracionUltimoEntrenamiento1">58</string>
-    <string name="tvNombreUltimoEntrenamiento2">Pecho y tríceps</string>
-    <string name="tvFechaUltimoEntrenamiento2">22 de mayo</string>
-    <string name="duracionUltimoEntrenamiento2">45</string>
-    <string name="tvNombreUltimoEntrenamiento3">Espalda y bíceps</string>
-    <string name="tvFechaUltimoEntrenamiento3">20 de mayo</string>
-    <string name="duracionUltimoEntrenamiento3">52</string>
-
-    <!-- Grupos musculares de los ejercicios de ejemplo de los últimos entrenamientos -->
-    <string name="tvGrupoMuscularEjemploPecho">Pecho</string>
-    <string name="tvGrupoMuscularEjemploTriceps">Tríceps</string>
-    <string name="tvGrupoMuscularEjemploEspalda">Espalda</string>
-    <string name="tvGrupoMuscularEjemploBiceps">Bíceps</string>
 </resources>

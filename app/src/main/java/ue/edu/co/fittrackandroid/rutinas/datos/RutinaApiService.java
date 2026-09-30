@@ -16,9 +16,11 @@ import ue.edu.co.fittrackandroid.rutinas.modelo.RutinasResponse;
 
 public interface RutinaApiService {
 
+    /** Solicita al servidor una rutina por su identificador, con sus ejercicios y series ya resueltos. */
     @GET("rutinas/{id}")
     Call<RutinaResponse> getRutinaById(@Path("id") Long id);
 
+    /** Solicita al servidor la lista de rutinas del usuario. */
     @GET("rutinas")
     Call<List<RutinasResponse>> getRutinas();
 

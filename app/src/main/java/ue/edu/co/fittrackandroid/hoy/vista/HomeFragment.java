@@ -82,6 +82,7 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    /** Busca las vistas de la pantalla y deja todo listo antes de consultar la información del inicio. */
     private void initObjects(View view) {
         btnIniciarEntrenamiento = view.findViewById(R.id.btnIniciarEntrenamiento);
         rvUltimosEntrenamientos = view.findViewById(R.id.rvUltimosEntrenamientos);
@@ -93,7 +94,7 @@ public class HomeFragment extends Fragment {
         tvBienvenida = view.findViewById(R.id.tvBienvenida);
 
         tvFecha.setText(getString(R.string.tvFecha, formatearFechaHoy()));
-        tvBienvenida.setText(sesionManager.obtenerNombre());
+        tvBienvenida.setText(getString(R.string.tvBienvenida, sesionManager.obtenerNombre()));
         rvUltimosEntrenamientos.setLayoutManager(new LinearLayoutManager(requireContext()));
         mostrarEstadoCarga();
     }
@@ -101,9 +102,17 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) requireActivity()).mostrarToolbarPrincipal();
+        MainActivity activity = (MainActivity) requireActivity();
+        activity.mostrarToolbarPrincipal();
+        // También se restaura la navegación inferior: Inicio es una pestaña raíz y hay
+        // pantallas, como la galería o el entrenamiento activo, que la ocultan.
+        activity.mostrarNavegacionInferior();
     }
 
+    /**
+     * Pide al servidor el detalle de la rutina recomendada y, si llega bien, abre la
+     * pantalla del entrenamiento activo con sus ejercicios y series ya cargados.
+     */
     private void iniciarEntrenamiento() {
         if (idProximaRutina == null) {
             return;
@@ -289,13 +298,13 @@ public class HomeFragment extends Fragment {
      * El adapter entrega el elemento seleccionado y la pantalla del resumen consulta el
      * detalle guardado usando su identificador.
      *
-     * @param entrenamiento entrenamiento seleccionado en la lista.
      */
     private void abrirResumenEntrenamiento(UltimoEntrenamiento entrenamiento) {
         ((MainActivity) requireActivity())
                 .mostrarResumenEntrenamientoHistorial(entrenamiento.getId());
     }
 
+    /** Devuelve la fecha de hoy en español, con la primera letra en mayúscula para mostrarla en la pantalla. */
     private String formatearFechaHoy() {
         SimpleDateFormat formato = new SimpleDateFormat(
                 "EEEE, d 'de' MMMM 'de' yyyy", new Locale("es", "CO"));

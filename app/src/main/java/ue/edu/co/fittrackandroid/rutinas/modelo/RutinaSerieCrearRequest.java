@@ -13,9 +13,8 @@ public class RutinaSerieCrearRequest {
     private final double pesoObjetivo;
 
     /**
-     * @param numeroSerie posición de la serie dentro del ejercicio, empezando en 1.
-     * @param repeticionesObjetivo repeticiones de la serie, cero si el usuario no escribió nada.
-     * @param pesoObjetivo peso de la serie, cero si el usuario no escribió nada.
+     * Crea la serie con su posición dentro del ejercicio empezando en 1 y sus valores
+     * objetivo, que llegan en cero cuando el usuario dejó el campo vacío.
      */
     public RutinaSerieCrearRequest(int numeroSerie, int repeticionesObjetivo, double pesoObjetivo) {
         this.numeroSerie = numeroSerie;
@@ -23,14 +22,17 @@ public class RutinaSerieCrearRequest {
         this.pesoObjetivo = pesoObjetivo;
     }
 
+    /** Obtiene la posición de la serie dentro del ejercicio, empezando en 1. */
     public int getNumeroSerie() {
         return numeroSerie;
     }
 
+    /** Obtiene las repeticiones objetivo de la serie, en cero si el usuario no escribió nada. */
     public int getRepeticionesObjetivo() {
         return repeticionesObjetivo;
     }
 
+    /** Obtiene el peso objetivo de la serie, en cero si el usuario no escribió nada. */
     public double getPesoObjetivo() {
         return pesoObjetivo;
     }

@@ -16,18 +16,14 @@ public class RegistroRepository {
 
     private final RegistroApiService registroApiService;
 
-    /**
-     * @param context contexto de la aplicación, usado por el cliente de Retrofit.
-     */
+    /** Crea el repositorio obteniendo el servicio de registro del cliente de Retrofit. */
     public RegistroRepository(Context context) {
         this.registroApiService = RetrofitClient.getInstance(context).create(RegistroApiService.class);
     }
 
     /**
-     * Prepara el envío de los datos de registro al backend.
-     *
-     * @param registroRequest nombre, correo y contraseña tal como los escribió el usuario.
-     * @return llamada de Retrofit pendiente de ejecutar con enqueue.
+     * Prepara el envío de los datos de registro al backend y devuelve la llamada de
+     * Retrofit pendiente de ejecutar, para que la pantalla pueda revisar la respuesta.
      */
     public Call<RegistroResponse> registrarUsuario(RegistroRequest registroRequest) {
         return registroApiService.registerUser(registroRequest);

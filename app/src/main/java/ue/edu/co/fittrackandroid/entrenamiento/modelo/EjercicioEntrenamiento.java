@@ -20,14 +20,7 @@ public class EjercicioEntrenamiento {
     private final Long rutinaEjercicioId;
     private final List<SerieEntrenamiento> series = new ArrayList<>();
 
-    /**
-     * Crea un ejercicio con las series recibidas desde la rutina.
-     *
-     * @param rutinaEjercicioId identificador del bloque dentro de la rutina
-     * @param nombre nombre visible del ejercicio
-     * @param grupoMuscular grupo muscular principal del ejercicio
-     * @param series series iniciales del ejercicio; puede ser {@code null}
-     */
+    /** Crea un ejercicio con las series recibidas desde la rutina, que pueden venir vacías o nulas. */
     public EjercicioEntrenamiento(Long rutinaEjercicioId, String nombre, String grupoMuscular,
                                  List<SerieEntrenamiento> series) {
         this.nombre = nombre;
@@ -38,44 +31,37 @@ public class EjercicioEntrenamiento {
         }
     }
 
-    /** @return el nombre visible del ejercicio. */
+    /** Devuelve el nombre visible del ejercicio. */
     public String getNombre() {
         return nombre;
     }
 
-    /** @return el grupo muscular principal del ejercicio. */
+    /** Devuelve el grupo muscular principal del ejercicio. */
     public String getGrupoMuscular() {
         return grupoMuscular;
     }
 
-    /** @return el identificador del bloque de ejercicio dentro de la rutina. */
+    /** Devuelve el identificador del bloque de ejercicio dentro de la rutina. */
     public Long getRutinaEjercicioId() {
         return rutinaEjercicioId;
     }
 
-    /**
-     * @return el identificador de la fila que guarda el ejercicio en la base de datos local,
-     *         o cero si todavía no se ha guardado.
-     */
+    /** Devuelve el identificador de la fila que guarda el ejercicio en la base de datos local, o cero si todavía no se ha guardado. */
     public long getIdBorrador() {
         return idBorrador;
     }
 
-    /** @param idBorrador identificador que Room asignó a este ejercicio. */
+    /** Guarda el identificador que Room asignó a este ejercicio al escribirlo en la base de datos local. */
     public void setIdBorrador(long idBorrador) {
         this.idBorrador = idBorrador;
     }
 
-    /** @return las series editables del ejercicio. */
+    /** Devuelve las series editables del ejercicio. */
     public List<SerieEntrenamiento> getSeries() {
         return series;
     }
 
-    /**
-     * Agrega una serie vacía al final del ejercicio.
-     *
-     * @return la serie recién agregada.
-     */
+    /** Agrega una serie vacía al final del ejercicio y la devuelve para que se pueda editar de una. */
     public SerieEntrenamiento agregarSerie() {
         int numeroSerie = series.size() + 1;
         SerieEntrenamiento serieNueva = new SerieEntrenamiento(numeroSerie, 0, 0);
@@ -83,7 +69,7 @@ public class EjercicioEntrenamiento {
         return serieNueva;
     }
 
-    /** @return cuántas series tiene el ejercicio, completas o no. */
+    /** Devuelve cuántas series tiene el ejercicio, completas o no. */
     public int getCantidadSeries() {
         return series.size();
     }
@@ -91,22 +77,18 @@ public class EjercicioEntrenamiento {
     /**
      * Indica si el ejercicio tiene más de una serie. Un ejercicio siempre necesita al menos
      * una, así que la última no se puede quitar.
-     *
-     * @return true si se puede quitar alguna serie.
      */
     public boolean puedeEliminarSerie() {
         return series.size() > 1;
     }
 
     /**
-     * Quita una serie del ejercicio y renumera las que quedan.
+     * Quita una serie del ejercicio y renumera las que quedan. Devuelve la serie quitada, o
+     * nulo si la posición no existe o si era la única que tenía el ejercicio.
      *
      * <p>Aquí el renumerado es obligatorio: a diferencia de la creación de rutinas, el
      * entrenamiento guarda el número de cada serie y lo manda al backend, así que no basta
      * con mostrar la posición.
-     *
-     * @param posicionSerie posición de la serie dentro de este ejercicio.
-     * @return la serie quitada, o null si la posición no existe o si era la única.
      */
     public SerieEntrenamiento eliminarSerie(int posicionSerie) {
         if (posicionSerie < 0 || posicionSerie >= series.size() || !puedeEliminarSerie()) {

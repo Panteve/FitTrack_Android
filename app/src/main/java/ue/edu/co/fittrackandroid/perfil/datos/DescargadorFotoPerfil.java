@@ -17,15 +17,14 @@ public final class DescargadorFotoPerfil {
     private static final String TIPO_JPEG = "image/jpeg";
     private static final String TIPO_PNG = "image/png";
 
+    /** Impide instanciar la clase: todos sus métodos son estáticos. */
     private DescargadorFotoPerfil() {
     }
 
     /**
-     * Descarga sin bloquear la navegación. Si algo falla, la copia anterior se conserva.
-     *
-     * @param fotoPerfilUrl URL firmada temporal
-     * @param usuarioId identificador usado para nombrar la copia local
-     * @param fotoPerfilLocal administrador del archivo privado
+     * Descarga en un hilo aparte la foto firmada de la URL temporal y la guarda con el
+     * administrador del archivo privado, sin bloquear la navegación. Si algo falla, la
+     * copia anterior se conserva.
      */
     public static void descargar(
             String fotoPerfilUrl,
@@ -75,6 +74,7 @@ public final class DescargadorFotoPerfil {
         });
     }
 
+    /** Revisa que la respuesta sea una imagen JPEG o PNG, o que no declare tipo. */
     private static boolean tipoPermitido(String contentType) {
         if (contentType == null || contentType.isBlank()) {
             return true;

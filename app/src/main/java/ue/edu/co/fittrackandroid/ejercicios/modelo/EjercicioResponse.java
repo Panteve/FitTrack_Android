@@ -10,14 +10,17 @@ public class EjercicioResponse {
     private String nombre;
     private String grupoMuscular;
 
+    /** Obtiene el identificador del ejercicio en el servidor. */
     public Long getId() {
         return id;
     }
 
+    /** Obtiene el nombre del ejercicio tal como lo devolvió el backend. */
     public String getNombre() {
         return nombre;
     }
 
+    /** Obtiene el grupo muscular al que pertenece el ejercicio. */
     public String getGrupoMuscular() {
         return grupoMuscular;
     }

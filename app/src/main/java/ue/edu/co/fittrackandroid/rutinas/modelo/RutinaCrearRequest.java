@@ -17,10 +17,9 @@ public class RutinaCrearRequest {
     private final List<RutinaEjercicioCrearRequest> ejercicios;
 
     /**
-     * @param nombre nombre de la rutina, obligatorio.
-     * @param descripcion descripción opcional, puede ir en null.
-     * @param diaSemana día de entrenamiento elegido en el desplegable.
-     * @param ejercicios ejercicios de la rutina con sus series, al menos uno.
+     * Crea el cuerpo del envío con el nombre obligatorio de la rutina, la descripción
+     * opcional, el día de entrenamiento elegido en el desplegable y los ejercicios con
+     * sus series, que deben ser al menos uno.
      */
     public RutinaCrearRequest(String nombre, String descripcion, DiaSemana diaSemana,
                               List<RutinaEjercicioCrearRequest> ejercicios) {
@@ -30,18 +29,22 @@ public class RutinaCrearRequest {
         this.ejercicios = ejercicios;
     }
 
+    /** Obtiene el nombre obligatorio de la rutina. */
     public String getNombre() {
         return nombre;
     }
 
+    /** Obtiene la descripción opcional de la rutina, que puede venir en null. */
     public String getDescripcion() {
         return descripcion;
     }
 
+    /** Obtiene el día de entrenamiento escolhido en el desplegable. */
     public DiaSemana getDiaSemana() {
         return diaSemana;
     }
 
+    /** Obtiene los ejercicios de la rutina con sus series, listos para enviarse. */
     public List<RutinaEjercicioCrearRequest> getEjercicios() {
         return ejercicios;
     }

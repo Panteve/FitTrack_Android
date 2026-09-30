@@ -29,9 +29,9 @@ public class EntrenamientoBorradorCompleto {
 
     /**
      * Series de todos los ejercicios del borrador.
-     * La relación cruza la tabla {@code ejercicio_borrador} como puente: el Junction
-     * empareja {@code entrenamiento_borrador.id} con {@code ejercicio_borrador.entrenamientoId}
-     * y {@code serie_borrador.ejercicioBorradorId} con {@code ejercicio_borrador.id}.
+     * La relación cruza la tabla ejercicio_borrador como puente: el Junction
+     * empareja entrenamiento_borrador.id con ejercicio_borrador.entrenamientoId
+     * y serie_borrador.ejercicioBorradorId con ejercicio_borrador.id.
      */
     @Relation(entity = SerieBorradorEntity.class,
             parentColumn = "id",
@@ -42,7 +42,7 @@ public class EntrenamientoBorradorCompleto {
                     entityColumn = "id"))
     public List<SerieBorradorEntity> series;
 
-    /** @return la fila principal del borrador, o null si la consulta no devolvió nada. */
+    /** Devuelve la fila principal del borrador, o nulo si la consulta no devolvió nada. */
     public EntrenamientoBorradorEntity getEntrenamiento() {
         return entrenamiento;
     }

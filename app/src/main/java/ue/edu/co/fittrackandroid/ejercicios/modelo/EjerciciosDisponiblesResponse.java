@@ -12,10 +12,12 @@ public class EjerciciosDisponiblesResponse {
     private List<EjercicioResponse> ejerciciosSistema;
     private List<EjercicioResponse> misEjercicios;
 
+    /** Obtiene los ejercicios que trae el sistema y que el usuario no puede modificar. */
     public List<EjercicioResponse> getEjerciciosSistema() {
         return ejerciciosSistema;
     }
 
+    /** Obtiene los ejercicios que creó el usuario y que sí puede modificar o borrar. */
     public List<EjercicioResponse> getMisEjercicios() {
         return misEjercicios;
     }

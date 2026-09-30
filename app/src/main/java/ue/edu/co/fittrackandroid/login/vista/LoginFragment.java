@@ -69,6 +69,7 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
+    /** Busca las vistas del formulario y las guarda en sus campos. */
     private void initObjects(View view) {
         etCorreo = view.findViewById(R.id.etCorreo);
         etContrasena = view.findViewById(R.id.etContrasena);
@@ -93,6 +94,11 @@ public class LoginFragment extends Fragment {
         ((MainActivity) requireActivity()).mostrarCrearCuenta();
     }
 
+    /**
+     * Valida el correo y la contraseña, envía el inicio de sesión al servidor y, si la
+     * respuesta trae un token válido, guarda la sesión, prepara la foto de perfil y
+     * abre la pantalla de inicio.
+     */
     private void iniciarSesion() {
         mostrarCargando(true);
         String correo = etCorreo.getText().toString().trim();
@@ -191,6 +197,7 @@ public class LoginFragment extends Fragment {
 
     }
 
+    /** Activa o desactiva el botón de iniciar sesión y le cambia el texto según esté esperando la respuesta. */
     private void mostrarCargando(boolean cargando) {
         if (cargando) {
             btnIniciarSesion.setEnabled(false);
@@ -201,6 +208,7 @@ public class LoginFragment extends Fragment {
         }
     }
 
+    /** Muestra u oculta los caracteres escritos en el campo de contraseña y cambia el ícono del ojo. */
     private void alternarVisibilidadContrasena() {
         int posicionCursor = etContrasena.getSelectionEnd();
         if (contrasenaVisible) {
@@ -214,6 +222,7 @@ public class LoginFragment extends Fragment {
         etContrasena.setSelection(posicionCursor);
     }
 
+    /** Oculta los mensajes de error del campo y de las credenciales en cuanto el usuario vuelve a escribir. */
     private void limpiarErrorAlEscribir(EditText campo, TextView textoError) {
         campo.addTextChangedListener(new TextWatcher() {
             @Override

@@ -26,12 +26,15 @@ public class PerfilEjercicioAdapter
      * Callback que avisa qué ejercicio quiere consultar el usuario.
      */
     public interface OnEjercicioClickListener {
+
+        /** Avisa que el usuario tocó la fila de un ejercicio del perfil. */
         void onEjercicioClick(EjercicioResponse ejercicio);
     }
 
     private final List<EjercicioResponse> ejercicios;
     private final OnEjercicioClickListener listener;
 
+    /** Crea el adapter con los ejercicios del usuario y el fragment que atiende el toque. */
     public PerfilEjercicioAdapter(List<EjercicioResponse> ejercicios,
                                   OnEjercicioClickListener listener) {
         this.ejercicios = ejercicios;
@@ -64,6 +67,7 @@ public class PerfilEjercicioAdapter
         private final View viewSeparadorEjercicio;
         private final OnEjercicioClickListener listener;
 
+        /** Crea la fila del ejercicio, guardando sus vistas y el fragment que atiende el toque. */
         EjercicioPerfilViewHolder(@NonNull View itemView,
                                   OnEjercicioClickListener listener) {
             super(itemView);
@@ -74,6 +78,7 @@ public class PerfilEjercicioAdapter
             viewSeparadorEjercicio = itemView.findViewById(R.id.viewSeparadorEjercicioPerfil);
         }
 
+        /** Rellena la fila con el número, el nombre y el grupo, y deja cerrar el click en la tarjeta. */
         void asignar(EjercicioResponse ejercicio, int posicion, boolean esUltimo) {
             // El número corresponde al orden en que llegó la lista.
             tvNumeroEjercicio.setText(String.valueOf(posicion + 1));

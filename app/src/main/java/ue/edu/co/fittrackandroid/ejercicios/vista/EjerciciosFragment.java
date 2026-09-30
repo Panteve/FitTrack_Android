@@ -155,6 +155,7 @@ public class EjerciciosFragment extends Fragment {
         super.onDestroyView();
     }
 
+    /** Busca las vistas de la pantalla y las guarda en los campos. */
     private void inicializarVistas(View view) {
         etBuscarEjercicio = view.findViewById(R.id.etBuscarEjercicio);
         tvChipTodos = view.findViewById(R.id.tvChipTodos);
@@ -183,6 +184,7 @@ public class EjerciciosFragment extends Fragment {
         btnReintentarCargaEjercicios.setOnClickListener(v -> cargarEjerciciosDisponibles());
     }
 
+    /** Conecta el buscador para que cada tecla aplique el filtro a las dos listas. */
     private void configurarBuscador() {
         etBuscarEjercicio.addTextChangedListener(new TextWatcher() {
             @Override
@@ -201,6 +203,7 @@ public class EjerciciosFragment extends Fragment {
         });
     }
 
+    /** Conecta los cinco filtros por grupo muscular, incluido el que muestra todas las secciones. */
     private void configurarChips() {
         tvChipTodos.setOnClickListener(v -> seleccionarChip(tvChipTodos, null));
         tvChipPecho.setOnClickListener(v -> seleccionarChip(tvChipPecho, grupoPecho()));
@@ -303,9 +306,6 @@ public class EjerciciosFragment extends Fragment {
      * Convierte la lista que llegó de la API al modelo que usa el adapter.
      * Si el backend no envía alguna de las listas se entrega vacía, para que la sección
      * muestre su mensaje sin fallar.
-     *
-     * @param ejerciciosRecibidos lista de ejercicios recibida del backend.
-     * @return lista de ejercicios en el modelo de la pantalla.
      */
     private List<Ejercicio> convertirAEjercicios(List<EjercicioResponse> ejerciciosRecibidos) {
         List<Ejercicio> listaEjercicios = new ArrayList<>();
@@ -372,18 +372,22 @@ public class EjerciciosFragment extends Fragment {
     // Los nombres de los grupos salen de los mismos recursos que muestran los chips y que
     // envía el usuario al crear un ejercicio, así nunca se escriben a mano.
 
+    /** Obtiene el nombre del grupo muscular de los filtros, tomado del mismo recurso que muestra el chip. */
     private String grupoPecho() {
         return getString(R.string.tvChipPecho);
     }
 
+    /** Obtiene el nombre del grupo muscular de espalda, tomado del mismo recurso que muestra el chip. */
     private String grupoEspalda() {
         return getString(R.string.tvChipEspalda);
     }
 
+    /** Obtiene el nombre del grupo muscular de pierna, tomado del mismo recurso que muestra el chip. */
     private String grupoPierna() {
         return getString(R.string.tvChipPierna);
     }
 
+    /** Obtiene el nombre del grupo muscular de brazo, tomado del mismo recurso que muestra el chip. */
     private String grupoBrazo() {
         return getString(R.string.tvChipBrazo);
     }

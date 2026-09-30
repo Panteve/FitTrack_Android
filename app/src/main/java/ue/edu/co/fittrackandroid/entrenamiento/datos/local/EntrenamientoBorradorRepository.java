@@ -51,15 +51,14 @@ public class EntrenamientoBorradorRepository {
     /** Avisa cuándo terminó de leer el borrador guardado de una cuenta. */
     public interface EscuchaBorrador {
 
-        /**
-         * @param entrenamiento la sesión recuperada, o null si esa cuenta no tenía borrador.
-         */
+        /** Avisa que la sesión quedó recuperada, o que esa cuenta no tenía borrador guardado. */
         void alCargarBorrador(EntrenamientoEnCurso entrenamiento);
     }
 
     private final FitTrackDatabase baseDeDatos;
     private final EntrenamientoBorradorDao dao;
 
+    /** Crea el repositorio abriendo la base de datos local y guardando su DAO de borradores. */
     public EntrenamientoBorradorRepository(Context contexto) {
         baseDeDatos = FitTrackDatabase.obtenerInstancia(contexto);
         dao = baseDeDatos.borradorDao();
@@ -73,9 +72,6 @@ public class EntrenamientoBorradorRepository {
      * nunca queda un borrador a medio guardar.
      *
      * <p>Si la cuenta ya tenía un borrador, se reemplaza: solo puede haber uno activo.
-     *
-     * @param correoUsuario  cuenta que está entrenando.
-     * @param entrenamiento  sesión que se acaba de crear.
      */
     public void guardarBorradorInicial(String correoUsuario, EntrenamientoEnCurso entrenamiento) {
         if (correoUsuario == null || entrenamiento == null) {
@@ -92,6 +88,7 @@ public class EntrenamientoBorradorRepository {
         });
     }
 
+    /** Borra el borrador anterior de la cuenta y escribe la sesión completa, ejercicio por ejercicio. */
     private void escribirBorradorCompleto(String correoUsuario,
                                           EntrenamientoEnCurso entrenamiento) {
         dao.eliminarBorradorDeUsuario(correoUsuario);
@@ -134,12 +131,9 @@ public class EntrenamientoBorradorRepository {
 
     /**
      * Busca el borrador activo de la cuenta y lo devuelve ya convertido a
-     * {@link EntrenamientoEnCurso}, con sus ejercicios, sus series y el descanso en curso.
+     * EntrenamientoEnCurso, con sus ejercicios, sus series y el descanso en curso.
      * El resultado llega en el hilo principal; si la cuenta no tiene borrador, llega null
      * y la aplicación sigue con el comportamiento de siempre.
-     *
-     * @param correoUsuario cuenta cuyo borrador se quiere recuperar.
-     * @param escucha       a quien se le avisa cuando la lectura termine.
      */
     public void cargarBorradorActivo(String correoUsuario, EscuchaBorrador escucha) {
         if (correoUsuario == null || escucha == null) {
@@ -168,8 +162,9 @@ public class EntrenamientoBorradorRepository {
      *
      * <p>Las listas que devuelve Room no vienen ordenadas, así que los ejercicios se ordenan
      * por su posición y las series por su número. Los dos cronómetros de la pantalla usan
-     * {@link SystemClock#elapsedRealtime()}, y como ese valor cambia al reiniciar el
-     * dispositivo, aquí se reconstruyen a partir de los instantes de reloj real guardados.
+     * el tiempo transcurrido desde el arranque del sistema, y como ese valor cambia al
+     * reiniciar el dispositivo, aquí se reconstruyen a partir de los instantes de reloj
+     * real guardados.
      */
     private EntrenamientoEnCurso convertirABorrador(EntrenamientoBorradorCompleto borradorCompleto) {
         List<EjercicioBorradorEntity> ejerciciosGuardados =
@@ -258,8 +253,6 @@ public class EntrenamientoBorradorRepository {
      * Guarda los datos de todas las series de un ejercicio: peso, repeticiones y estado
      * de completada. También sirve para registrar una serie que el usuario acaba de agregar,
      * porque las que todavía no tienen fila propia se insertan.
-     *
-     * @param ejercicio ejercicio editado, con sus series ya al día en memoria.
      */
     public void guardarSeries(EjercicioEntrenamiento ejercicio) {
         if (ejercicio == null || ejercicio.getIdBorrador() == 0) {
@@ -279,9 +272,6 @@ public class EntrenamientoBorradorRepository {
     /**
      * Inserta o actualiza cada serie del ejercicio. Las que todavía no tienen fila propia se
      * insertan y se les guarda el identificador que Room les asigna.
-     *
-     * @param ejercicio   ejercicio editado, con sus series ya al día en memoria.
-     * @param ejercicioId identificador local del ejercicio.
      */
     private void escribirSeries(EjercicioEntrenamiento ejercicio, long ejercicioId) {
         List<SerieEntrenamiento> series = ejercicio.getSeries();
@@ -301,8 +291,6 @@ public class EntrenamientoBorradorRepository {
     /**
      * Guarda los datos que pertenecen a la sesión completa y no a una serie concreta:
      * las notas y el descanso que está corriendo.
-     *
-     * @param entrenamiento sesión en curso.
      */
     public void guardarDatosEntrenamiento(EntrenamientoEnCurso entrenamiento) {
         if (entrenamiento == null || entrenamiento.getIdBorrador() == 0) {
@@ -330,8 +318,6 @@ public class EntrenamientoBorradorRepository {
     /**
      * Quita un ejercicio del borrador guardado. Sus series se borran solas gracias a la
      * clave foránea con borrado en cascada.
-     *
-     * @param ejercicio ejercicio que el usuario quitó de la pantalla.
      */
     public void eliminarEjercicio(EjercicioEntrenamiento ejercicio) {
         if (ejercicio == null || ejercicio.getIdBorrador() == 0) {
@@ -351,13 +337,10 @@ public class EntrenamientoBorradorRepository {
     /**
      * Quita una serie del borrador guardado y deja el número de las que quedan seguido.
      *
-     * <p>Guardar las series otra vez es lo que renumera: {@link #crearSerie} guarda el
+     * <p>Guardar las series otra vez es lo que renumera: el método crearSerie guarda el
      * número que tiene cada serie en memoria, que el modelo ya dejó consecutivo al quitar
      * la anterior. El borrado y la reescritura van en la misma transacción, para que el
      * borrador nunca quede con números repetidos o con un hueco.
-     *
-     * @param ejercicio ejercicio al que pertenecía la serie.
-     * @param serie     serie que el usuario quitó de la pantalla.
      */
     public void eliminarSerie(EjercicioEntrenamiento ejercicio, SerieEntrenamiento serie) {
         if (ejercicio == null || serie == null || serie.getIdBorrador() == 0) {
@@ -386,8 +369,6 @@ public class EntrenamientoBorradorRepository {
      * <p>Se borra por correo y no por identificador de fila para que también funcione cuando
      * la sesión ya no está en memoria, por ejemplo al cerrar sesión. Así el borrador de una
      * cuenta nunca se confunde con el de otra.
-     *
-     * @param correoUsuario cuenta cuyo borrador se elimina.
      */
     public void eliminarBorrador(String correoUsuario) {
         if (correoUsuario == null) {
@@ -405,6 +386,7 @@ public class EntrenamientoBorradorRepository {
 
     // ------------------------------------------------------------------ Utilidades
 
+    /** Traduce el ejercicio de la pantalla a la fila que se guarda en la tabla, en la posición indicada. */
     private EjercicioBorradorEntity crearEjercicio(long id, long entrenamientoId, int posicion,
                                                    EjercicioEntrenamiento ejercicio) {
         return new EjercicioBorradorEntity(
@@ -417,6 +399,10 @@ public class EntrenamientoBorradorRepository {
         );
     }
 
+    /**
+     * Traduce la serie de la pantalla a la fila que se guarda en la tabla. Si la serie todavía
+     * no tiene número propio, se le asigna el siguiente según la posición que ocupa.
+     */
     private SerieBorradorEntity crearSerie(long id, long ejercicioId, int posicion,
                                             SerieEntrenamiento serie) {
         int numeroSerie = serie.getNumeroSerie() > 0 ? serie.getNumeroSerie() : posicion + 1;
@@ -432,10 +418,8 @@ public class EntrenamientoBorradorRepository {
 
     /**
      * Traduce el fin del descanso, que la pantalla maneja con el reloj del sistema, al
-     * instante de reloj real que sí sobrevive a que el proceso se cierre.
-     *
-     * @param instanteFinDescanso fin del descanso en el reloj del sistema, o cero.
-     * @return el instante de reloj real equivalente, o cero si no hay descanso.
+     * instante de reloj real que sí sobrevive a que el proceso se cierre. Si no hay
+     * descanso en curso, o si su tiempo ya venció, se guarda cero.
      */
     private long obtenerFechaHoraFinDescanso(long instanteFinDescanso) {
         if (instanteFinDescanso <= 0) {
@@ -453,9 +437,6 @@ public class EntrenamientoBorradorRepository {
     /**
      * Devuelve a la sesión el descanso que estaba corriendo. Si el tiempo restante ya se
      * venció, el descanso simplemente no se restaura.
-     *
-     * @param entrenamiento      sesión que se está reconstruyendo.
-     * @param fechaHoraFinDescanso instante de reloj real del fin del descanso, o cero.
      */
     private void restaurarFinDescanso(EntrenamientoEnCurso entrenamiento,
                                       long fechaHoraFinDescanso) {
@@ -471,7 +452,7 @@ public class EntrenamientoBorradorRepository {
         entrenamiento.setInstanteFinDescanso(SystemClock.elapsedRealtime() + milisegundosRestantes);
     }
 
-    /** @return el texto, o una cadena vacía si es null, porque SQLite no guarda valores nulos. */
+    /** Devuelve el texto, o una cadena vacía si es nulo, porque SQLite no guarda valores nulos. */
     private String textoONulo(String texto) {
         if (texto == null) {
             return "";
@@ -479,7 +460,7 @@ public class EntrenamientoBorradorRepository {
         return texto;
     }
 
-    /** @return null si el texto está vacío, para devolverlo al modelo tal como estaba. */
+    /** Devuelve nulo si el texto está vacío, para devolverlo al modelo tal como estaba. */
     private String textoONuloANull(String texto) {
         if (texto == null || texto.isEmpty()) {
             return null;

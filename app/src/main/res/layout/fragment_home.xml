@@ -42,7 +42,6 @@
                         android:id="@+id/tvFecha"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/tvFecha"
                         android:textColor="@color/colorTextTertiary"
                         android:textSize="13sp" />
 
@@ -51,7 +50,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/spacing_xs"
-                        android:text="@string/tvBienvenida"
                         android:textColor="@color/colorTextPrimary"
                         android:textSize="18sp"
                         android:textStyle="bold" />

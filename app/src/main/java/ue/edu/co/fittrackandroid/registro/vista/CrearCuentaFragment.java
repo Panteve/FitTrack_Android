@@ -139,13 +139,8 @@ public class CrearCuentaFragment extends Fragment {
 
     /**
      * Revisa los cuatro campos en el mismo orden que valida el backend y muestra
-     * el primer error que encuentre.
-     *
-     * @param nombreUsuario       nombre escrito, ya recortado.
-     * @param correo              correo escrito, ya recortado.
-     * @param contrasena          contraseña escrita, sin recortar.
-     * @param repetirContrasena   confirmación escrita, sin recortar.
-     * @return true si el registro se puede enviar al backend.
+     * el primer error que encuentre. Devuelve true solo si el registro se puede
+     * enviar al servidor.
      */
     private boolean validarCampos(String nombreUsuario, String correo, String contrasena,
                                   String repetirContrasena) {
@@ -193,13 +188,9 @@ public class CrearCuentaFragment extends Fragment {
     }
 
     /**
-     * Envía el registro al backend y espera su respuesta.
-     * Mientras la llamada está en vuelo la pantalla queda bloqueada, de modo que
-     * no se puedan crear dos cuentas con el mismo toque.
-     *
-     * @param nombreUsuario nombre validado.
-     * @param correo        correo validado, es el que se guarda en la sesión.
-     * @param contrasena    contraseña validada, solo viaja en la petición.
+     * Envía el nombre, el correo y la contraseña ya validados al backend y espera su
+     * respuesta. Mientras la llamada está en vuelo la pantalla queda bloqueada, de modo
+     * que no se puedan crear dos cuentas con el mismo toque.
      */
     private void registrarCuenta(String nombreUsuario, String correo, String contrasena) {
         RegistroRequest registroRequest = new RegistroRequest(nombreUsuario, correo, contrasena);
@@ -268,12 +259,10 @@ public class CrearCuentaFragment extends Fragment {
     }
 
     /**
-     * Guarda la sesión devuelta por el backend y abre Inicio.
-     * Solo se llega aquí con un 2xx y un token utilizable, así que la cuenta ya
-     * existe en el servidor. La contraseña no se guarda en ninguna parte.
-     *
-     * @param registroResponse respuesta con el token y el nombre confirmados.
-     * @param correo           correo con el que el usuario se registró.
+     * Guarda la sesión devuelta por el backend con el correo con el que se registró el
+     * usuario, prepara su foto de perfil y abre Inicio. Solo se llega aquí con un 2xx y
+     * un token utilizable, así que la cuenta ya existe en el servidor. La contraseña no
+     * se guarda en ninguna parte.
      */
     private void procesarCuentaCreada(RegistroResponse registroResponse, String correo) {
         sesionManager.guardarTokens(registroResponse.getToken());
@@ -304,8 +293,6 @@ public class CrearCuentaFragment extends Fragment {
      * Bloquea el formulario y la acción de GUARDAR mientras la petición está en
      * vuelo, y los vuelve a habilitar cuando termina. El texto escrito se conserva
      * para poder reintentar sin volver a escribirlo todo.
-     *
-     * @param registrando true si la llamada está en vuelo, false si ya terminó.
      */
     private void mostrarRegistrando(boolean registrando) {
         registrandoCuenta = registrando;
@@ -340,11 +327,8 @@ public class CrearCuentaFragment extends Fragment {
     }
 
     /**
-     * Muestra el mensaje de error del campo y pide el foco en él.
-     *
-     * @param campo      campo que falló la validación.
-     * @param textoError mensaje de error que ya está en la pantalla.
-     * @param mensajeId  texto del mensaje que además se muestra en un Toast.
+     * Muestra el mensaje de error del campo que falló la validación, le cambia el
+     * fondo, le pide el foco y repite el mismo texto en un Toast.
      */
     private void mostrarError(EditText campo, TextView textoError, @StringRes int mensajeId) {
         textoError.setText(mensajeId);

@@ -48,6 +48,7 @@ public class CrearRutinaEjercicioAdapter
     private final List<EjercicioRutinaEditable> listaEjercicios;
     private final EscuchaCrearRutina escucha;
 
+    /** Crea el adapter con la lista de ejercicios de la rutina y los avisos de sus botones. */
     public CrearRutinaEjercicioAdapter(List<EjercicioRutinaEditable> listaEjercicios,
                                         EscuchaCrearRutina escucha) {
         this.listaEjercicios = listaEjercicios;
@@ -101,6 +102,7 @@ public class CrearRutinaEjercicioAdapter
 
         private EjercicioRutinaEditable ejercicio;
 
+        /** Crea el contenedor de la tarjeta y busca sus textos, sus botones y el contenedor donde van las series. */
         EjercicioEditableViewHolder(@NonNull View itemView, LayoutInflater inflater,
                                     EscuchaCrearRutina escucha) {
             super(itemView);
@@ -114,6 +116,7 @@ public class CrearRutinaEjercicioAdapter
             btnAgregarSerie = itemView.findViewById(R.id.btnAgregarSerie);
         }
 
+        /** Muestra los datos del ejercicio, dibuja sus series y conecta los botones con el fragment. */
         void asignar(EjercicioRutinaEditable ejercicio) {
             this.ejercicio = ejercicio;
 
@@ -148,6 +151,10 @@ public class CrearRutinaEjercicioAdapter
             }
         }
 
+        /**
+         * Crea la fila de una serie con su número, sus campos de peso y repeticiones ya
+         * rellenos y el botón de quitar, que se apaga cuando solo queda esa serie.
+         */
         private View crearFilaSerie(SerieRutina serie, int posicionSerie) {
             View filaSerie = inflater.inflate(R.layout.item_serie_rutina, layoutSeries, false);
 

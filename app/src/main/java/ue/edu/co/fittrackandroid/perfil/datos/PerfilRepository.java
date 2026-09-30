@@ -17,51 +17,38 @@ public class PerfilRepository {
 
     private final PerfilApiService perfilApiService;
 
+    /** Crea el repositorio conectando el servicio de perfil al cliente Retrofit de la aplicación. */
     public PerfilRepository(Context context) {
         perfilApiService = RetrofitClient.getInstance(context)
                 .create(PerfilApiService.class);
     }
 
     /**
-     * Prepara el envío del nuevo nombre; el Fragmento ejecuta la llamada.
-     * La respuesta no trae cuerpo, por eso la llamada es de tipo Void.
-     *
-     * @param cambiarNombreRequest nombre nuevo ya validado.
-     * @return llamada que termina con un 204 cuando el nombre quedó actualizado.
+     * Prepara el envío del nuevo nombre; el fragmento ejecuta la llamada, que no trae
+     * cuerpo y termina con un 204 cuando el nombre quedó actualizado.
      */
     public Call<Void> cambiarNombre(CambiarNombreRequest cambiarNombreRequest) {
         return perfilApiService.cambiarNombre(cambiarNombreRequest);
     }
 
     /**
-     * Prepara el envío de la contraseña nueva; el Fragmento ejecuta la llamada.
-     * La respuesta no trae cuerpo, por eso la llamada es de tipo Void.
-     *
-     * @param cambiarContrasenaRequest contraseña actual y nueva ya validadas.
-     * @return llamada que termina con un 204 cuando la contraseña quedó actualizada.
+     * Prepara el envío de la contraseña nueva; el fragmento ejecuta la llamada, que no
+     * trae cuerpo y termina con un 204 cuando la contraseña quedó actualizada.
      */
     public Call<Void> cambiarContrasena(CambiarContrasenaRequest cambiarContrasenaRequest) {
         return perfilApiService.cambiarContrasena(cambiarContrasenaRequest);
     }
 
-    /**
-     * Prepara la subida o el reemplazo de la foto de perfil.
-     *
-     * @param foto parte multipart ya validada
-     * @return llamada que devuelve la ubicación temporal de la foto
-     */
+    /** Prepara la subida o el reemplazo de la foto de perfil. */
     public Call<FotoPerfilResponse> guardarFoto(MultipartBody.Part foto) {
         return perfilApiService.guardarFoto(foto);
     }
 
-    /**
-     * Prepara la eliminación de la foto del usuario autenticado.
-     *
-     * @return llamada sin contenido de respuesta
-     */
+    /** Prepara la eliminación de la foto del usuario autenticado. */
     public Call<Void> quitarFoto() {
         return perfilApiService.quitarFoto();
     }
 
+    /** Prepara el borrado definitivo de la cuenta del usuario autenticado. */
     public Call<UsuarioResponse> eliminarUsuario() { return perfilApiService.eliminarUsuario(); }
 }

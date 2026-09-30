@@ -2,28 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET"/>
-    <!-- La galería propia consulta MediaStore directamente, por eso se piden los
-         permisos reales de lectura según la versión de Android. READ_EXTERNAL_STORAGE
-         solo existe hasta Android 12L; desde Android 13 se usa READ_MEDIA_IMAGES. -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <!-- Android 14 o superior: acceso parcial cuando el usuario solo autoriza las
-         fotografías que él mismo selecciona. -->
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
-    <!-- Solo para abrir la cámara y adjuntar la foto del entrenamiento. La captura
-         queda en el caché privado de FitTrack, así que no se pide permiso de
-         almacenamiento. -->
     <uses-permission android:name="android.permission.CAMERA"/>
-    <!-- La cámara no es obligatoria: un dispositivo sin ella, o con la cámara dañada,
-         puede seguir usando la app y simplemente no tomar fotografías. -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-    <!-- Desde Android 11 el sistema esconde las cámaras instaladas. Sin esta entrada
-         la consulta de ActivityResultContracts.TakePicture no encuentra ninguna y la
-         captura fallaría siempre. -->
     <queries>
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />

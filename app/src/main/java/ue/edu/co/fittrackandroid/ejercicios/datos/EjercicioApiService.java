@@ -16,31 +16,36 @@ import ue.edu.co.fittrackandroid.ejercicios.modelo.EjerciciosDisponiblesResponse
 public interface EjercicioApiService {
 
     // El encabezado Authorization lo agrega AutenticacionInterceptor.
+    /** Solicita al servidor los ejercicios que creó el usuario autenticado. */
     @GET("ejercicios/mis-ejercicios")
     Call<List<EjercicioResponse>> getMisEjercicios();
 
-    // Trae los ejercicios del sistema y los del usuario ya separados.
+    /** Solicita al servidor los ejercicios disponibles, ya separados entre los del sistema y los del usuario. */
     @GET("ejercicios/disponibles")
     Call<EjerciciosDisponiblesResponse> getEjerciciosDisponibles();
 
-    // Registra un ejercicio nuevo con el nombre y el grupo muscular elegidos.
+    /** Registra un ejercicio nuevo con el nombre y el grupo muscular elegidos. */
     @POST("ejercicios")
     Call<EjercicioResponse> crearEjercicio(@Body EjercicioRequest ejercicioRequest);
 
-    // Trae un ejercicio propio por su identificador. El backend solo deja consultar
-    // los ejercicios que pertenecen al usuario autenticado.
+    /**
+     * Solicita al servidor un ejercicio propio por su identificador. El backend solo deja
+     * consultar los ejercicios que pertenecen al usuario autenticado.
+     */
     @GET("ejercicios/{id}")
     Call<EjercicioResponse> getEjercicioById(@Path("id") Long ejercicioId);
 
-    // Actualiza un ejercicio propio. El cuerpo es el mismo que usa la creación porque
-    // el backend reemplaza los datos del ejercicio por los que se envían.
+    /**
+     * Actualiza un ejercicio propio. El cuerpo es el mismo que usa la creación porque
+     * el backend reemplaza los datos del ejercicio por los que se envían.
+     */
     @PUT("ejercicios/{id}")
     Call<EjercicioResponse> actualizarEjercicio(
             @Path("id") Long ejercicioId,
             @Body EjercicioRequest ejercicioRequest
     );
 
-    // Elimina lógicamente un ejercicio propio. El backend responde 204 sin cuerpo.
+    /** Elimina lógicamente un ejercicio propio. El backend responde 204 sin cuerpo. */
     @DELETE("ejercicios/{id}")
     Call<Void> eliminarEjercicio(@Path("id") Long ejercicioId);
 }
