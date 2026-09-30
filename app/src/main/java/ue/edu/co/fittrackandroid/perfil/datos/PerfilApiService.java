@@ -10,6 +10,7 @@ import retrofit2.http.PUT;
 import ue.edu.co.fittrackandroid.perfil.modelo.CambiarContrasenaRequest;
 import ue.edu.co.fittrackandroid.perfil.modelo.CambiarNombreRequest;
 import ue.edu.co.fittrackandroid.perfil.modelo.FotoPerfilResponse;
+import ue.edu.co.fittrackandroid.perfil.modelo.UsuarioResponse;
 
 /**
  * Endpoints relacionados con los datos personales del usuario.
@@ -43,4 +44,6 @@ public interface PerfilApiService {
      */
     @DELETE("usuarios/me/foto")
     Call<Void> quitarFoto();
+
+    @DELETE("usuarios/me/eliminar") Call<UsuarioResponse> eliminarUsuario();
 }

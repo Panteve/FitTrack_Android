@@ -45,6 +45,7 @@ import ue.edu.co.fittrackandroid.perfil.datos.FotoPerfilLocal;
 import ue.edu.co.fittrackandroid.perfil.datos.PerfilRepository;
 import ue.edu.co.fittrackandroid.perfil.modelo.CambiarNombreRequest;
 import ue.edu.co.fittrackandroid.perfil.modelo.FotoPerfilResponse;
+import ue.edu.co.fittrackandroid.perfil.modelo.UsuarioResponse;
 import ue.edu.co.fittrackandroid.remote.SesionManager;
 import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 
@@ -90,6 +91,8 @@ public class PerfilFragment extends Fragment {
     private PerfilRepository perfilRepository;
     private Call<List<EjercicioResponse>> currentCallEjercicios;
     private Call<Void> currentCallCambiarNombre;
+    private Call<UsuarioResponse> currentCallEliminarUsuario;
+    private boolean eliminandoCuenta;
     private Call<FotoPerfilResponse> currentCallGuardarFoto;
     private Call<Void> currentCallQuitarFoto;
     private boolean guardandoNombre;
@@ -799,19 +802,82 @@ public class PerfilFragment extends Fragment {
      * acción aún no está disponible.
      */
     private void confirmarBorradoCuenta() {
-        // TODO: Llamar al endpoint de borrado de cuenta cuando exista. La respuesta
+        if (eliminandoCuenta) {
+            return;
+        }
         // decidirá si además se limpia la sesión con sesionManager.cerrarSesion().
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.tvTituloBorrarCuenta)
                 .setMessage(R.string.tvMensajeBorrarCuenta)
                 .setPositiveButton(R.string.btnConfirmarBorrarCuenta, (dialogo, cual) ->
-                        Toast.makeText(
-                                requireContext(),
-                                "El borrado de cuenta todavía no está disponible",
-                                Toast.LENGTH_SHORT
-                        ).show())
+                        eliminarCuenta())
                 .setNegativeButton(R.string.btnCancelarBorrarCuenta, null)
                 .show();
+    }
+
+    private void eliminarCuenta() {
+
+        if (eliminandoCuenta) {
+            return;
+        }
+
+        eliminandoCuenta = true;
+        btnBorrarCuenta.setEnabled(false);
+
+        currentCallEliminarUsuario = perfilRepository.eliminarUsuario();
+
+        currentCallEliminarUsuario.enqueue(new Callback<UsuarioResponse>() {
+
+            @Override
+            public void onResponse(
+                    @NonNull Call<UsuarioResponse> call,
+                    @NonNull Response<UsuarioResponse> response) {
+
+                if (!isAdded()) {
+                    return;
+                }
+
+                if (response.isSuccessful()) {
+                    procesarCuentaEliminada();
+                    return;
+                }
+
+                eliminandoCuenta = false;
+                btnBorrarCuenta.setEnabled(true);
+
+                ManejadorErroresApi
+                        .obtenerToast(requireContext(), response.code())
+                        .show();
+            }
+
+            @Override
+            public void onFailure(
+                    @NonNull Call<UsuarioResponse> call,
+                    @NonNull Throwable throwable) {
+
+                if (call.isCanceled() || !isAdded()) {
+                    return;
+                }
+
+                eliminandoCuenta = false;
+                btnBorrarCuenta.setEnabled(true);
+
+                ManejadorErroresApi
+                        .obtenerToast(requireContext(), throwable)
+                        .show();
+            }
+        });
+    }
+
+    private void procesarCuentaEliminada() {
+
+        Toast.makeText(
+                requireContext(),
+                "Cuenta eliminada correctamente",
+                Toast.LENGTH_SHORT
+        ).show();
+
+        ((MainActivity) requireActivity()).cerrarSesion();
     }
 
     /** Pide confirmación antes de cerrar la sesión. */
@@ -843,6 +909,10 @@ public class PerfilFragment extends Fragment {
 
         if (currentCallQuitarFoto != null) {
             currentCallQuitarFoto.cancel();
+        }
+
+        if (currentCallEliminarUsuario != null) {
+            currentCallEliminarUsuario.cancel();
         }
 
         actualizandoFoto = false;

@@ -7,6 +7,7 @@ import retrofit2.Call;
 import ue.edu.co.fittrackandroid.perfil.modelo.CambiarContrasenaRequest;
 import ue.edu.co.fittrackandroid.perfil.modelo.CambiarNombreRequest;
 import ue.edu.co.fittrackandroid.perfil.modelo.FotoPerfilResponse;
+import ue.edu.co.fittrackandroid.perfil.modelo.UsuarioResponse;
 import ue.edu.co.fittrackandroid.remote.RetrofitClient;
 
 /**
@@ -61,4 +62,6 @@ public class PerfilRepository {
     public Call<Void> quitarFoto() {
         return perfilApiService.quitarFoto();
     }
+
+    public Call<UsuarioResponse> eliminarUsuario() { return perfilApiService.eliminarUsuario(); }
 }
