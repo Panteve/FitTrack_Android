@@ -221,14 +221,5 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvVersion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_xl"
-            android:paddingBottom="@dimen/spacing_md"
-            android:text="@string/tvVersion"
-            android:textColor="@color/colorTextSecondary"
-            android:textSize="11sp" />
     </LinearLayout>
 </ScrollView>
