@@ -1,23 +1,38 @@
 package ue.edu.co.fittrackandroid.resumen.vista;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -26,8 +41,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,10 +54,15 @@ import ue.edu.co.fittrackandroid.entrenamiento.datos.EntrenamientoRepository;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoCrearRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoDetalleResponse;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoEnCurso;
+import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoFotoResponse;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.RegistroSerieRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.RegistroSerieResponse;
+import ue.edu.co.fittrackandroid.imagenes.GaleriaImagenesFragment;
+import ue.edu.co.fittrackandroid.imagenes.PermisosImagenes;
 import ue.edu.co.fittrackandroid.MainActivity;
 import ue.edu.co.fittrackandroid.R;
+import ue.edu.co.fittrackandroid.resumen.datos.DescargadorFotoEntrenamiento;
+import ue.edu.co.fittrackandroid.resumen.datos.FotoEntrenamientoLocal;
 import ue.edu.co.fittrackandroid.resumen.modelo.EjercicioResumen;
 import ue.edu.co.fittrackandroid.resumen.modelo.GrupoMuscularResumen;
 import ue.edu.co.fittrackandroid.resumen.modelo.ResumenEntrenamiento;
@@ -51,8 +75,9 @@ import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
  * <p>Muestra el nombre del entrenamiento, el día y la hora en que se realizó, las tres
  * métricas finales (duración, volumen y series), la distribución porcentual de los
  * grupos musculares trabajados y los ejercicios con sus series realizadas. También permite
- * guardar una nota o descripción del entrenamiento. Las acciones de fotografía son
- * provisionales y todavía no abren la cámara ni la galería.
+ * guardar una nota o descripción del entrenamiento. La fotografía del resumen se puede
+ * tomar con la cámara o agregar eligiendo una imagen del almacenamiento externo; en los
+ * dos casos se valida, se sube al backend y recién entonces se guarda la copia local.
  *
  * <p>La pantalla se abre al confirmar "Terminar" y también al pulsar un registro de
  * "Últimos entrenamientos" en Inicio. En el primer caso MainActivity ya tiene el resumen
@@ -68,7 +93,11 @@ import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
  */
 public class ResumenEntrenamientoFragment extends Fragment {
 
+    private static final String ARG_ID_ENTRENAMIENTO = "idEntrenamiento";
     private static final int LONGITUD_MAXIMA_NOTA = 1000;
+    private static final String TIPO_JPEG = "image/jpeg";
+    private static final String TIPO_PNG = "image/png";
+    private static final String NOMBRE_ARCHIVO_FOTO = "foto_entrenamiento.jpg";
 
     /**
      * Clave del resultado que avisa que el entrenamiento fue borrado. La escucha
@@ -87,6 +116,17 @@ public class ResumenEntrenamientoFragment extends Fragment {
     private Call<Void> currentCallEliminar;
     private boolean eliminandoEntrenamiento;
     private boolean guardandoNota;
+    private boolean subiendoFoto;
+    /** true cuando el cuadro de la tarjeta está mostrando una foto y no el icono. */
+    private boolean hayFotoVisible;
+    /** Foto preparada que no se pudo subir todavía, para poder reenviarla sin recapturar. */
+    private byte[] contenidoFotoPendiente;
+    private FotoEntrenamientoLocal fotoEntrenamientoLocal;
+    private File archivoCapturaFoto;
+    private Call<EntrenamientoFotoResponse> currentCallSubirFoto;
+    private ActivityResultLauncher<String> permisoCamaraLauncher;
+    private ActivityResultLauncher<Uri> camaraLauncher;
+    private ActivityResultLauncher<String[]> permisoGaleriaLauncher;
 
     private ProgressBar pbCargaResumenEntrenamiento;
     private TextView tvErrorResumenEntrenamiento;
@@ -103,6 +143,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
     private Button btnGuardarNotaResumenEntrenamiento;
     private Button btnTomarFotoResumenEntrenamiento;
     private Button btnAgregarFotoResumenEntrenamiento;
+    private ImageView imgFotoResumenEntrenamiento;
     private TextView tvResumenSinEjercicios;
     private LinearLayout layoutGruposMuscularesResumen;
     private RecyclerView rvEjerciciosResumen;
@@ -111,15 +152,87 @@ public class ResumenEntrenamientoFragment extends Fragment {
         // Required empty public constructor
     }
 
+    /**
+     * Crea la pantalla preparada para consultar un entrenamiento guardado.
+     *
+     * @param idEntrenamiento identificador asignado por el backend
+     * @return Fragment con el identificador dentro de sus argumentos
+     */
+    public static ResumenEntrenamientoFragment newInstance(Long idEntrenamiento) {
+        ResumenEntrenamientoFragment fragment = new ResumenEntrenamientoFragment();
+        Bundle argumentos = new Bundle();
+        if (idEntrenamiento != null) {
+            argumentos.putLong(ARG_ID_ENTRENAMIENTO, idEntrenamiento);
+        }
+        fragment.setArguments(argumentos);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = (MainActivity) requireActivity();
-        // El resumen todavía no se guarda en disco: solo existe mientras la app siga viva,
-        // o se reconstruye con el detalle que devuelve el backend.
-        resumen = activity.obtenerResumenEntrenamientoActual();
-        idEntrenamiento = activity.obtenerIdEntrenamientoResumenActual();
+        Bundle argumentos = getArguments();
+        if (argumentos != null && argumentos.containsKey(ARG_ID_ENTRENAMIENTO)) {
+            idEntrenamiento = argumentos.getLong(ARG_ID_ENTRENAMIENTO);
+        }
         entrenamientoRepository = new EntrenamientoRepository(requireContext());
+        fotoEntrenamientoLocal = new FotoEntrenamientoLocal(requireContext());
+
+        // Los lanzadores se registran aquí, antes de que exista la vista, porque así
+        // Android puede devolver el resultado aunque la pantalla se haya recreado.
+        permisoCamaraLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                concedido -> {
+                    if (Boolean.TRUE.equals(concedido)) {
+                        abrirCamara();
+                        return;
+                    }
+                    mostrarPermisoCamaraRechazado();
+                }
+        );
+        camaraLauncher = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                exitoso -> {
+                    if (Boolean.TRUE.equals(exitoso)) {
+                        procesarFotoCapturada();
+                        return;
+                    }
+                    // El usuario canceló la cámara. No es un error: solo se limpia el
+                    // archivo temporal que quedó sin usar.
+                    fotoEntrenamientoLocal.eliminarCaptura(archivoCapturaFoto);
+                    archivoCapturaFoto = null;
+                }
+        );
+        // La galería propia usa permisos reales según la versión de Android. El lanzador
+        // de permisos y el escucha del resultado de la galería se registran aquí, antes
+        // de que exista la vista, para que el resultado pueda llegar aunque la pantalla
+        // se haya recreado.
+        permisoGaleriaLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                this::procesarResultadoPermisoGaleria
+        );
+        registrarResultadoImagenSeleccionada();
+    }
+
+    /**
+     * Escucha el resultado que devuelve {@link GaleriaImagenesFragment} cuando el usuario
+     * elige una imagen. Solo se procesa cuando el destino es el entrenamiento.
+     */
+    private void registrarResultadoImagenSeleccionada() {
+        getParentFragmentManager().setFragmentResultListener(
+                GaleriaImagenesFragment.REQUEST_IMAGEN_SELECCIONADA,
+                this,
+                (clave, resultado) -> {
+                    String destino = resultado.getString(GaleriaImagenesFragment.EXTRA_DESTINO);
+                    if (!GaleriaImagenesFragment.DESTINO_ENTRENAMIENTO.equals(destino)) {
+                        return;
+                    }
+
+                    Uri uri = resultado.getParcelable(GaleriaImagenesFragment.EXTRA_URI_IMAGEN);
+                    procesarFotoSeleccionada(uri);
+                }
+        );
     }
 
     @Override
@@ -131,17 +244,14 @@ public class ResumenEntrenamientoFragment extends Fragment {
         btnReintentarResumenEntrenamiento.setOnClickListener(v -> cargarResumenDesdeApi());
         btnBorrarEntrenamiento.setOnClickListener(v -> confirmarBorradoEntrenamiento());
         btnGuardarNotaResumenEntrenamiento.setOnClickListener(v -> guardarNota());
-        btnTomarFotoResumenEntrenamiento.setOnClickListener(v -> mostrarFotoProximamente());
-        btnAgregarFotoResumenEntrenamiento.setOnClickListener(v -> mostrarFotoProximamente());
+        btnTomarFotoResumenEntrenamiento.setOnClickListener(v -> tomarFoto());
+        btnAgregarFotoResumenEntrenamiento.setOnClickListener(v -> agregarFoto());
+        imgFotoResumenEntrenamiento.setOnClickListener(v -> tocarFoto());
 
-        if (resumen != null) {
-            // El resumen ya venía construido: no hace falta ninguna consulta.
-            mostrarResumen();
-            cargarDetalleParaEdicion();
-        } else if (idEntrenamiento != null) {
+        if (idEntrenamiento != null && idEntrenamiento > 0) {
             cargarResumenDesdeApi();
         } else {
-            // Sin resumen ni identificador no hay nada que recuperar ni que reintentar.
+            // Sin un identificador válido no hay ningún entrenamiento que consultar.
             mostrarEstadoError();
         }
 
@@ -173,6 +283,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
                 R.id.btnTomarFotoResumenEntrenamiento);
         btnAgregarFotoResumenEntrenamiento = view.findViewById(
                 R.id.btnAgregarFotoResumenEntrenamiento);
+        imgFotoResumenEntrenamiento = view.findViewById(R.id.imgFotoResumenEntrenamiento);
         tvResumenSinEjercicios = view.findViewById(R.id.tvResumenSinEjercicios);
         layoutGruposMuscularesResumen = view.findViewById(R.id.layoutGruposMuscularesResumen);
         rvEjerciciosResumen = view.findViewById(R.id.rvEjerciciosResumen);
@@ -218,6 +329,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
         mostrarCabecera();
         mostrarMetricas();
         mostrarNota();
+        mostrarFoto();
         mostrarGruposMusculares();
         mostrarEjercicios();
         actualizarBotonBorrar();
@@ -225,11 +337,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
 
     // ------------------------------------------------------------------ Nota y fotografía
 
-    /**
-     * Muestra la nota recibida y habilita su edición cuando existe el detalle completo.
-     * El resumen recién creado se ve inmediatamente; su detalle se consulta en segundo
-     * plano para disponer de todos los campos que exige la actualización del backend.
-     */
+    /** Muestra la nota recibida y habilita su edición cuando existe el detalle completo. */
     private void mostrarNota() {
         boolean detalleDisponible = detalleEntrenamiento != null;
         etNotaResumenEntrenamiento.setEnabled(detalleDisponible && !guardandoNota);
@@ -241,45 +349,6 @@ public class ResumenEntrenamientoFragment extends Fragment {
 
         String nota = detalleEntrenamiento.getNotas();
         etNotaResumenEntrenamiento.setText(nota == null ? "" : nota);
-    }
-
-    /**
-     * Consulta en segundo plano el detalle del entrenamiento recién terminado. El resumen
-     * ya está visible, por eso esta petición no reemplaza la pantalla por el estado de carga.
-     */
-    private void cargarDetalleParaEdicion() {
-        if (idEntrenamiento == null || idEntrenamiento <= 0) {
-            return;
-        }
-
-        currentCallDetalle = entrenamientoRepository.getEntrenamientoById(idEntrenamiento);
-        currentCallDetalle.enqueue(new Callback<EntrenamientoDetalleResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<EntrenamientoDetalleResponse> call,
-                                   @NonNull Response<EntrenamientoDetalleResponse> response) {
-                if (!isAdded() || getView() == null) {
-                    return;
-                }
-
-                if (response.isSuccessful() && response.body() != null) {
-                    detalleEntrenamiento = response.body();
-                    mostrarNota();
-                    return;
-                }
-
-                ManejadorErroresApi.obtenerToast(requireContext(), response.code()).show();
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<EntrenamientoDetalleResponse> call,
-                                  @NonNull Throwable throwable) {
-                if (call.isCanceled() || !isAdded() || getView() == null) {
-                    return;
-                }
-
-                ManejadorErroresApi.obtenerToast(requireContext(), throwable).show();
-            }
-        });
     }
 
     /** Valida la nota y actualiza el entrenamiento ya guardado. */
@@ -421,13 +490,624 @@ public class ResumenEntrenamientoFragment extends Fragment {
         btnBorrarEntrenamiento.setEnabled(!guardando);
     }
 
-    /** Informa que cámara, galería y subida de archivos todavía no están conectadas. */
-    private void mostrarFotoProximamente() {
+    // ------------------------------------------------------------------ Fotografía
+
+    /**
+     * Muestra la fotografía del entrenamiento.
+     *
+     * <p>Primero se busca la copia que quedó en el caché, que es inmediata. Solo si no
+     * existe, y el backend tiene una foto guardada, se descarga. Así el espacio
+     * siempre tiene su imagen y la descarga es un refuerzo, no un requisito.
+     */
+    private void mostrarFoto() {
+        if (idEntrenamiento == null || idEntrenamiento <= 0) {
+            mostrarFotoPorDefecto();
+            return;
+        }
+
+        byte[] copiaLocal = fotoEntrenamientoLocal.leerCopiaLocal(idEntrenamiento);
+        if (copiaLocal != null) {
+            mostrarFotoEnPantalla(copiaLocal);
+            return;
+        }
+
+        mostrarFotoPorDefecto();
+
+        if (detalleEntrenamiento == null) {
+            return;
+        }
+
+        String fotoUrl = detalleEntrenamiento.getFotoUrl();
+        if (fotoUrl == null || fotoUrl.trim().isEmpty()) {
+            return;
+        }
+
+        DescargadorFotoEntrenamiento.descargar(
+                requireContext(),
+                idEntrenamiento,
+                fotoUrl,
+                contenido -> {
+                    // La pantalla pudo cerrarse mientras se descargaba.
+                    if (isAdded() && getView() != null) {
+                        mostrarFotoEnPantalla(contenido);
+                    }
+                }
+        );
+    }
+
+    /** Vuelve al icono de cámara cuando no hay ninguna foto que mostrar. */
+    private void mostrarFotoPorDefecto() {
+        hayFotoVisible = false;
+
+        int relleno = getResources().getDimensionPixelSize(R.dimen.spacing_xl);
+        imgFotoResumenEntrenamiento.setPadding(
+                relleno,
+                relleno,
+                relleno,
+                relleno
+        );
+        // El color del icono viene de app:tint en el layout. Hay que ponerlo aquí
+        // también porque al volver de la vista ampliada la foto sigue teñida.
+        ImageViewCompat.setImageTintList(
+                imgFotoResumenEntrenamiento,
+                ColorStateList.valueOf(
+                        requireContext().getColor(R.color.colorTextTertiary)
+                )
+        );
+        // El icono va centrado y con aire alrededor; la foto real usa recorte central.
+        imgFotoResumenEntrenamiento.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        imgFotoResumenEntrenamiento.setImageResource(R.drawable.ic_camera);
+    }
+
+    /**
+     * Punto de entrada del botón de agregar foto: abre la galería propia para
+     * que el usuario elija una imagen ya guardada en el teléfono.
+     *
+     * <p>Se repiten las mismas comprobaciones que al tomar foto porque el backend solo
+     * admite imágenes de un entrenamiento que ya tenga identificador, y así un botón
+     * no puede iniciar una subida mientras la otra sigue en vuelo.
+     */
+    private void agregarFoto() {
+        if (subiendoFoto) {
+            return;
+        }
+
+        if (idEntrenamiento == null || idEntrenamiento <= 0) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnAgregarFotoResumenEntrenamiento_error_entrenamiento,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        // Si la subida anterior falló se reintenta con la foto que ya está en memoria,
+        // sin obligar al usuario a elegirla otra vez.
+        if (reintentarSubidaFoto()) {
+            return;
+        }
+
+        if (PermisosImagenes.tienePermisoLectura(requireContext())) {
+            abrirGaleria();
+            return;
+        }
+
+        permisoGaleriaLauncher.launch(PermisosImagenes.permisosSolicitados());
+    }
+
+    /** Abre la galería propia para elegir una fotografía. */
+    private void abrirGaleria() {
+        ((MainActivity) requireActivity())
+                .mostrarGaleriaImagenes(GaleriaImagenesFragment.DESTINO_ENTRENAMIENTO);
+    }
+
+    /**
+     * Revisa el resultado de pedir el permiso de lectura de imágenes. Con cualquier acceso
+     * (completo o parcial) se abre la galería; sin acceso se explica por qué FitTrack
+     * necesita leer las imágenes y, si ya no se puede volver a preguntar, se ofrecen los
+     * ajustes de la aplicación.
+     *
+     * @param resultados permiso o permisos solicitados con su estado final
+     */
+    private void procesarResultadoPermisoGaleria(Map<String, Boolean> resultados) {
+        if (PermisosImagenes.tienePermisoLectura(requireContext())) {
+            abrirGaleria();
+            return;
+        }
+
+        mostrarPermisoGaleriaRechazado();
+    }
+
+    /**
+     * Explica por qué se necesita el permiso de galería. Si Android permite volver a
+     * preguntarlo, se ofrece el reintento; si no, se abre la pantalla de ajustes.
+     */
+    private void mostrarPermisoGaleriaRechazado() {
+        final boolean sePuedeVolverAPreguntar = puedeVolverAPreguntarPermisoGaleria();
+
+        AlertDialog dialogo = new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.tvTituloPermisoGaleriaEntrenamiento)
+                .setMessage(sePuedeVolverAPreguntar
+                        ? R.string.tvMensajePermisoGaleriaEntrenamiento
+                        : R.string.tvMensajePermisoGaleriaEntrenamiento_desactivado)
+                .setPositiveButton(
+                        sePuedeVolverAPreguntar
+                                ? R.string.btnConcederPermisoGaleria
+                                : R.string.btnAbrirAjustesGaleria,
+                        (dialogoVisible, cual) -> {
+                            if (sePuedeVolverAPreguntar) {
+                                permisoGaleriaLauncher.launch(
+                                        PermisosImagenes.permisosSolicitados());
+                                return;
+                            }
+                            PermisosImagenes.abrirAjustes(requireContext());
+                        }
+                )
+                .setNegativeButton(R.string.btnCancelarPermisoGaleria, null)
+                .create();
+
+        dialogo.show();
+    }
+
+    /**
+     * @return true si Android todavía permite volver a preguntar por el permiso, porque
+     *         el usuario no lo rechazó de forma definitiva. En Android 14 se revisan los
+     *         dos permisos: basta con que alguno de los dos pueda volver a preguntarse.
+     */
+    private boolean puedeVolverAPreguntarPermisoGaleria() {
+        for (String permiso : PermisosImagenes.permisosSolicitados()) {
+            if (shouldShowRequestPermissionRationale(permiso)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Punto de entrada del botón de tomar foto.
+     *
+     * <p>El backend solo admite fotos de un entrenamiento que ya tenga identificador,
+     * por eso sin él no se llega ni a abrir la cámara. Después se revisa el permiso y,
+     * si falta, se solicita.
+     */
+    private void tomarFoto() {
+        if (subiendoFoto) {
+            return;
+        }
+
+        if (idEntrenamiento == null || idEntrenamiento <= 0) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnTomarFotoResumenEntrenamiento_error_entrenamiento,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        // Si la subida anterior falló se reintenta con la foto que ya está en memoria,
+        // sin obligar a tomarla de nuevo.
+        if (reintentarSubidaFoto()) {
+            return;
+        }
+
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED) {
+            abrirCamara();
+            return;
+        }
+
+        permisoCamaraLauncher.launch(Manifest.permission.CAMERA);
+    }
+
+    /**
+     * Prepara el archivo temporal y abre la cámara.
+     *
+     * <p>Se usa TakePicture y no TakePicturePreview porque el segundo solo entrega una
+     * miniatura de baja calidad, y esta fotografía es el recuerdo del entrenamiento.
+     */
+    private void abrirCamara() {
+        if (!hayAplicacionDeCamara()) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnTomarFotoResumenEntrenamiento_error_camara,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        File archivoNuevo = fotoEntrenamientoLocal.crearArchivoCaptura();
+        if (archivoNuevo == null) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnTomarFotoResumenEntrenamiento_error_captura,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        Uri uriSeguro;
+        try {
+            uriSeguro = fotoEntrenamientoLocal.obtenerUriParaCamara(archivoNuevo);
+        } catch (IllegalArgumentException | SecurityException error) {
+            // El archivo quedó fuera de la ruta compartida: no se puede continuar.
+            fotoEntrenamientoLocal.eliminarCaptura(archivoNuevo);
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnTomarFotoResumenEntrenamiento_error_captura,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        archivoCapturaFoto = archivoNuevo;
+        camaraLauncher.launch(uriSeguro);
+    }
+
+    /**
+     * @return true si el dispositivo tiene alguna aplicación capaz de tomar la foto.
+     *         No todos los dispositivos con cámara la traen instalada.
+     */
+    private boolean hayAplicacionDeCamara() {
+        Intent intencion = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        return requireContext()
+                .getPackageManager()
+                .queryIntentActivities(intencion, PackageManager.MATCH_DEFAULT_ONLY)
+                .size() > 0;
+    }
+
+    /**
+     * Explica que el permiso fue rechazado. Android no permite volver a mostrar el
+     * diálogo después de un rechazo definitivo, así que en ese caso hay que ir a los
+     * ajustes de la aplicación.
+     */
+    private void mostrarPermisoCamaraRechazado() {
+        boolean sePuedeVolverAPreguntar = shouldShowRequestPermissionRationale(
+                Manifest.permission.CAMERA
+        );
+
         Toast.makeText(
                 requireContext(),
-                "La opción de foto estará disponible próximamente",
+                sePuedeVolverAPreguntar
+                        ? R.string.btnTomarFotoResumenEntrenamiento_error_permiso
+                        : R.string.btnTomarFotoResumenEntrenamiento_error_permiso_ajustes,
+                Toast.LENGTH_LONG
+        ).show();
+    }
+
+    /**
+     * Valida la fotografía recién capturada, la muestra de inmediato y comienza la
+     * subida. La captura original se elimina: a partir de aquí solo importa la copia
+     * comprimida, que es la que se envía.
+     */
+    private void procesarFotoCapturada() {
+        File archivo = archivoCapturaFoto;
+        archivoCapturaFoto = null;
+
+        if (archivo == null || !fotoEntrenamientoLocal.esCapturaValida(archivo)) {
+            fotoEntrenamientoLocal.eliminarCaptura(archivo);
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnTomarFotoResumenEntrenamiento_error_captura,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        byte[] contenidoFoto = fotoEntrenamientoLocal.prepararParaSubir(archivo);
+        fotoEntrenamientoLocal.eliminarCaptura(archivo);
+
+        if (contenidoFoto == null) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnTomarFotoResumenEntrenamiento_error_tamano,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        // Solo se envía. La copia local y el cuadro de la vista previa se actualizan
+        // más adelante, cuando el backend confirme que la guardó.
+        subirFoto(contenidoFoto);
+    }
+
+    /**
+     * Valida la imagen elegida en la galería propia y la sube igual que una
+     * fotografía tomada con la cámara.
+     *
+     * <p>Se copia primero a un archivo del caché porque es la única forma de pasar por
+     * la misma preparación que usa la cámara: enderezar, reducir y comprimir. Así una
+     * foto de galería que venga girada o muy grande llega al backend en el mismo formato
+     * que una captura.
+     *
+     * @param uri dirección {@code content://} del archivo elegido, o null si el usuario canceló
+     */
+    private void procesarFotoSeleccionada(@Nullable Uri uri) {
+        if (uri == null || subiendoFoto) {
+            return;
+        }
+
+        if (idEntrenamiento == null || idEntrenamiento <= 0) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnTomarFotoResumenEntrenamiento_error_entrenamiento,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        // El tipo lo declara el proveedor del archivo, no el nombre: por eso se pregunta
+        // y se compara en lugar de mirar la extensión.
+        String tipoContenido = requireContext().getContentResolver().getType(uri);
+        if (!TIPO_JPEG.equals(tipoContenido) && !TIPO_PNG.equals(tipoContenido)) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnAgregarFotoResumenEntrenamiento_error_formato,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        File archivoSeleccionado;
+        try {
+            archivoSeleccionado = fotoEntrenamientoLocal.copiarDesdeUri(uri);
+        } catch (IOException | SecurityException error) {
+            // El proveedor no dejó leer el archivo, o llegó vacío.
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnAgregarFotoResumenEntrenamiento_error_lectura,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        if (archivoSeleccionado == null) {
+            // La copia interna ya lo borró: solo faltaba avisar que pesa demasiado.
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnAgregarFotoResumenEntrenamiento_error_tamano,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        byte[] contenidoFoto = fotoEntrenamientoLocal.prepararParaSubir(archivoSeleccionado);
+        fotoEntrenamientoLocal.eliminarCaptura(archivoSeleccionado);
+
+        if (contenidoFoto == null) {
+            // El archivo pasó la validación de formato pero no se pudo decodificar
+            // como imagen.
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnAgregarFotoResumenEntrenamiento_error_imagen,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        // Solo se envía. La copia local y el cuadro de la vista previa se actualizan
+        // más adelante, cuando el backend confirme que la guardó.
+        subirFoto(contenidoFoto);
+    }
+
+    /**
+     * Envía la fotografía al backend con la petición
+     * {@code POST /entrenamientos/{id}/foto}. Mientras está en vuelo los dos botones
+     * de la tarjeta quedan apagados para que no se pueda tomar otra foto encima.
+     *
+     * @param contenidoFoto JPEG ya comprimido y preparado
+     */
+    private void subirFoto(byte[] contenidoFoto) {
+        if (subiendoFoto || idEntrenamiento == null || idEntrenamiento <= 0) {
+            return;
+        }
+
+        RequestBody cuerpoFoto = RequestBody.create(
+                contenidoFoto,
+                MediaType.get(TIPO_JPEG)
+        );
+        MultipartBody.Part parteFoto = MultipartBody.Part.createFormData(
+                "foto",
+                NOMBRE_ARCHIVO_FOTO,
+                cuerpoFoto
+        );
+
+        mostrarSubiendoFoto(true);
+
+        currentCallSubirFoto = entrenamientoRepository.subirFoto(
+                idEntrenamiento,
+                parteFoto
+        );
+        currentCallSubirFoto.enqueue(new Callback<EntrenamientoFotoResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<EntrenamientoFotoResponse> call,
+                                   @NonNull Response<EntrenamientoFotoResponse> response) {
+                if (!isAdded() || getView() == null) {
+                    return;
+                }
+
+                if (!response.isSuccessful() || response.body() == null) {
+                    conservarFotoParaReintento(contenidoFoto);
+                    mostrarErrorSubidaFoto(response.code());
+                    return;
+                }
+
+                procesarFotoGuardada(contenidoFoto);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<EntrenamientoFotoResponse> call,
+                                  @NonNull Throwable throwable) {
+                if (call.isCanceled() || !isAdded() || getView() == null) {
+                    return;
+                }
+
+                // Sin respuesta del servidor, por ejemplo sin internet.
+                conservarFotoParaReintento(contenidoFoto);
+                ManejadorErroresApi.obtenerToast(requireContext(), throwable).show();
+            }
+        });
+    }
+
+    /**
+     * Muestra un aviso propio para los rechazos de tamaño y de formato. La imagen ya
+     * se validó en el teléfono, pero el backend puede rechazarla igual: por eso no
+     * alcanza con el error genérico de cada código.
+     *
+     * @param codigoRespuesta código HTTP devuelto por el servidor
+     */
+    private void mostrarErrorSubidaFoto(int codigoRespuesta) {
+        if (codigoRespuesta == 413) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnTomarFotoResumenEntrenamiento_error_tamano,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        if (codigoRespuesta == 415) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnAgregarFotoResumenEntrenamiento_error_formato,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        ManejadorErroresApi.obtenerToast(requireContext(), codigoRespuesta).show();
+    }
+
+    /**
+     * Escribe la copia local y muestra la foto, ya con el backend confirmado que la
+     * guardó. Es el único punto donde se actualiza lo que el usuario ve.
+     *
+     * <p>El orden importa: mientras la subida está en vuelo la foto anterior sigue
+     * intacta, tanto en pantalla como en el caché. Si el servidor rechaza la imagen no
+     * se reemplaza nada, así que nunca se muestra una foto que el usuario no llegó a
+     * guardar.
+     *
+     * @param contenidoFoto JPEG que el backend confirmó
+     */
+    private void procesarFotoGuardada(byte[] contenidoFoto) {
+        contenidoFotoPendiente = null;
+        mostrarSubiendoFoto(false);
+
+        try {
+            fotoEntrenamientoLocal.guardarCopiaLocal(idEntrenamiento, contenidoFoto);
+        } catch (IOException error) {
+            // La foto ya está en el backend, así que no se pierde nada: solo habrá que
+            // volver a descargarla la próxima vez que se abra este entrenamiento.
+            Toast.makeText(
+                    requireContext(),
+                    R.string.btnTomarFotoResumenEntrenamiento_error_guardado_local,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        mostrarFotoEnPantalla(contenidoFoto);
+
+        Toast.makeText(
+                requireContext(),
+                R.string.btnTomarFotoResumenEntrenamiento_confirmacion,
                 Toast.LENGTH_SHORT
         ).show();
+    }
+
+    /**
+     * Vuelve a enviar la fotografía que ya se tenía en pantalla. Se usa cuando la
+     * subida anterior falló, para no obligar al usuario a tomarla de nuevo.
+     *
+     * @return true si había una foto pendiente y se empezó a reenviar
+     */
+    private boolean reintentarSubidaFoto() {
+        if (contenidoFotoPendiente == null) {
+            return false;
+        }
+
+        byte[] contenidoFoto = contenidoFotoPendiente;
+        contenidoFotoPendiente = null;
+        subirFoto(contenidoFoto);
+
+        return true;
+    }
+
+    /**
+     * Deja la fotografía a la vista y ofrece reenviarla. El error concreto ya lo
+     * muestra la pantalla, así que aquí solo se restaura el estado de los botones.
+     *
+     * @param contenidoFoto JPEG que no se pudo enviar
+     */
+    private void conservarFotoParaReintento(byte[] contenidoFoto) {
+        contenidoFotoPendiente = contenidoFoto;
+        mostrarSubiendoFoto(false);
+        btnTomarFotoResumenEntrenamiento.setText(
+                R.string.btnTomarFotoResumenEntrenamiento_reintentar);
+    }
+
+    /**
+     * Cambia el estado de la tarjeta de fotografía mientras la imagen viaja al
+     * backend, o cuando se deja de subir.
+     *
+     * @param subiendo true mientras la petición está en vuelo
+     */
+    private void mostrarSubiendoFoto(boolean subiendo) {
+        subiendoFoto = subiendo;
+        btnTomarFotoResumenEntrenamiento.setEnabled(!subiendo);
+        btnAgregarFotoResumenEntrenamiento.setEnabled(!subiendo);
+
+        btnTomarFotoResumenEntrenamiento.setText(subiendo
+                ? R.string.btnTomarFotoResumenEntrenamiento_subiendo
+                : R.string.btnTomarFotoResumenEntrenamiento);
+    }
+
+    /**
+     * Tocar la fotografía hace una cosa u otra según lo que haya en pantalla: si ya
+     * hay una foto, se abre a pantalla completa; si no hay ninguna, se abre la cámara.
+     * Recapturar es una acción que no debería pasar por un toque accidental sobre la
+     * imagen, así que eso se queda en el botón de abajo.
+     */
+    private void tocarFoto() {
+        if (hayFotoVisible && idEntrenamiento != null) {
+            FotoEntrenamientoDialogFragment
+                    .newInstance(idEntrenamiento)
+                    .show(getParentFragmentManager(), FotoEntrenamientoDialogFragment.ETIQUETA);
+            return;
+        }
+
+        tomarFoto();
+    }
+
+    /**
+     * Muestra la fotografía en el cuadro de la tarjeta. El recorte central hace que la
+     * imagen llene el cuadro sin deformarse; la foto entera, sin recortar, se ve al
+     * tocarla.
+     */
+    private void mostrarFotoEnPantalla(@Nullable byte[] contenidoFoto) {
+        if (contenidoFoto == null || getView() == null) {
+            return;
+        }
+
+        int ladoPrevia = getResources()
+                .getDimensionPixelSize(R.dimen.workout_photo_preview_height);
+        Bitmap foto = fotoEntrenamientoLocal
+                .cargarBitmapParaVistaPrevia(contenidoFoto, ladoPrevia);
+
+        if (foto == null) {
+            return;
+        }
+
+        hayFotoVisible = true;
+        // Sin relleno para que la fotografía ocupe todo el cuadro, sin tinte y con
+        // recorte central para que no queden bandas vacías.
+        imgFotoResumenEntrenamiento.setPadding(0, 0, 0, 0);
+        ImageViewCompat.setImageTintList(imgFotoResumenEntrenamiento, null);
+        imgFotoResumenEntrenamiento.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imgFotoResumenEntrenamiento.setImageBitmap(foto);
     }
 
     // ------------------------------------------------------------------ Borrado del entrenamiento
@@ -551,8 +1231,7 @@ public class ResumenEntrenamientoFragment extends Fragment {
     /**
      * Avisa que el entrenamiento se borró, informa a HomeFragment para que vuelva a
      * consultar su información (donde el registro ya no aparecerá) y regresa a la
-     * pantalla anterior. El resumen se olvida de MainActivity para que no quede en
-     * memoria un entrenamiento que ya no existe.
+     * pantalla anterior.
      */
     private void procesarEntrenamientoEliminado() {
         Toast.makeText(
@@ -566,7 +1245,6 @@ public class ResumenEntrenamientoFragment extends Fragment {
                 new Bundle()
         );
 
-        activity.limpiarResumenEntrenamientoActual();
         activity.regresar();
     }
 
@@ -588,11 +1266,10 @@ public class ResumenEntrenamientoFragment extends Fragment {
     // ------------------------------------------------------------------ Consulta del detalle
 
     /**
-     * Consulta el entrenamiento guardado y reconstruye su resumen.
-     * Se usa al abrir un registro del historial, que solo trae el identificador.
+     * Consulta el entrenamiento guardado y reconstruye su resumen usando el identificador.
      */
     private void cargarResumenDesdeApi() {
-        if (idEntrenamiento == null) {
+        if (idEntrenamiento == null || idEntrenamiento <= 0) {
             mostrarEstadoError();
             return;
         }
@@ -856,6 +1533,10 @@ public class ResumenEntrenamientoFragment extends Fragment {
             currentCallDetalle.cancel();
         }
 
+        if (currentCallSubirFoto != null) {
+            currentCallSubirFoto.cancel();
+        }
+
         if (currentCallEliminar != null) {
             currentCallEliminar.cancel();
         }
@@ -865,9 +1546,8 @@ public class ResumenEntrenamientoFragment extends Fragment {
         }
 
         // Al cancelar las llamadas ya no queda ninguna petición en vuelo, así que el
-        // bloqueo puede desaparecer si las vistas se recrean. El resumen y el
-        // identificador NO se limpian aquí: solo se olvidan cuando el borrado se
-        // confirma, porque destruye la vista también al girar el dispositivo.
+        // bloqueo puede desaparecer si las vistas se recrean. El identificador sigue
+        // disponible en los argumentos del Fragment para volver a consultar el detalle.
         eliminandoEntrenamiento = false;
         guardandoNota = false;
         super.onDestroyView();

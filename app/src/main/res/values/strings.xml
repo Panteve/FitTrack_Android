@@ -222,11 +222,19 @@
     <string name="tvCabeceraPesoObjetivo">PESO OBJ.</string>
     <string name="tvCabeceraRepeticiones">REPS</string>
     <string name="btnAgregarSerie">AGREGAR OTRA SERIE</string>
+    <string name="cdQuitarEjercicioRutina">Quitar ejercicio de la rutina</string>
 
     <!-- item_serie_rutina.xml -->
     <string name="tvNumeroSerie">1</string>
     <string name="etPesoObjetivoSerie_hint">60</string>
     <string name="etRepeticionesSerie_hint">10</string>
+    <string name="cdQuitarSerieRutina">Quitar serie</string>
+
+    <!-- Diálogos de quitar ejercicios y series al editar una rutina -->
+    <string name="tvTituloQuitarEjercicioRutina">Quitar ejercicio</string>
+    <string name="tvMensajeQuitarEjercicioRutina">¿Quieres quitar %1$s?\nTambién se eliminarán sus series.</string>
+    <string name="btnConfirmarQuitarEjercicioRutina">QUITAR</string>
+    <string name="btnCancelarQuitarEjercicioRutina">CANCELAR</string>
 
     <string name="tvNavInicio">Inicio</string>
     <string name="tvNavRutinas">Rutinas</string>
@@ -325,6 +333,25 @@
     <string name="tvMensajeBorrarCuenta">¿Seguro que quieres borrar tu cuenta? Perderás tus ejercicios y tus rutinas.</string>
     <string name="btnConfirmarBorrarCuenta">BORRAR CUENTA</string>
     <string name="btnCancelarBorrarCuenta">CANCELAR</string>
+
+    <!-- PerfilFragment: permiso de almacenamiento para abrir la galería propia -->
+    <string name="tvTituloPermisoGaleria">Permiso para leer imágenes</string>
+    <string name="tvMensajePermisoGaleria">FitTrack necesita acceder a tus imágenes para que elijas tu foto de perfil. Solo se usan las fotos que tú selecciones</string>
+    <string name="btnConcederPermisoGaleria">CONCEDER PERMISO</string>
+    <string name="btnCancelarPermisoGaleria">CANCELAR</string>
+    <string name="tvTituloPermisoGaleriaDesactivado">Permiso desactivado</string>
+    <string name="tvMensajePermisoGaleriaDesactivado">El permiso para leer imágenes está desactivado. Actívalo en los ajustes de la aplicación para elegir tu foto de perfil</string>
+    <string name="btnAbrirAjustesGaleria">ABRIR AJUSTES</string>
+
+    <!-- Configuración del entrenamiento: descanso que se inicia al completar una serie -->
+    <string name="tvTituloConfiguracionEntrenamiento">CONFIGURACIÓN DE ENTRENAMIENTO</string>
+    <string name="tvDescansoPredeterminado">DESCANSO PREDETERMINADO</string>
+    <string name="tvDescripcionDescansoPredeterminado">Es el descanso que se inicia al completar una serie. Puedes ajustarlo también durante el entrenamiento, sin cambiarlo aquí.</string>
+    <string name="btnRestarDescansoPredeterminado">-15 s</string>
+    <string name="btnSumarDescansoPredeterminado">+15 s</string>
+    <!-- Texto inicial: se reemplaza por el tiempo guardado al abrir el perfil. -->
+    <string name="tvTiempoDescansoPredeterminado">03:00</string>
+    <string name="tvTiempoDescansoPredeterminado_formato">%1$s</string>
 
     <!-- CambiarContrasenaFragment -->
     <string name="tvToolbarTituloCambiarContrasena">Cambiar contraseña</string>
@@ -431,9 +458,39 @@
     <string name="btnGuardarNotaResumenEntrenamiento_confirmacion">Nota guardada</string>
     <string name="etNotaResumenEntrenamiento_error_largo">La nota no puede superar los 1000 caracteres</string>
     <string name="tvLabelFotoResumenEntrenamiento">FOTO DEL ENTRENAMIENTO</string>
-    <string name="imgFotoResumenEntrenamiento">Vista previa de la foto del entrenamiento</string>
+    <string name="imgFotoResumenEntrenamiento">Foto del entrenamiento. Tócala para verla más grande</string>
     <string name="btnTomarFotoResumenEntrenamiento">TOMAR FOTO</string>
     <string name="btnAgregarFotoResumenEntrenamiento">AGREGAR FOTO</string>
+    <!-- Cámara, captura y subida de la foto del entrenamiento -->
+    <string name="btnTomarFotoResumenEntrenamiento_subiendo">SUBIENDO…</string>
+    <string name="btnTomarFotoResumenEntrenamiento_reintentar">REINTENTAR SUBIDA</string>
+    <string name="btnTomarFotoResumenEntrenamiento_confirmacion">Foto guardada correctamente</string>
+    <string name="btnTomarFotoResumenEntrenamiento_error_permiso">Se necesita el permiso de cámara para tomar la foto</string>
+    <string name="btnTomarFotoResumenEntrenamiento_error_permiso_ajustes">El permiso de cámara está desactivado. Actívalo en los ajustes de la aplicación</string>
+    <string name="btnTomarFotoResumenEntrenamiento_error_camara">No hay una aplicación de cámara disponible en este dispositivo</string>
+    <string name="btnTomarFotoResumenEntrenamiento_error_captura">No pudimos leer la fotografía tomada</string>
+    <string name="btnTomarFotoResumenEntrenamiento_error_tamano">La fotografía es demasiado grande para guardarla</string>
+    <string name="btnTomarFotoResumenEntrenamiento_error_entrenamiento">Guarda el entrenamiento antes de tomar una foto</string>
+    <string name="btnTomarFotoResumenEntrenamiento_error_guardado_local">La foto se guardó en el servidor, pero no pudimos guardarla en el teléfono</string>
+    <!-- Elegir una imagen en el almacenamiento externo con el botón AGREGAR FOTO -->
+    <string name="btnAgregarFotoResumenEntrenamiento_error_formato">Solo se pueden agregar imágenes JPEG o PNG</string>
+    <string name="btnAgregarFotoResumenEntrenamiento_error_lectura">No pudimos leer la imagen del almacenamiento</string>
+    <string name="btnAgregarFotoResumenEntrenamiento_error_tamano">La imagen supera los 5 MB permitidos</string>
+    <string name="btnAgregarFotoResumenEntrenamiento_error_imagen">El archivo elegido no contiene una imagen válida</string>
+    <!-- Vista ampliada de la foto -->
+    <string name="imgFotoEntrenamientoAmpliada">Foto del entrenamiento a pantalla completa. Tócala para cerrarla</string>
+    <string name="btnAgregarFotoResumenEntrenamiento_error_entrenamiento">Guarda el entrenamiento antes de agregar una foto</string>
+    <!-- ResumenEntrenamientoFragment: permiso de almacenamiento para AGREGAR FOTO -->
+    <string name="tvTituloPermisoGaleriaEntrenamiento">Permiso para leer imágenes</string>
+    <string name="tvMensajePermisoGaleriaEntrenamiento">FitTrack necesita acceder a tus imágenes para agregar la foto del entrenamiento. Solo se usan las fotos que tú selecciones</string>
+    <string name="tvMensajePermisoGaleriaEntrenamiento_desactivado">El permiso para leer imágenes está desactivado. Actívalo en los ajustes de la aplicación para agregar la foto</string>
+
+    <!-- GaleriaImagenesFragment: galería propia de FitTrack -->
+    <string name="tvToolbarTituloSeleccionarFoto">Seleccionar foto</string>
+    <string name="tvGaleriaImagenesSinPermiso">No se pueden leer las imágenes porque el permiso de almacenamiento fue retirado</string>
+    <string name="btnGaleriaImagenesAbrirAjustes">ABRIR AJUSTES</string>
+    <string name="tvGaleriaImagenesVacia">No hay imágenes disponibles en este dispositivo</string>
+    <string name="cdImagenDispositivo">Imagen</string>
     <string name="tvTituloGruposMuscularesResumen">GRUPOS MUSCULARES TRABAJADOS</string>
     <string name="tvTituloEjerciciosResumen">EJERCICIOS REALIZADOS</string>
     <string name="tvResumenSinEjercicios">No se registraron ejercicios en este entrenamiento</string>

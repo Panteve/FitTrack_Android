@@ -35,6 +35,7 @@ import ue.edu.co.fittrackandroid.entrenamiento.vista.EntrenamientoActivoFragment
 import ue.edu.co.fittrackandroid.hoy.modelo.EjercisioEnRutina;
 import ue.edu.co.fittrackandroid.hoy.modelo.RutinaResponse;
 import ue.edu.co.fittrackandroid.hoy.vista.HomeFragment;
+import ue.edu.co.fittrackandroid.imagenes.GaleriaImagenesFragment;
 import ue.edu.co.fittrackandroid.login.vista.LoginFragment;
 import ue.edu.co.fittrackandroid.perfil.datos.FotoPerfilLocal;
 import ue.edu.co.fittrackandroid.perfil.vista.CambiarContrasenaFragment;
@@ -42,7 +43,6 @@ import ue.edu.co.fittrackandroid.perfil.vista.PerfilFragment;
 
 import ue.edu.co.fittrackandroid.registro.vista.CrearCuentaFragment;
 import ue.edu.co.fittrackandroid.remote.SesionManager;
-import ue.edu.co.fittrackandroid.resumen.modelo.ResumenEntrenamiento;
 import ue.edu.co.fittrackandroid.resumen.vista.ResumenEntrenamientoFragment;
 import ue.edu.co.fittrackandroid.rutinas.vista.CrearRutinaFragment;
 import ue.edu.co.fittrackandroid.rutinas.vista.ModificarRutinaFragment;
@@ -78,21 +78,6 @@ public class MainActivity extends AppCompatActivity {
      * o al minimizar el entrenamiento.
      */
     private EntrenamientoEnCurso entrenamientoEnCurso;
-
-    /**
-     * Resumen del último entrenamiento terminado que se está mostrando.
-     * Vive en la Activity porque todavía no existe el historial guardado.
-     * TODO: Reemplazar por el entrenamiento leído del almacenamiento cuando exista.
-     */
-    private ResumenEntrenamiento resumenEntrenamientoActual;
-
-    /**
-     * Identificador del entrenamiento guardado que se está mostrando en el resumen.
-     * Sirve para consultar el detalle cuando el resumen no viene ya construido,
-     * por ejemplo al abrir un registro de "Últimos entrenamientos", y para borrarlo
-     * con {@code DELETE /entrenamientos/{id}} desde la pantalla del resumen.
-     */
-    private Long idEntrenamientoResumenActual;
 
     /** Reloj de la isla del entrenamiento minimizado. */
     private final Handler handlerIsla = new Handler(Looper.getMainLooper());
@@ -590,72 +575,32 @@ public class MainActivity extends AppCompatActivity {
      * entrenamiento sale de la pila, así la flecha hacia atrás nunca devuelve a una sesión
      * finalizada: se recupera la pantalla desde la que se empezó a entrenar.
      *
-     * <p>El identificador que devuelve el backend también se guarda aquí: es el único dato
-     * que permite borrar el entrenamiento recién creado, porque todavía no existe historial
-     * en disco del que recuperarlo.
+     * <p>El identificador que devuelve el backend se entrega al Fragment para que consulte
+     * el entrenamiento guardado y reconstruya el resumen.
      *
      * @param idEntrenamiento identificador del entrenamiento guardado en el backend.
-     * @param resumen         copia de solo lectura del entrenamiento terminado.
      */
-    public void mostrarResumenEntrenamiento(Long idEntrenamiento,
-                                            ResumenEntrenamiento resumen) {
-        idEntrenamientoResumenActual = idEntrenamiento;
-        resumenEntrenamientoActual = resumen;
-
+    public void mostrarResumenEntrenamiento(Long idEntrenamiento) {
         descartarEntrenamientoEnCurso();
         mostrarNavegacionInferior();
 
         getSupportFragmentManager().popBackStackImmediate();
-        cargarFragmentConBackStack(new ResumenEntrenamientoFragment());
+        cargarFragmentConBackStack(ResumenEntrenamientoFragment.newInstance(idEntrenamiento));
     }
 
     /**
      * Abre el resumen de un entrenamiento que ya está guardado en el historial.
      *
-     * <p>A diferencia de {@link #mostrarResumenEntrenamiento(Long, ResumenEntrenamiento)},
+     * <p>A diferencia de {@link #mostrarResumenEntrenamiento(Long)},
      * esta pantalla no borra nada: consultar el pasado nunca puede terminar, descartar ni
-     * pausear el entrenamiento que el usuario puede tener abierto. Si el resumen todavía
-     * no está construido se guarda el identificador para que la propia pantalla del
-     * resumen consulte el detalle del entrenamiento.
+     * pausar el entrenamiento que el usuario puede tener abierto. El Fragment recibe el
+     * identificador y consulta el detalle guardado en el backend.
      *
      * @param idEntrenamiento identificador del entrenamiento guardado.
-     * @param resumen        resumen ya construido, o null si hay que consultarlo.
      */
-    public void mostrarResumenEntrenamientoHistorial(Long idEntrenamiento,
-                                                     ResumenEntrenamiento resumen) {
-        idEntrenamientoResumenActual = idEntrenamiento;
-        resumenEntrenamientoActual = resumen;
-
+    public void mostrarResumenEntrenamientoHistorial(Long idEntrenamiento) {
         mostrarNavegacionInferior();
-        cargarFragmentConBackStack(new ResumenEntrenamientoFragment());
-    }
-
-    /**
-     * @return el resumen del entrenamiento que se está mostrando, o null si no hay ninguno.
-     */
-    public ResumenEntrenamiento obtenerResumenEntrenamientoActual() {
-        return resumenEntrenamientoActual;
-    }
-
-    /**
-     * @return el identificador del entrenamiento guardado que se está mostrando,
-     *         o null si el resumen actual no viene del historial.
-     */
-    public Long obtenerIdEntrenamientoResumenActual() {
-        return idEntrenamientoResumenActual;
-    }
-
-    /**
-     * Olvida el resumen que se está mostrando.
-     * La usa el cierre de sesión y la pantalla del resumen cuando el entrenamiento
-     * ya fue borrado en el backend, para que no quede en memoria un registro que
-     * dejó de existir.
-     * TODO: Reemplazar por el entrenamiento leído del almacenamiento cuando exista
-     *       el historial guardado.
-     */
-    public void limpiarResumenEntrenamientoActual() {
-        resumenEntrenamientoActual = null;
-        idEntrenamientoResumenActual = null;
+        cargarFragmentConBackStack(ResumenEntrenamientoFragment.newInstance(idEntrenamiento));
     }
 
     /**
@@ -817,6 +762,18 @@ public class MainActivity extends AppCompatActivity {
         cargarFragmentConBackStack(new CambiarContrasenaFragment());
     }
 
+    /**
+     * Abre la galería propia de FitTrack para elegir una fotografía del dispositivo.
+     * El destino le dice a la galería quién la espera de vuelta: el perfil o el resumen
+     * de un entrenamiento.
+     *
+     * @param destino {@link GaleriaImagenesFragment#DESTINO_PERFIL} o
+     *                {@link GaleriaImagenesFragment#DESTINO_ENTRENAMIENTO}
+     */
+    public void mostrarGaleriaImagenes(String destino) {
+        cargarFragmentConBackStack(GaleriaImagenesFragment.newInstance(destino));
+    }
+
     /** Retrocede a la pantalla anterior si hay una en la pila. */
     public void regresar() {
         onBackPressed();
@@ -835,7 +792,6 @@ public class MainActivity extends AppCompatActivity {
         sesionManager.cerrarSesion();
         // Un entrenamiento en curso no puede sobrevivir al cierre de sesión.
         descartarEntrenamientoEnCurso(correoUsuario);
-        limpiarResumenEntrenamientoActual();
         limpiarBackStack();
         mostrarLogin();
     }

@@ -142,6 +142,84 @@
                 app:drawableTint="@color/colorTextTertiary" />
         </LinearLayout>
 
+        <!-- Configuración de entrenamiento: descanso que se inicia al completar una serie.
+             Se edita aquí y se aplica al siguiente entrenamiento que se abra, porque los
+             botones del panel de descanso solo cambian el temporizador que está corriendo. -->
+        <LinearLayout
+            style="@style/FitTrack.Container.Card"
+            android:id="@+id/layoutConfiguracionEntrenamiento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTituloConfiguracionEntrenamiento"
+                style="@style/FitTrack.Text.Subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tvTituloConfiguracionEntrenamiento" />
+
+            <TextView
+                android:id="@+id/tvDescansoPredeterminado"
+                style="@style/FitTrack.Text.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:text="@string/tvDescansoPredeterminado" />
+
+            <TextView
+                android:id="@+id/tvDescripcionDescansoPredeterminado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:text="@string/tvDescripcionDescansoPredeterminado"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="@dimen/text_size_small" />
+
+            <!-- Los botones se deshabilitan mientras se lee la preferencia guardada. -->
+            <LinearLayout
+                android:id="@+id/layoutControlesDescansoPredeterminado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:baselineAligned="false"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnRestarDescansoPredeterminado"
+                    style="@style/FitTrack.Button.Compact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    android:text="@string/btnRestarDescansoPredeterminado"
+                    android:textAllCaps="false" />
+
+                <TextView
+                    android:id="@+id/tvTiempoDescansoPredeterminado"
+                    style="@style/FitTrack.Text.Metric"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/tvTiempoDescansoPredeterminado"
+                    android:textColor="@color/colorPrimary" />
+
+                <Button
+                    android:id="@+id/btnSumarDescansoPredeterminado"
+                    style="@style/FitTrack.Button.Compact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    android:text="@string/btnSumarDescansoPredeterminado"
+                    android:textAllCaps="false" />
+            </LinearLayout>
+        </LinearLayout>
+
         <!-- Ejercicios creados por el usuario -->
         <LinearLayout
             android:id="@+id/cardListaEjercicios"

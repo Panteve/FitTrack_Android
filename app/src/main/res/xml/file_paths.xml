@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Rutas que el FileProvider de FitTrack puede entregar a otras aplicaciones.
+     Está limitada a una sola carpeta: la de fotografías temporales del caché.
+     Así la cámara solo puede escribir ahí y nunca en el resto de la app. -->
+<paths>
+    <cache-path
+        name="fotos_temporales"
+        path="fotos/" />
+</paths>

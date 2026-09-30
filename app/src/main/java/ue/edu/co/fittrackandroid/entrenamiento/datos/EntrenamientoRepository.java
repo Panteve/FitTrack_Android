@@ -2,9 +2,11 @@ package ue.edu.co.fittrackandroid.entrenamiento.datos;
 
 import android.content.Context;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoCrearRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoDetalleResponse;
+import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoFotoResponse;
 import ue.edu.co.fittrackandroid.remote.RetrofitClient;
 
 /** Centraliza las llamadas Retrofit relacionadas con entrenamientos. */
@@ -58,5 +60,19 @@ public class EntrenamientoRepository {
         return entrenamientoApiService.eliminarEntrenamiento(
                 entrenamientoId
         );
+    }
+
+    /**
+     * Prepara el envío de la fotografía de un entrenamiento guardado. Si el
+     * entrenamiento ya tenía una foto, el backend la reemplaza por esta.
+     *
+     * @param entrenamientoId identificador del entrenamiento
+     * @param foto parte multipart con la imagen ya comprimida
+     * @return llamada que devuelve la dirección de la foto guardada
+     */
+    public Call<EntrenamientoFotoResponse> subirFoto(
+            Long entrenamientoId,
+            MultipartBody.Part foto) {
+        return entrenamientoApiService.subirFoto(entrenamientoId, foto);
     }
 }

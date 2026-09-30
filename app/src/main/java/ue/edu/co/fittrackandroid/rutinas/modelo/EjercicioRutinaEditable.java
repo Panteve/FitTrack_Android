@@ -78,4 +78,30 @@ public class EjercicioRutinaEditable {
         series.add(serieNueva);
         return serieNueva;
     }
+
+    /**
+     * Indica si el ejercicio tiene más de una serie. El backend exige que cada ejercicio
+     * tenga al menos una, así que la última no se puede quitar.
+     *
+     * @return true si se puede quitar alguna serie.
+     */
+    public boolean puedeEliminarSerie() {
+        return series.size() > 1;
+    }
+
+    /**
+     * Quita una serie del ejercicio. Como el número de serie sale de la posición, las que
+     * quedan se renumeran solas al redibujarse.
+     *
+     * @param posicionSerie posición de la serie dentro de este ejercicio.
+     * @return true si la serie se eliminó, false si la posición no existe o si era la única.
+     */
+    public boolean eliminarSerie(int posicionSerie) {
+        if (posicionSerie < 0 || posicionSerie >= series.size() || !puedeEliminarSerie()) {
+            return false;
+        }
+
+        series.remove(posicionSerie);
+        return true;
+    }
 }

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Galería propia de FitTrack: cuadrícula de las imágenes del dispositivo consultadas
+     con MediaStore. La pantalla muestra un solo estado a la vez: carga, sin permiso,
+     vacía o la cuadrícula. La toolbar (título y regreso) vive en MainActivity. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutGaleriaImagenes"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <ProgressBar
+        android:id="@+id/pbCargaGaleriaImagenes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/colorPrimary"
+        android:visibility="gone" />
+
+    <!-- El permiso de lectura se retiró mientras la pantalla estaba abierta -->
+    <LinearLayout
+        android:id="@+id/layoutGaleriaSinPermiso"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/spacing_xl"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvGaleriaImagenesSinPermiso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/tvGaleriaImagenesSinPermiso"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnGaleriaImagenesAbrirAjustes"
+            style="@style/FitTrack.Button.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height_standard"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:text="@string/btnGaleriaImagenesAbrirAjustes" />
+    </LinearLayout>
+
+    <!-- No hay imágenes JPEG o PNG en el dispositivo -->
+    <TextView
+        android:id="@+id/tvGaleriaImagenesVacia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/spacing_xl"
+        android:text="@string/tvGaleriaImagenesVacia"
+        android:textColor="@color/colorTextSecondary"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvGaleriaImagenes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:padding="2dp"
+        android:visibility="gone" />
+</FrameLayout>

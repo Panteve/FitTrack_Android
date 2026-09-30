@@ -1,14 +1,18 @@
 package ue.edu.co.fittrackandroid.entrenamiento.datos;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoCrearRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoDetalleResponse;
+import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoFotoResponse;
 
 /** Endpoints disponibles para los entrenamientos del usuario autenticado. */
 public interface EntrenamientoApiService {
@@ -48,4 +52,20 @@ public interface EntrenamientoApiService {
     Call<Void> eliminarEntrenamiento(
             @Path("id") Long entrenamientoId
     );
+
+    /**
+     * Sube o reemplaza la fotografía de un entrenamiento ya guardado.
+     *
+     * <p>El backend acepta JPEG y PNG de hasta 5 MB, y si el entrenamiento ya tenía
+     * una foto la sustituye por esta.
+     *
+     * @param entrenamientoId identificador del entrenamiento
+     * @param foto parte multipart con la imagen llamada {@code foto}
+     * @return llamada con el identificador y la dirección de la foto guardada
+     */
+    @Multipart
+    @POST("entrenamientos/{id}/foto")
+    Call<EntrenamientoFotoResponse> subirFoto(
+            @Path("id") Long entrenamientoId,
+            @Part MultipartBody.Part foto);
 }

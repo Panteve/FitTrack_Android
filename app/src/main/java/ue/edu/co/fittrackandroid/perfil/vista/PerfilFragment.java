@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -29,7 +31,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -39,8 +44,11 @@ import retrofit2.Response;
 import ue.edu.co.fittrackandroid.ejercicios.datos.EjercicioRepository;
 import ue.edu.co.fittrackandroid.ejercicios.modelo.EjercicioResponse;
 import ue.edu.co.fittrackandroid.ejercicios.vista.CrearEjercicioFragment;
+import ue.edu.co.fittrackandroid.imagenes.GaleriaImagenesFragment;
+import ue.edu.co.fittrackandroid.imagenes.PermisosImagenes;
 import ue.edu.co.fittrackandroid.MainActivity;
 import ue.edu.co.fittrackandroid.R;
+import ue.edu.co.fittrackandroid.entrenamiento.datos.PreferenciasEntrenamientoDataStore;
 import ue.edu.co.fittrackandroid.perfil.datos.FotoPerfilLocal;
 import ue.edu.co.fittrackandroid.perfil.datos.PerfilRepository;
 import ue.edu.co.fittrackandroid.perfil.modelo.CambiarNombreRequest;
@@ -50,10 +58,11 @@ import ue.edu.co.fittrackandroid.remote.SesionManager;
 import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 
 /**
- * Pantalla de perfil: foto, datos personales, ejercicios creados por el usuario, cambio de
- * contraseña y cierre de sesión. El nombre y el correo salen de la sesión guardada en
- * SharedPreferences, el mismo origen que usa el saludo de Inicio. La foto se guarda en el
- * backend y se conserva como archivo privado asociado al identificador del usuario.
+ * Pantalla de perfil: foto, datos personales, configuración del entrenamiento, ejercicios
+ * creados por el usuario, cambio de contraseña y cierre de sesión. El nombre y el correo
+ * salen de la sesión guardada en SharedPreferences, el mismo origen que usa el saludo de
+ * Inicio. La foto se guarda en el backend y se conserva como archivo privado asociado al
+ * identificador del usuario. La duración del descanso predeterminado sale de DataStore.
  * Los ejercicios se consultan al backend.
  */
 public class PerfilFragment extends Fragment {
@@ -63,11 +72,18 @@ public class PerfilFragment extends Fragment {
     private static final String TIPO_JPEG = "image/jpeg";
     private static final String TIPO_PNG = "image/png";
 
+    /**
+     * Opacidad de los botones de descanso que ya llegaron a su límite. Android no cambia
+     * la apariencia de un Button al deshabilitarlo cuando el botón tiene su propio color,
+     * así que se baja la opacidad a mano para que se note que no se puede seguir pulsando.
+     */
+    private static final float ALFA_BOTON_DESHABILITADO = 0.4f;
+
     // El registro de usuario admite nombres de hasta 255 caracteres; en Perfil se
     // aplica la misma regla para no enviar un nombre que el backend rechace.
     private static final int LONGITUD_MAXIMA_NOMBRE = 255;
 
-    private ActivityResultLauncher<String[]> selectorImagen;
+    private ActivityResultLauncher<String[]> permisoGaleriaLauncher;
 
     private ImageView imgFotoPerfil;
     private ImageButton btnIconoCambiarFoto;
@@ -84,11 +100,15 @@ public class PerfilFragment extends Fragment {
     private ProgressBar pbCargaEjerciciosPerfil;
     private TextView tvSinEjerciciosPerfil;
     private RecyclerView rvEjerciciosPerfil;
+    private TextView tvTiempoDescansoPredeterminado;
+    private Button btnRestarDescansoPredeterminado;
+    private Button btnSumarDescansoPredeterminado;
     private SesionManager sesionManager;
     private FotoPerfilLocal fotoPerfilLocal;
     private Long usuarioId;
     private EjercicioRepository ejercicioRepository;
     private PerfilRepository perfilRepository;
+    private PreferenciasEntrenamientoDataStore preferenciasEntrenamiento;
     private Call<List<EjercicioResponse>> currentCallEjercicios;
     private Call<Void> currentCallCambiarNombre;
     private Call<UsuarioResponse> currentCallEliminarUsuario;
@@ -98,6 +118,22 @@ public class PerfilFragment extends Fragment {
     private boolean guardandoNombre;
     private boolean actualizandoFoto;
 
+    /** Descanso que se ve en pantalla mientras llega la preferencia guardada. */
+    private int segundosDescansoSeleccionados =
+            PreferenciasEntrenamientoDataStore.SEGUNDOS_DESCANSO_PREDETERMINADO;
+
+    /** Último descanso que DataStore confirmó, para volver atrás si una escritura falla. */
+    private int segundosDescansoGuardados = segundosDescansoSeleccionados;
+
+    /** Lecturas y escrituras de la preferencia, que se cancelan al salir de la pantalla. */
+    private final CompositeDisposable suscripcionesDescanso = new CompositeDisposable();
+
+    /**
+     * DataStore entrega el resultado en un hilo de trabajo, así que todo lo que llega de
+     * allí se pasa primero por el hilo principal antes de tocar las vistas.
+     */
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
     public PerfilFragment() {
         // Required empty public constructor
     }
@@ -105,11 +141,34 @@ public class PerfilFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // El selector debe registrarse en onCreate, antes de que exista la vista.
-        selectorImagen = registerForActivityResult(
-                new ActivityResultContracts.OpenDocument(),
-                this::subirFotoPerfil);
+        // Los lanzadores se registran en onCreate, antes de que exista la vista, para que
+        // el resultado pueda llegar aunque la pantalla se haya recreado.
+        permisoGaleriaLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                this::procesarResultadoPermisoGaleria);
+        registrarResultadoImagenSeleccionada();
         registrarResultadoEjercicioCreado();
+    }
+
+    /**
+     * Escucha la fotografía elegida en la galería propia de FitTrack. La galería devuelve
+     * la Uri y el destino que se le indicó al abrirla; este fragmento solo responde cuando
+     * el destino es el perfil, y después sube la imagen con el flujo de siempre.
+     */
+    private void registrarResultadoImagenSeleccionada() {
+        getParentFragmentManager().setFragmentResultListener(
+                GaleriaImagenesFragment.REQUEST_IMAGEN_SELECCIONADA,
+                this,
+                (clave, resultado) -> {
+                    String destino = resultado.getString(GaleriaImagenesFragment.EXTRA_DESTINO);
+                    if (!GaleriaImagenesFragment.DESTINO_PERFIL.equals(destino)) {
+                        return;
+                    }
+
+                    Uri uriImagen = resultado.getParcelable(
+                            GaleriaImagenesFragment.EXTRA_URI_IMAGEN);
+                    subirFotoPerfil(uriImagen);
+                });
     }
 
     /**
@@ -140,10 +199,13 @@ public class PerfilFragment extends Fragment {
         fotoPerfilLocal = new FotoPerfilLocal(requireContext());
         ejercicioRepository = new EjercicioRepository(requireContext());
         perfilRepository = new PerfilRepository(requireContext());
+        preferenciasEntrenamiento =
+                PreferenciasEntrenamientoDataStore.obtenerInstancia(requireContext());
 
         // La lista de ejercicios se consulta en onResume, no aquí: cargarDatosPerfil()
         // sigue siendo el responsable de los datos de la sesión y de la foto local.
         cargarDatosPerfil();
+        cargarDescansoPredeterminado();
         configurarAcciones();
 
         return view;
@@ -177,12 +239,23 @@ public class PerfilFragment extends Fragment {
         pbCargaEjerciciosPerfil = view.findViewById(R.id.pbCargaEjerciciosPerfil);
         tvSinEjerciciosPerfil = view.findViewById(R.id.tvSinEjerciciosPerfil);
         rvEjerciciosPerfil = view.findViewById(R.id.rvEjerciciosPerfil);
+        tvTiempoDescansoPredeterminado = view.findViewById(R.id.tvTiempoDescansoPredeterminado);
+        btnRestarDescansoPredeterminado =
+                view.findViewById(R.id.btnRestarDescansoPredeterminado);
+        btnSumarDescansoPredeterminado =
+                view.findViewById(R.id.btnSumarDescansoPredeterminado);
 
         // La lista vive dentro del desplazamiento general del perfil, por eso no debe
         // intentar desplazarse por separado.
         rvEjerciciosPerfil.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvEjerciciosPerfil.setNestedScrollingEnabled(false);
         rvEjerciciosPerfil.setHasFixedSize(false);
+
+        // Hasta que llegue la preferencia guardada se muestra el valor seguro y los botones
+        // quedan apagados, para no sobrescribir algo que todavía no se ha leído.
+        mostrarTiempoDescansoPredeterminado();
+        mostrarBotonDescanso(btnRestarDescansoPredeterminado, false);
+        mostrarBotonDescanso(btnSumarDescansoPredeterminado, false);
     }
 
     /**
@@ -215,8 +288,161 @@ public class PerfilFragment extends Fragment {
         btnCambiarContrasena.setOnClickListener(v -> abrirCambiarContrasena());
         btnCerrarSesion.setOnClickListener(v -> confirmarCierreSesion());
         btnBorrarCuenta.setOnClickListener(v -> confirmarBorradoCuenta());
+        btnRestarDescansoPredeterminado.setOnClickListener(
+                v -> cambiarDescansoPredeterminado(
+                        -PreferenciasEntrenamientoDataStore.PASO_AJUSTE_DESCANSO));
+        btnSumarDescansoPredeterminado.setOnClickListener(
+                v -> cambiarDescansoPredeterminado(
+                        PreferenciasEntrenamientoDataStore.PASO_AJUSTE_DESCANSO));
 
         configurarLimpiarErrorNombre();
+    }
+
+    // ------------------------------------------------------------------ Descanso predeterminado
+
+    /**
+     * Lee de DataStore la duración del descanso que el usuario dejó configurada y la
+     * muestra. Si la lectura falla, la pantalla sigue operativa con los tres minutos de
+     * siempre: es mejor mostrar un valor conocido que dejar los botones apagados.
+     */
+    private void cargarDescansoPredeterminado() {
+        int segundosDeRespaldo =
+                PreferenciasEntrenamientoDataStore.SEGUNDOS_DESCANSO_PREDETERMINADO;
+
+        suscripcionesDescanso.add(
+                preferenciasEntrenamiento.obtenerSegundosDescanso().subscribe(
+                        segundosDescanso -> enPantalla(
+                                () -> mostrarDescansoLeido(segundosDescanso)),
+                        error -> enPantalla(() -> mostrarDescansoLeido(segundosDeRespaldo))
+                ));
+    }
+
+    /**
+     * Pone en pantalla el descanso que DataStore devolvió y habilita los botones según
+     * los límites permitidos.
+     *
+     * @param segundosDescanso duración guardada, en segundos.
+     */
+    private void mostrarDescansoLeido(int segundosDescanso) {
+        segundosDescansoSeleccionados = segundosDescanso;
+        segundosDescansoGuardados = segundosDescanso;
+        mostrarTiempoDescansoPredeterminado();
+        actualizarBotonesDescansoPredeterminado();
+    }
+
+    /**
+     * Suma o resta el paso indicado, respeta el rango permitido, actualiza la pantalla y
+     * guarda el resultado de inmediato. No hay botón de guardar: cada cambio queda
+     * escrito en DataStore.
+     *
+     * @param cambioSegundos cuántos segundos suma o resta la pulsación.
+     */
+    private void cambiarDescansoPredeterminado(int cambioSegundos) {
+        segundosDescansoSeleccionados = limitarDescansoSeleccionado(
+                segundosDescansoSeleccionados + cambioSegundos);
+
+        mostrarTiempoDescansoPredeterminado();
+        actualizarBotonesDescansoPredeterminado();
+
+        guardarDescansoPredeterminado(segundosDescansoSeleccionados);
+    }
+
+    /**
+     * @param segundosDescanso valor elegido por el usuario, que puede pasarse del límite.
+     * @return el mismo valor si es válido, o el límite más cercano si no lo es.
+     */
+    private int limitarDescansoSeleccionado(int segundosDescanso) {
+        if (segundosDescanso < PreferenciasEntrenamientoDataStore.SEGUNDOS_DESCANSO_MINIMO) {
+            return PreferenciasEntrenamientoDataStore.SEGUNDOS_DESCANSO_MINIMO;
+        }
+
+        if (segundosDescanso > PreferenciasEntrenamientoDataStore.SEGUNDOS_DESCANSO_MAXIMO) {
+            return PreferenciasEntrenamientoDataStore.SEGUNDOS_DESCANSO_MAXIMO;
+        }
+
+        return segundosDescanso;
+    }
+
+    /** Escribe el descanso en DataStore y recuerda el valor cuando queda confirmado. */
+    private void guardarDescansoPredeterminado(int segundosDescanso) {
+        suscripcionesDescanso.add(
+                preferenciasEntrenamiento.guardarSegundosDescanso(segundosDescanso).subscribe(
+                        () -> enPantalla(() -> segundosDescansoGuardados = segundosDescanso),
+                        error -> enPantalla(this::restaurarUltimoDescansoGuardado)
+                ));
+    }
+
+    /**
+     * Vuelve al último descanso que DataStore confirmó. Así un fallo de escritura no
+     * deja en pantalla un valor que el dispositivo nunca guardó.
+     */
+    private void restaurarUltimoDescansoGuardado() {
+        segundosDescansoSeleccionados = segundosDescansoGuardados;
+        mostrarTiempoDescansoPredeterminado();
+        actualizarBotonesDescansoPredeterminado();
+
+        Toast.makeText(
+                requireContext(),
+                "No se pudo guardar el descanso, se restauró el anterior",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+    /** Muestra el descanso seleccionado con el formato de minutos y segundos: 03:00. */
+    private void mostrarTiempoDescansoPredeterminado() {
+        tvTiempoDescansoPredeterminado.setText(
+                getString(R.string.tvTiempoDescansoPredeterminado_formato,
+                        formatearTiempoDescanso(segundosDescansoSeleccionados)));
+    }
+
+    /**
+     * Apaga el botón de restar cuando ya se llegó al mínimo y el de sumar cuando ya se
+     * llegó al máximo.
+     */
+    private void actualizarBotonesDescansoPredeterminado() {
+        mostrarBotonDescanso(btnRestarDescansoPredeterminado,
+                segundosDescansoSeleccionados
+                        > PreferenciasEntrenamientoDataStore.SEGUNDOS_DESCANSO_MINIMO);
+        mostrarBotonDescanso(btnSumarDescansoPredeterminado,
+                segundosDescansoSeleccionados
+                        < PreferenciasEntrenamientoDataStore.SEGUNDOS_DESCANSO_MAXIMO);
+    }
+
+    /**
+     * Habilita o deshabilita un botón de descanso. Un botón deshabilitado además se ve
+     * más claro, porque el tema no cambia la apariencia de los botones al apagarlos.
+     *
+     * @param botonDescanso botón de restar o de sumar.
+     * @param habilitado true si el usuario todavía puede pulsarlo.
+     */
+    private void mostrarBotonDescanso(Button botonDescanso, boolean habilitado) {
+        botonDescanso.setEnabled(habilitado);
+        botonDescanso.setAlpha(habilitado ? 1f : ALFA_BOTON_DESHABILITADO);
+    }
+
+    /**
+     * @param segundosDescanso duración a mostrar, en segundos.
+     * @return el tiempo con el formato mm:ss, por ejemplo 03:00 o 00:30.
+     */
+    private String formatearTiempoDescanso(int segundosDescanso) {
+        return String.format(Locale.getDefault(), "%02d:%02d",
+                segundosDescanso / 60, segundosDescanso % 60);
+    }
+
+    /**
+     * Ejecuta la acción en el hilo principal y solo si la vista del perfil sigue viva.
+     * Las lecturas y escrituras de DataStore terminan en un hilo de trabajo, así que
+     * nunca se tocan las vistas directamente desde allí.
+     *
+     * @param accion cambio que se debe aplicar a la pantalla.
+     */
+    private void enPantalla(Runnable accion) {
+        handler.post(() -> {
+            if (!isAdded() || getView() == null) {
+                return;
+            }
+            accion.run();
+        });
     }
 
     /** Consulta los ejercicios creados por el usuario y los muestra en la tarjeta. */
@@ -329,12 +555,84 @@ public class PerfilFragment extends Fragment {
         ((MainActivity) requireActivity()).mostrarCambiarContrasena();
     }
 
-    /** Abre el selector de imágenes del sistema, filtrando solo por imágenes. */
+    /**
+     * Punto de entrada de las tres acciones de fotografía: comprueba el permiso de
+     * almacenamiento que corresponde a la versión de Android y, si está concedido, abre
+     * la galería propia de FitTrack. Si falta, lo solicita.
+     */
     private void abrirSelectorImagen() {
         if (actualizandoFoto) {
             return;
         }
-        selectorImagen.launch(new String[]{"image/*"});
+
+        if (PermisosImagenes.tienePermisoLectura(requireContext())) {
+            abrirGaleria();
+            return;
+        }
+
+        permisoGaleriaLauncher.launch(PermisosImagenes.permisosSolicitados());
+    }
+
+    /** Abre la galería de imágenes de FitTrack para elegir la foto de perfil. */
+    private void abrirGaleria() {
+        ((MainActivity) requireActivity())
+                .mostrarGaleriaImagenes(GaleriaImagenesFragment.DESTINO_PERFIL);
+    }
+
+    /**
+     * Revisa el resultado de pedir el permiso de almacenamiento. Con cualquier acceso
+     * (completo o parcial) se abre la galería; sin acceso se explica por qué FitTrack
+     * necesita leer las imágenes y, si ya no se puede volver a preguntar, se ofrecen
+     * los ajustes de la aplicación.
+     *
+     * @param resultados permiso o permisos solicitados con su estado final
+     */
+    private void procesarResultadoPermisoGaleria(Map<String, Boolean> resultados) {
+        if (!isAdded()) {
+            return;
+        }
+
+        if (PermisosImagenes.tienePermisoLectura(requireContext())) {
+            abrirGaleria();
+            return;
+        }
+
+        mostrarPermisoGaleriaRechazado();
+    }
+
+    /**
+     * Explica el rechazo del permiso. Si Android todavía permite volver a preguntar se
+     * ofrece el botón de conceder; si el usuario marcó "No volver a preguntar" o el
+     * permiso quedó desactivado desde los ajustes, solo queda abrir la pantalla de
+     * configuración de la aplicación.
+     */
+    private void mostrarPermisoGaleriaRechazado() {
+        boolean sePuedeVolverAPreguntar = shouldShowRequestPermissionRationale(
+                PermisosImagenes.permisosSolicitados()[0]);
+
+        if (sePuedeVolverAPreguntar) {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.tvTituloPermisoGaleria)
+                    .setMessage(R.string.tvMensajePermisoGaleria)
+                    .setPositiveButton(
+                            R.string.btnConcederPermisoGaleria,
+                            (dialogo, cual) -> permisoGaleriaLauncher.launch(
+                                    PermisosImagenes.permisosSolicitados())
+                    )
+                    .setNegativeButton(R.string.btnCancelarPermisoGaleria, null)
+                    .show();
+            return;
+        }
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.tvTituloPermisoGaleriaDesactivado)
+                .setMessage(R.string.tvMensajePermisoGaleriaDesactivado)
+                .setPositiveButton(
+                        R.string.btnAbrirAjustesGaleria,
+                        (dialogo, cual) -> PermisosImagenes.abrirAjustes(requireContext())
+                )
+                .setNegativeButton(R.string.btnCancelarPermisoGaleria, null)
+                .show();
     }
 
     /**
@@ -897,8 +1195,6 @@ public class PerfilFragment extends Fragment {
             currentCallEjercicios.cancel();
         }
 
-        // Si la pantalla se cierra mientras se guarda el nombre, la llamada se cancela
-        // para no intentar tocar vistas de un Fragment que ya no está visible.
         if (currentCallCambiarNombre != null) {
             currentCallCambiarNombre.cancel();
         }
@@ -916,6 +1212,8 @@ public class PerfilFragment extends Fragment {
         }
 
         actualizandoFoto = false;
+
+        suscripcionesDescanso.clear();
 
         super.onDestroyView();
     }

@@ -2,6 +2,33 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- La galería propia consulta MediaStore directamente, por eso se piden los
+         permisos reales de lectura según la versión de Android. READ_EXTERNAL_STORAGE
+         solo existe hasta Android 12L; desde Android 13 se usa READ_MEDIA_IMAGES. -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- Android 14 o superior: acceso parcial cuando el usuario solo autoriza las
+         fotografías que él mismo selecciona. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+    <!-- Solo para abrir la cámara y adjuntar la foto del entrenamiento. La captura
+         queda en el caché privado de FitTrack, así que no se pide permiso de
+         almacenamiento. -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <!-- La cámara no es obligatoria: un dispositivo sin ella, o con la cámara dañada,
+         puede seguir usando la app y simplemente no tomar fotografías. -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <!-- Desde Android 11 el sistema esconde las cámaras instaladas. Sin esta entrada
+         la consulta de ActivityResultContracts.TakePicture no encuentra ninguna y la
+         captura fallaría siempre. -->
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,6 +38,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FitTrackAndroid">
+        <!-- Entrega a la aplicación de cámara una dirección segura y revocable donde
+             escribir la fotografía. El archivo nunca se expone con su ruta real. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

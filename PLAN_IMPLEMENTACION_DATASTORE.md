@@ -1,38 +1,77 @@
-# Plan de implementación: DataStore para filtros de ejercicios
+# Plan de implementación: DataStore para la duración de descanso
 
 ## Objetivo
 
-Usar Preferences DataStore en una función que FitTrack ya tiene: el buscador y el filtro por grupo muscular de la pantalla de ejercicios.
+Usar Preferences DataStore para guardar la duración de descanso predeterminada de los entrenamientos.
 
-Cuando el usuario vuelva a la pantalla o Android cierre el proceso, se restaurarán:
+El usuario podrá modificar esta preferencia desde una sección nueva dentro de la pantalla de Perfil. Cuando complete una serie, el entrenamiento activo iniciará el descanso con el valor guardado.
 
-- El texto de búsqueda.
-- El grupo muscular seleccionado.
+No se creará una pantalla adicional: la configuración formará parte de `PerfilFragment`.
 
-No se agregará una pantalla de configuración ni una nueva funcionalidad visible.
+## Por qué este dato pertenece a DataStore
 
-## Por qué estos datos pertenecen a DataStore
+La duración de descanso es una preferencia pequeña y simple del usuario en el dispositivo. Solo se necesita guardar un número entero y no requiere:
 
-Son solamente dos valores pequeños de configuración temporal. No necesitan:
-
-- Tablas.
-- Relaciones.
+- Tablas ni relaciones.
 - Consultas complejas.
-- Actualizaciones parciales de muchas filas.
+- Sincronización con el backend.
+- Historial de cambios.
 
-Room se reservará para el entrenamiento activo, que sí es información estructurada. `SharedPreferences` seguirá manejando la sesión existente y no se migrará en esta etapa.
+Room/SQLite continuará almacenando el borrador estructurado del entrenamiento activo. `SharedPreferences` seguirá manejando la sesión existente y no se migrará en esta etapa.
+
+## Comportamiento funcional
+
+- Valor predeterminado: `180` segundos, equivalentes a 3 minutos.
+- Valor mínimo: `30` segundos.
+- Valor máximo: `600` segundos, equivalentes a 10 minutos.
+- Cada pulsación en los controles de Perfil aumentará o disminuirá `15` segundos.
+- El valor se mostrará en formato `mm:ss`, por ejemplo `03:00`.
+- El cambio se guardará inmediatamente en DataStore.
+- Al abrir Perfil nuevamente, se mostrará el último valor guardado.
+- Al iniciar un descanso nuevo, `EntrenamientoActivoFragment` usará el valor guardado.
+- Los botones actuales de `-15 s` y `+15 s` del entrenamiento activo solo modificarán el descanso que está corriendo. No cambiarán la preferencia permanente.
+
+Esta separación evita que un ajuste ocasional durante una serie cambie accidentalmente todos los descansos futuros.
+
+## Interfaz en Perfil
+
+Antes de implementar el cambio visual se debe leer `guia_uso_recursos_visuales.md` y conservar la apariencia actual del proyecto.
+
+En `fragment_perfil.xml` se agregará una sección de configuración, ubicada después de los datos personales y antes de la lista de ejercicios del usuario.
+
+La sección tendrá:
+
+- Un título: “Configuración de entrenamiento”.
+- Una etiqueta: “Descanso predeterminado”.
+- Un texto corto que explique que se aplicará al completar una serie.
+- Un botón para restar 15 segundos.
+- Un `TextView` central con el tiempo seleccionado en formato `mm:ss`.
+- Un botón para sumar 15 segundos.
+
+Identificadores propuestos:
+
+| Componente | ID | Recurso de texto |
+|---|---|---|
+| Título de sección | `tvTituloConfiguracionEntrenamiento` | `tvTituloConfiguracionEntrenamiento` |
+| Etiqueta | `tvDescansoPredeterminado` | `tvDescansoPredeterminado` |
+| Explicación | `tvDescripcionDescansoPredeterminado` | `tvDescripcionDescansoPredeterminado` |
+| Restar tiempo | `btnRestarDescansoPredeterminado` | `btnRestarDescansoPredeterminado` |
+| Tiempo seleccionado | `tvTiempoDescansoPredeterminado` | Se asigna con un formato definido en `strings.xml` |
+| Sumar tiempo | `btnSumarDescansoPredeterminado` | `btnSumarDescansoPredeterminado` |
+
+Todos los textos visibles se declararán en `res/values/strings.xml`. Los botones se deshabilitarán visualmente cuando el valor alcance su límite mínimo o máximo.
 
 ## Implementación elegida para Java
 
 El proyecto está escrito en Java. Se utilizará Preferences DataStore con el adaptador oficial para RxJava 3, porque permite leer y escribir DataStore desde Java sin introducir código Kotlin ni bloquear el hilo principal.
 
-La documentación oficial indica que solo debe existir una instancia de DataStore para un mismo archivo dentro del proceso. La clase propuesta será, por tanto, un singleton.
+Solo debe existir una instancia de DataStore para un mismo archivo dentro del proceso. La clase encargada se implementará como singleton y recibirá el contexto de aplicación.
 
-Versión verificada en la documentación oficial de Android el 29 de septiembre de 2026: DataStore `1.2.1`.
+Versión revisada en la documentación oficial de Android al redactar este plan: DataStore `1.2.1`.
 
 Referencia oficial: <https://developer.android.com/topic/libraries/architecture/datastore>
 
-## Dependencias
+## Dependencia
 
 ```toml
 # gradle/libs.versions.toml
@@ -53,57 +92,43 @@ dependencies {
 }
 ```
 
-No se necesita Proto DataStore porque solo se guardarán pares clave-valor.
+No se necesita Proto DataStore porque solo se guardará un par clave-valor.
 
 ## Estructura de carpetas
 
-DataStore pertenece al feature de ejercicios:
+La preferencia pertenece al feature de entrenamiento, aunque se edite desde Perfil:
 
 ```text
-app/src/main/java/ue/edu/co/fittrackandroid/ejercicios/
-├── datos/
-│   ├── EjercicioApiService.java
-│   ├── EjercicioRepository.java
-│   └── PreferenciasEjerciciosDataStore.java
-├── modelo/
-│   └── FiltrosEjercicios.java
-└── vista/
-    └── EjerciciosFragment.java
+app/src/main/java/ue/edu/co/fittrackandroid/
+├── entrenamiento/
+│   ├── datos/
+│   │   └── PreferenciasEntrenamientoDataStore.java
+│   └── vista/
+│       └── EntrenamientoActivoFragment.java
+└── perfil/
+    └── vista/
+        └── PerfilFragment.java
 ```
 
-No se ubicará en `remote`, porque no contiene datos del servidor.
+`PerfilFragment` podrá usar la clase del feature de entrenamiento porque está modificando una configuración que afecta directamente a ese feature. No se creará una abstracción adicional ni se moverá a `utils`.
 
-## Archivo y claves
+## Archivo y clave
 
 Nombre del archivo DataStore:
 
 ```text
-preferencias_ejercicios.preferences_pb
+preferencias_entrenamiento.preferences_pb
 ```
-
-Claves:
 
 | Clave | Tipo | Valor predeterminado |
 |---|---|---|
-| `texto_busqueda` | `String` | Cadena vacía |
-| `grupo_muscular` | `String` | Cadena vacía, que representa “Todos” |
+| `segundos_descanso_predeterminado` | `int` | `180` |
 
-DataStore no guardará `null`; para el grupo sin filtro se utilizará una cadena vacía y al leerla se convertirá nuevamente a `null` para conservar el comportamiento actual de `EjerciciosFragment`.
+Al leer o guardar, el valor se limitará al rango de 30 a 600 segundos. Así, un dato inválido no podrá producir un descanso negativo o excesivo.
 
-## Modelo sencillo
+## Responsabilidad de `PreferenciasEntrenamientoDataStore`
 
-`FiltrosEjercicios` será un modelo inmutable con:
-
-```java
-private final String textoBusqueda;
-private final String grupoMuscular;
-```
-
-Debe tener constructor y getters. No necesita setters.
-
-## Responsabilidad de `PreferenciasEjerciciosDataStore`
-
-La clase tendrá una sola instancia de:
+La clase mantendrá una única instancia de:
 
 ```java
 RxDataStore<Preferences>
@@ -114,109 +139,124 @@ La instancia se construirá una vez con el contexto de aplicación:
 ```java
 new RxPreferenceDataStoreBuilder(
         context.getApplicationContext(),
-        "preferencias_ejercicios"
+        "preferencias_entrenamiento"
 ).build();
+```
+
+Constantes propuestas:
+
+```java
+public static final int SEGUNDOS_DESCANSO_PREDETERMINADO = 180;
+public static final int SEGUNDOS_DESCANSO_MINIMO = 30;
+public static final int SEGUNDOS_DESCANSO_MAXIMO = 600;
+public static final int PASO_AJUSTE_DESCANSO = 15;
 ```
 
 API pública propuesta:
 
 ```java
-public Single<FiltrosEjercicios> obtenerFiltros();
+public Single<Integer> obtenerSegundosDescanso();
 
-public Completable guardarFiltros(
-        String textoBusqueda,
-        String grupoMuscular
-);
-
-public Completable limpiarFiltros();
+public Completable guardarSegundosDescanso(int segundosDescanso);
 ```
 
-Las escrituras deben crear una copia mutable de las preferencias recibidas, cambiar las dos claves y devolver la copia como preferencias inmutables.
+La clase no tendrá referencias a Fragments ni a vistas.
 
-## Integración con `EjerciciosFragment`
+## Integración con `PerfilFragment`
 
-### Lectura
+### Lectura inicial
 
-En `onCreate` o al preparar la pantalla:
+Al preparar la vista:
 
-1. Obtener la instancia de `PreferenciasEjerciciosDataStore`.
-2. Leer los filtros una sola vez.
-3. Asignar `textoBusqueda` y `grupoMuscularSeleccionado`.
-4. Cuando la vista exista, escribir el texto en `etBuscarEjercicio`.
-5. Seleccionar visualmente el chip correspondiente.
-6. Aplicar los filtros a ambas listas cuando lleguen los ejercicios del backend.
+1. Obtener la instancia de `PreferenciasEntrenamientoDataStore`.
+2. Leer una vez la duración guardada.
+3. Guardarla en una variable `segundosDescansoSeleccionados`.
+4. Mostrar el valor con formato `mm:ss`.
+5. Habilitar o deshabilitar los botones según los límites.
 
-La lectura debe terminar antes de presentar el estado definitivo para evitar que primero aparezca “Todos” y después cambie el filtro.
+Mientras termina la lectura, se puede mostrar `03:00` como valor seguro y mantener temporalmente deshabilitados los dos botones para evitar sobrescribir una preferencia que aún no se ha cargado.
 
-Si ocurre un error de lectura:
+Si falla la lectura, se usarán 180 segundos y la pantalla continuará operativa.
 
-- Usar texto vacío y “Todos”.
-- Mantener la pantalla operativa.
-- No cerrar la aplicación.
+### Modificación y guardado
 
-### Escritura
+Al pulsar uno de los botones:
 
-Guardar ambos valores juntos:
+1. Sumar o restar 15 segundos.
+2. Respetar el rango de 30 a 600 segundos.
+3. Actualizar inmediatamente el texto `mm:ss`.
+4. Actualizar el estado habilitado de ambos botones.
+5. Guardar el nuevo valor en DataStore.
 
-- Cuando el usuario seleccione un chip.
-- Cuando la pantalla pase a `onStop`, para conservar el texto final del buscador.
+Si falla la escritura, se restaurará en pantalla el último valor confirmado por DataStore y se mostrará un aviso simple. No se agregará un botón “Guardar”, porque cada cambio quedará persistido al instante.
 
-Guardar el texto en `onStop` evita escribir al almacenamiento por cada carácter. El estado actual del fragment seguirá actualizando las listas inmediatamente en memoria.
+## Integración con `EntrenamientoActivoFragment`
 
-### Limpieza
+Actualmente el fragment inicia todos los descansos con la constante fija `SEGUNDOS_DESCANSO_BASE = 180`. Esa constante se reemplazará por una variable de instancia, por ejemplo:
 
-`limpiarFiltros()` se puede usar si posteriormente se agrega una acción “Limpiar filtros”. No es necesario agregar ese botón ahora.
+```java
+private int segundosDescansoPredeterminado = 180;
+```
 
-Cerrar sesión no necesita borrar estos filtros, porque no son información privada ni pertenecen a una cuenta específica.
+Al preparar el fragment:
+
+1. Leer el valor desde `PreferenciasEntrenamientoDataStore`.
+2. Guardarlo en `segundosDescansoPredeterminado`.
+3. Si la lectura falla, conservar el valor seguro de 180 segundos.
+4. Cuando `iniciarDescanso()` sea llamado, usar esa variable para calcular el final del temporizador y mostrar su tiempo inicial.
+
+La preferencia solo se consultará al entrar al entrenamiento activo. Si el usuario cambia el valor desde Perfil, se aplicará al siguiente entrenamiento que abra. No se intentará cambiar un descanso que ya esté en curso.
+
+Los botones `btnRestarDescanso` y `btnSumarDescanso` mantendrán su comportamiento actual sobre el temporizador activo y no escribirán en DataStore.
 
 ## Manejo de RxJava
 
-`EjerciciosFragment` tendrá un `CompositeDisposable` para conservar las suscripciones de lectura y escritura.
+`PerfilFragment` y `EntrenamientoActivoFragment` mantendrán sus suscripciones en un `CompositeDisposable`.
 
 Reglas:
 
-- Agregar cada suscripción al `CompositeDisposable`.
-- Limpiarlo en `onDestroy`.
-- No conservar referencias a las vistas dentro de la clase DataStore.
-- Actualizar vistas únicamente si el fragment sigue agregado y la vista existe.
-- En caso de error de escritura, conservar el filtro en memoria y mostrar como máximo un aviso simple.
+- Agregar cada lectura y escritura al `CompositeDisposable`.
+- Limpiar las suscripciones cuando se destruya la vista del Fragment.
+- No usar `blockingGet()` ni bloquear el hilo principal.
+- Actualizar las vistas solo si el Fragment sigue agregado y su vista continúa disponible.
+- Usar 180 segundos como respaldo ante cualquier error de lectura.
 
-No se debe llamar `blockingGet()` ni bloquear el hilo principal.
-
-## Relación con SharedPreferences
-
-No se modificará `SesionManager`.
+## Relación con los demás almacenamientos
 
 | Almacenamiento | Responsabilidad |
 |---|---|
-| `SharedPreferences` | Token JWT, nombre y correo de la sesión |
-| Preferences DataStore | Buscador y grupo muscular seleccionados |
-| Room/SQLite | Entrenamiento activo, ejercicios y series |
+| `SharedPreferences` | Token JWT y datos básicos de la sesión |
+| Preferences DataStore | Duración de descanso predeterminada |
+| Room/SQLite | Borrador del entrenamiento activo, ejercicios y series |
+| Archivos internos | Copia local de la foto de perfil |
+| Supabase Storage | Foto de perfil remota |
 
-Esta separación permite demostrar las tres tecnologías sin guardar la misma información varias veces.
+La duración se considerará una preferencia general de la aplicación en ese dispositivo. Por eso no se borrará al cerrar sesión y no se duplicará en el backend.
 
 ## Verificación manual
 
-No se crearán pruebas unitarias ni instrumentadas para esta implementación. La comprobación se realizará manualmente con estos escenarios:
+No se crearán pruebas unitarias ni instrumentadas para esta implementación. La comprobación se realizará manualmente:
 
-1. Escribir una búsqueda, cambiar de pantalla y volver: el texto debe restaurarse.
-2. Seleccionar “Pecho”, cerrar y abrir la aplicación: el chip debe seguir seleccionado.
-3. Seleccionar “Todos”: debe guardarse una cadena vacía y restaurarse sin filtro.
-4. Restaurar filtros antes de recibir la API: al llegar los ejercicios deben aparecer ya filtrados.
-5. Simular un error de lectura: debe mostrarse la lista con valores predeterminados.
-6. Cerrar sesión e iniciar otra cuenta: los filtros pueden mantenerse porque son una preferencia general del dispositivo.
-7. Rotar la pantalla: no deben crearse varias instancias para el mismo archivo DataStore.
+1. Abrir Perfil sin valor previo: debe mostrarse `03:00`.
+2. Aumentar el descanso, salir de Perfil y volver: debe conservarse el nuevo valor.
+3. Cerrar y abrir la aplicación: debe restaurarse el valor guardado.
+4. Llegar a `00:30`: el botón de restar debe quedar deshabilitado.
+5. Llegar a `10:00`: el botón de sumar debe quedar deshabilitado.
+6. Configurar un valor, abrir un entrenamiento y completar una serie: el descanso debe iniciar con ese tiempo.
+7. Usar `-15 s` o `+15 s` durante el descanso activo: debe cambiar solo el temporizador actual.
+8. Volver a Perfil después del ajuste temporal: debe seguir apareciendo la preferencia permanente anterior.
+9. Simular un error de lectura: Perfil y el entrenamiento deben usar `03:00` sin cerrarse.
+10. Cerrar sesión e iniciar nuevamente: la duración debe mantenerse como preferencia del dispositivo.
 
 ## Criterios de terminado
 
-- Existe una única instancia de DataStore para `preferencias_ejercicios`.
-- El buscador y el chip sobreviven al cierre del proceso.
-- La pantalla continúa filtrando inmediatamente mientras el usuario escribe.
+- Perfil contiene una sección visible para modificar el descanso predeterminado.
+- El valor solo puede estar entre 30 y 600 segundos.
+- Cada cambio se guarda inmediatamente en DataStore.
+- El valor sobrevive al cierre del proceso de la aplicación.
+- Los descansos nuevos comienzan con la duración configurada.
+- Los ajustes temporales del entrenamiento activo no sobrescriben la preferencia.
+- Existe una sola instancia de DataStore para `preferencias_entrenamiento`.
 - No se bloquea el hilo principal.
-- Los errores usan valores predeterminados seguros.
-- `SesionManager` continúa funcionando con `SharedPreferences` sin cambios.
-- No se agregan pantallas nuevas.
-
-## Mejora futura opcional
-
-Si más adelante se agrega una preferencia visible para la duración del descanso, puede guardarse en otro DataStore propio del feature de entrenamiento. No debe añadirse ahora solamente para justificar la tecnología, porque el buscador y los filtros ya ofrecen un caso de uso real.
+- `SesionManager` continúa usando `SharedPreferences` sin cambios.
+- No se crean pruebas unitarias ni instrumentadas.

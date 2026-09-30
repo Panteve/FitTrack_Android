@@ -286,17 +286,14 @@ public class HomeFragment extends Fragment {
 
     /**
      * Abre la pantalla con el resultado del entrenamiento reciente que el usuario pulsó.
-     * El adapter solo entrega el elemento y esta pantalla no consulta nada: entrega el
-     * identificador y el resumen, si ya venía construido. La pantalla del resumen decide
-     * si necesita pedir el detalle del entrenamiento.
+     * El adapter entrega el elemento seleccionado y la pantalla del resumen consulta el
+     * detalle guardado usando su identificador.
      *
      * @param entrenamiento entrenamiento seleccionado en la lista.
      */
     private void abrirResumenEntrenamiento(UltimoEntrenamiento entrenamiento) {
         ((MainActivity) requireActivity())
-                .mostrarResumenEntrenamientoHistorial(
-                        entrenamiento.getId(),
-                        entrenamiento.getResumen());
+                .mostrarResumenEntrenamientoHistorial(entrenamiento.getId());
     }
 
     private String formatearFechaHoy() {

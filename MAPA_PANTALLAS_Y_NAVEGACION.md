@@ -430,6 +430,7 @@ Responsabilidad:
 - Mostrar y cambiar la foto de perfil.
 - Mostrar y editar el nombre.
 - Mostrar el correo definido en la interfaz.
+- Configurar la duración del descanso predeterminado entre series.
 - Mostrar la lista de ejercicios de la rutina.
 - Cambiar la contraseña de la cuenta.
 - Cerrar sesión.
@@ -440,8 +441,9 @@ Cómo se abre:
 
 Acciones:
 
-- **Foto, icono de cámara o Cambiar foto:** abre el selector de documentos de Android para elegir una imagen.
+- **Foto, icono de cámara o Cambiar foto:** abre la galería propia de FitTrack (`GaleriaImagenesFragment`) como pantalla secundaria para elegir una imagen del dispositivo. La galería pide el permiso de lectura de imágenes que corresponda a la versión de Android antes de mostrar la cuadrícula.
 - **Guardar nombre:** valida que no esté vacío y lo guarda localmente en `SharedPreferences`.
+- **Restar o sumar descanso:** cambia la duración predeterminada en pasos de 15 segundos, entre 30 y 600 segundos, y la guarda de inmediato. El botón se apaga al llegar a cualquiera de los dos límites.
 - **Nuevo ejercicio:** abre `CrearEjercicioFragment` como pantalla secundaria.
 - **Tocar un ejercicio de “Mis ejercicios”:** toda la fila es pulsable y abre `ModificarEjercicioFragment` con el identificador de ese ejercicio.
 - **Cambiar contraseña:** abre `CambiarContrasenaFragment` como pantalla secundaria.
@@ -451,6 +453,8 @@ Persistencia actual:
 
 - El nombre y el URI de la foto se guardan localmente en preferencias propias del perfil.
 - Cerrar sesión conserva el nombre y la foto, porque solo limpia las preferencias llamadas `sesion`.
+- El descanso predeterminado se guarda en `Preferences DataStore` (archivo `preferencias_entrenamiento.preferences_pb`) y no se borra al cerrar sesión: es una preferencia del dispositivo, no de la cuenta.
+- `EntrenamientoActivoFragment` lee esa preferencia al abrir la sesión y la aplica a los descansos nuevos. Sus botones de `-15 s` y `+15 s` solo modifican el temporizador que está corriendo.
 - Si la imagen guardada deja de estar disponible, se vuelve a mostrar el avatar predeterminado.
 - La lista de ejercicios se consulta al backend con `GET /ejercicios/mis-ejercicios` y se vuelve a consultar cada vez que el perfil vuelve a mostrarse, para que se vean los ejercicios creados, modificados o borrados desde otras pantallas.
 
@@ -458,6 +462,7 @@ Archivos relacionados:
 
 - Java de pantalla: `app/src/main/java/ue/edu/co/fittrackandroid/perfil/PerfilFragment.java`
 - Layout de pantalla: `app/src/main/res/layout/fragment_perfil.xml`
+- Preferencia del descanso: `app/src/main/java/ue/edu/co/fittrackandroid/entrenamiento/datos/PreferenciasEntrenamientoDataStore.java`
 - Modelo: `app/src/main/java/ue/edu/co/fittrackandroid/hoy/UltimoEntrenamiento.java`
 
 Pendiente o provisional:
@@ -613,6 +618,48 @@ Archivos relacionados:
 - API: `EntrenamientoApiService.java` y `EntrenamientoRepository.java` dentro de la carpeta `entrenamiento/datos`.
 - Modelo: `ResumenEntrenamiento.java` dentro de la carpeta `resumen/modelo`.
 
+### 13. Galería de imágenes
+
+Responsabilidad:
+
+- Mostrar en una cuadrícula las imágenes JPEG y PNG que hay en el dispositivo, para que el usuario elija una sin salir de la aplicación.
+
+Cómo se abre:
+
+- Desde **Perfil**, al tocar la foto, el icono de cámara o **Cambiar foto**.
+- Desde el resumen de un entrenamiento terminado, al pulsar **Agregar foto**.
+
+Estados visuales:
+
+- Cargando: solo el indicador, mientras se consulta `MediaStore`.
+- Con imágenes: la cuadrícula, con la imagen más reciente primero.
+- Sin imágenes: avisa que el dispositivo no tiene imágenes JPEG o PNG que mostrar.
+- Sin permiso: avisa que el permiso fue retirado y ofrece el botón **Abrir ajustes**. Aparece cuando se revoca el permiso con la pantalla abierta, por ejemplo al ir a los ajustes del sistema y volver.
+
+Acciones:
+
+- **Tocar una imagen:** la devuelve a la pantalla que abrió la galería mediante un `FragmentResult` y regresa sola a ella. No hay que confirmar nada más.
+- **Abrir ajustes:** entra en los ajustes de la aplicación para que el usuario reactive el permiso.
+- **Atrás:** regresa a la pantalla anterior sin elegir ninguna imagen.
+
+Datos actuales:
+
+- La pantalla recibe un argumento `destino` (`perfil` o `entrenamiento`) y lo devuelve junto con la Uri elegida. Así, cuando hay dos pantallas esperando a la vez, cada una solo reacciona a sus propias imágenes.
+- Lo que se devuelve es una dirección `content://` de `MediaStore`, nunca una ruta real en el disco. La pantalla que la recibe se encarga de copiarla, validarla y subirla.
+- La consulta y la lectura de las miniaturas se hacen en un hilo aparte del principal, nunca en la interfaz.
+- Desde Android 10 se usa la miniatura que genera el sistema; en versiones anteriores se decodifica una copia reducida con `BitmapFactory`. Las miniaturas ya leídas se guardan en una caché pequeña en memoria para no releerlas al desplazarse.
+- El permiso de lectura se revisa cada vez que la pantalla vuelve a mostrarse, para que también se detecte un permiso retirado en los ajustes.
+- La pantalla no dibuja toolbar ni navegación inferior: ambas las administra `MainActivity`, que además oculta la navegación inferior mientras la galería está abierta.
+
+Archivos relacionados:
+
+- Java de pantalla: `app/src/main/java/ue/edu/co/fittrackandroid/imagenes/GaleriaImagenesFragment.java`
+- Layout de pantalla: `app/src/main/res/layout/fragment_galeria_imagenes.xml`
+- Layout de celda: `app/src/main/res/layout/item_imagen_dispositivo.xml`
+- Adapter: `ImagenDispositivoAdapter.java` dentro de la carpeta `imagenes`.
+- Modelo: `ImagenDispositivo.java` dentro de la carpeta `imagenes`.
+- Permisos por versión de Android: `PermisosImagenes.java` dentro de la carpeta `imagenes`.
+
 ## Funciones provisionales y TODO principales
 
 | Área | Estado actual | Trabajo pendiente |
@@ -693,6 +740,7 @@ Fragments secundarios
 ├── ModificarRutinaFragment
 ├── CrearCuentaFragment
 ├── CambiarContrasenaFragment
+├── GaleriaImagenesFragment
 └── EjerciciosFragment
 
 Adapters

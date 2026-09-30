@@ -1,5 +1,6 @@
 package ue.edu.co.fittrackandroid.rutinas.vista;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -46,7 +47,7 @@ import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
  * Cuando el backend confirma la creación avisa a RutinasFragment y regresa.
  */
 public class CrearRutinaFragment extends Fragment
-        implements CrearRutinaEjercicioAdapter.OnAgregarSerieListener {
+        implements CrearRutinaEjercicioAdapter.EscuchaCrearRutina {
 
     /**
      * Clave del resultado que avisa que se creó una rutina. La escucha RutinasFragment,
@@ -207,8 +208,73 @@ public class CrearRutinaFragment extends Fragment
 
     @Override
     public void onAgregarSerie(int posicionEjercicio) {
-        listaEjercicios.get(posicionEjercicio).agregarSerie();
-        adapter.actualizarEjercicio(posicionEjercicio);
+        EjercicioRutinaEditable ejercicio = obtenerEjercicio(posicionEjercicio);
+
+        if (ejercicio != null) {
+            ejercicio.agregarSerie();
+            adapter.actualizarEjercicio(posicionEjercicio);
+        }
+    }
+
+    @Override
+    public void onQuitarSerie(int posicionEjercicio, int posicionSerie) {
+        EjercicioRutinaEditable ejercicio = obtenerEjercicio(posicionEjercicio);
+
+        // La última serie no se quita: el modelo lo impide porque el backend exige que
+        // cada ejercicio tenga al menos una.
+        if (ejercicio != null && ejercicio.eliminarSerie(posicionSerie)) {
+            adapter.actualizarEjercicio(posicionEjercicio);
+        }
+    }
+
+    @Override
+    public void onQuitarEjercicio(int posicionEjercicio) {
+        EjercicioRutinaEditable ejercicio = obtenerEjercicio(posicionEjercicio);
+
+        if (ejercicio != null) {
+            confirmarQuitarEjercicio(ejercicio);
+        }
+    }
+
+    /**
+     * Pide confirmación antes de quitar un ejercicio. Solo se quita del formulario: la
+     * rutina todavía no está guardada, así que no se llama al backend.
+     *
+     * @param ejercicio ejercicio que el usuario quiere quitar.
+     */
+    private void confirmarQuitarEjercicio(EjercicioRutinaEditable ejercicio) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.tvTituloQuitarEjercicioRutina)
+                .setMessage(getString(R.string.tvMensajeQuitarEjercicioRutina, ejercicio.getNombre()))
+                .setPositiveButton(R.string.btnConfirmarQuitarEjercicioRutina,
+                        (dialogo, cual) -> quitarEjercicio(ejercicio))
+                .setNegativeButton(R.string.btnCancelarQuitarEjercicioRutina, null)
+                .show();
+    }
+
+    private void quitarEjercicio(EjercicioRutinaEditable ejercicio) {
+        int posicionEjercicio = listaEjercicios.indexOf(ejercicio);
+
+        if (posicionEjercicio < 0) {
+            return;
+        }
+
+        // Quitar la tarjeta con sus series solo cambia la lista local: el backend se
+        // entera cuando el usuario guarda la rutina.
+        adapter.quitarEjercicio(posicionEjercicio);
+        actualizarEstadoPantalla();
+    }
+
+    /**
+     * Busca un ejercicio por su posición. Devuelve null si la posición ya no corresponde
+     * a ningún ejercicio, por ejemplo cuando la tarjeta se recycló al quitar otra.
+     */
+    private EjercicioRutinaEditable obtenerEjercicio(int posicionEjercicio) {
+        if (posicionEjercicio < 0 || posicionEjercicio >= listaEjercicios.size()) {
+            return null;
+        }
+
+        return listaEjercicios.get(posicionEjercicio);
     }
 
     /** Alterna entre el estado vacío y el estado con ejercicios. */
@@ -495,9 +561,11 @@ public class CrearRutinaFragment extends Fragment
 
     /**
      * Traduce lo que hay en pantalla a la petición que espera el backend.
-     * Los órdenes y los números de serie salen de la posición de cada elemento, por eso
-     * siempre empiezan en uno y nunca se repiten. Ninguna serie se elimina aunque esté vacía:
-     * el usuario la agregó a propósito y se envía con peso y repeticiones en cero.
+     * Solo se envían los ejercicios y las series que quedaron en la lista, así que lo que
+     * el usuario quitó nunca llega al backend. Los órdenes y los números de serie salen de
+     * la posición de cada elemento, por eso siempre empiezan en uno y nunca se repiten.
+     * Una serie vacía sí se envía: el usuario la agregó a propósito y va con peso y
+     * repeticiones en cero.
      *
      * @return datos listos para enviar a {@code POST /rutinas}.
      */

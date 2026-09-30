@@ -29,10 +29,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import ue.edu.co.fittrackandroid.entrenamiento.datos.EntrenamientoRepository;
+import ue.edu.co.fittrackandroid.entrenamiento.datos.PreferenciasEntrenamientoDataStore;
 import ue.edu.co.fittrackandroid.entrenamiento.datos.local.EntrenamientoBorradorRepository;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EjercicioEntrenamiento;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoCrearRequest;
@@ -42,9 +44,6 @@ import ue.edu.co.fittrackandroid.entrenamiento.modelo.RegistroSerieRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.SerieEntrenamiento;
 import ue.edu.co.fittrackandroid.MainActivity;
 import ue.edu.co.fittrackandroid.R;
-import ue.edu.co.fittrackandroid.resumen.modelo.EjercicioResumen;
-import ue.edu.co.fittrackandroid.resumen.modelo.ResumenEntrenamiento;
-import ue.edu.co.fittrackandroid.resumen.modelo.SerieResumen;
 import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 
 /**
@@ -60,10 +59,9 @@ import ue.edu.co.fittrackandroid.utils.ManejadorErroresApi;
 public class EntrenamientoActivoFragment extends Fragment
         implements EntrenamientoEjercicioAdapter.EscuchaEntrenamiento  {
 
-    /** Tiempo base de cada descanso entre series: tres minutos. */
-    // TODO: Obtener esta duración desde la configuración del usuario o de la rutina,
-    // en lugar de usar siempre un valor fijo para todos los ejercicios.
-    private static final int SEGUNDOS_DESCANSO_BASE = 180;
+    /** Tiempo de descanso con el que arranca cada serie, hasta leer la preferencia. */
+    private static final int SEGUNDOS_DESCANSO_BASE =
+            PreferenciasEntrenamientoDataStore.SEGUNDOS_DESCANSO_PREDETERMINADO;
 
     /** Pasos de ajuste del temporizador de descanso. */
     private static final int AJUSTE_DESCANSO_SEGUNDOS = 15;
@@ -82,8 +80,19 @@ public class EntrenamientoActivoFragment extends Fragment
     private EntrenamientoEjercicioAdapter adapter;
     private EntrenamientoRepository entrenamientoRepository;
     private EntrenamientoBorradorRepository borradorRepository;
+    private PreferenciasEntrenamientoDataStore preferenciasEntrenamiento;
     private Call<EntrenamientoDetalleResponse> currentCall;
     private boolean guardandoEntrenamiento;
+
+    /**
+     * Descanso con el que empieza cada serie. Se reemplaza por la preferencia que el
+     * usuario configuró en el perfil; si esa lectura falla se queda el valor seguro de
+     * tres minutos.
+     */
+    private int segundosDescansoPredeterminado = SEGUNDOS_DESCANSO_BASE;
+
+    /** Lectura de la preferencia, que se cancela al destruirse la vista. */
+    private final CompositeDisposable suscripcionesDescanso = new CompositeDisposable();
 
     /**
      * Se pone en true cuando el entrenamiento ya se guardó en el backend o el usuario lo
@@ -147,6 +156,22 @@ public class EntrenamientoActivoFragment extends Fragment
         entrenamiento = activity.obtenerEntrenamientoEnCurso();
         entrenamientoRepository = new EntrenamientoRepository(requireContext());
         borradorRepository = new EntrenamientoBorradorRepository(requireContext());
+        preferenciasEntrenamiento =
+                PreferenciasEntrenamientoDataStore.obtenerInstancia(requireContext());
+    }
+
+    /**
+     * Lee de DataStore la duración del descanso configurada en el perfil. La lectura llega
+     * en un hilo de trabajo, así que solo se guarda el valor: la cuenta regresiva usa la
+     * variable cuando el usuario complete una serie. Si la lectura falla se conserva el
+     * valor seguro de tres minutos.
+     */
+    private void cargarDescansoPredeterminado() {
+        suscripcionesDescanso.add(
+                preferenciasEntrenamiento.obtenerSegundosDescanso().subscribe(
+                        segundosDescanso -> segundosDescansoPredeterminado = segundosDescanso,
+                        error -> segundosDescansoPredeterminado = SEGUNDOS_DESCANSO_BASE
+                ));
     }
 
     @Override
@@ -162,6 +187,10 @@ public class EntrenamientoActivoFragment extends Fragment
             configurarAcciones();
             recalcularResumen();
             actualizarEstadoDescanso();
+
+            // La preferencia se consulta una sola vez, al entrar a la sesión. Si el usuario
+            // la cambia en el perfil después, se aplicará al siguiente entrenamiento que abra.
+            cargarDescansoPredeterminado();
         }
 
         return view;
@@ -205,6 +234,9 @@ public class EntrenamientoActivoFragment extends Fragment
         }
         guardandoEntrenamiento = false;
         cancelarCallbacks();
+        // La lectura de la preferencia ya no importa: el valor quedó en la variable de la
+        // pantalla o se perdió con la vista.
+        suscripcionesDescanso.clear();
         super.onDestroyView();
     }
 
@@ -363,23 +395,27 @@ public class EntrenamientoActivoFragment extends Fragment
 
     // ------------------------------------------------------------------ Descanso
 
-    /** Arranca el descanso de tres minutos después de completar una serie. */
+    /** Arranca el descanso configurado en el perfil después de completar una serie. */
     private void iniciarDescanso() {
         entrenamiento.setInstanteFinDescanso(
-                SystemClock.elapsedRealtime() + SEGUNDOS_DESCANSO_BASE * 1000L);
+                SystemClock.elapsedRealtime() + segundosDescansoPredeterminado * 1000L);
 
         // El fin del descanso también se guarda, para que la cuenta regresiva se pueda
         // restaurar aunque Android cierre el proceso mientras está corriendo.
         guardarDescanso();
 
-        tvTiempoDescanso.setText(EntrenamientoEnCurso.formatearTiempo(SEGUNDOS_DESCANSO_BASE));
+        tvTiempoDescanso.setText(
+                EntrenamientoEnCurso.formatearTiempo(segundosDescansoPredeterminado));
         layoutDescansoEntrenamiento.setVisibility(View.VISIBLE);
 
         handler.removeCallbacks(runnableDescanso);
         handler.post(runnableDescanso);
     }
 
-    /** Resta quince segundos al descanso sin dejar que el tiempo sea negativo. */
+    /**
+     * Resta quince segundos al descanso sin dejar que el tiempo sea negativo. Solo cambia
+     * el temporizador que está corriendo: la preferencia del perfil no se toca.
+     */
     private void restarTiempoDescanso() {
         int segundosRestantes = entrenamiento.getSegundosDescansoRestantes() - AJUSTE_DESCANSO_SEGUNDOS;
         if (segundosRestantes < 0) {
@@ -391,7 +427,8 @@ public class EntrenamientoActivoFragment extends Fragment
 
     /** Suma quince segundos al descanso, sin imponer un máximo. */
     private void sumarTiempoDescanso() {
-        aplicarTiempoDescanso(entrenamiento.getSegundosDescansoRestantes() + AJUSTE_DESCANSO_SEGUNDOS);
+        aplicarTiempoDescanso(
+                entrenamiento.getSegundosDescansoRestantes() + AJUSTE_DESCANSO_SEGUNDOS);
     }
 
     /** Fija el tiempo restante del descanso a partir de ahora. */
@@ -656,7 +693,6 @@ public class EntrenamientoActivoFragment extends Fragment
     }
 
     private void terminarEntrenamiento() {
-        ResumenEntrenamiento resumen = crearResumenFinal();
         EntrenamientoCrearRequest request = crearSolicitudEntrenamiento();
 
         // Se escribe lo que estaba pendiente antes de enviar la sesión al backend.
@@ -680,10 +716,7 @@ public class EntrenamientoActivoFragment extends Fragment
 
                     // El identificador lo crea el backend: es el único válido para consultar
                     // o borrar después el entrenamiento guardado.
-                    activity.mostrarResumenEntrenamiento(
-                            response.body().getId(),
-                            resumen
-                    );
+                    activity.mostrarResumenEntrenamiento(response.body().getId());
                     return;
                 }
 
@@ -764,50 +797,6 @@ public class EntrenamientoActivoFragment extends Fragment
     private void restaurarDespuesDeErrorGuardado() {
         mostrarGuardandoEntrenamiento(false);
         reanudarActualizacionesVisuales();
-    }
-
-    /**
-     * Arma la copia de solo lectura del entrenamiento terminado.
-     *
-     * <p>Solo se copian las series completadas y con valores válidos, y los ejercicios que
-     * se quedan sin ninguna serie completada no aparecen en el resumen. El resultado no
-     * guarda ninguna referencia a la sesión en curso, así que puede mostrarse aunque la
-     * sesión ya haya sido borrada.
-     */
-    private ResumenEntrenamiento crearResumenFinal() {
-        List<EjercicioResumen> ejerciciosResumen = new ArrayList<>();
-
-        for (EjercicioEntrenamiento ejercicio : entrenamiento.getEjercicios()) {
-            List<SerieResumen> seriesResumen = new ArrayList<>();
-
-            for (SerieEntrenamiento serie : ejercicio.getSeries()) {
-                if (serie.isCompletada() && serie.tieneDatosValidos()) {
-                    seriesResumen.add(new SerieResumen(serie.getPeso(),
-                            serie.getRepeticiones()));
-                }
-            }
-
-            if (seriesResumen.isEmpty()) {
-                continue;
-            }
-
-            String grupoMuscular = ejercicio.getGrupoMuscular();
-            if (grupoMuscular == null || grupoMuscular.isBlank()) {
-                grupoMuscular = getString(R.string.tvGrupoMuscularResumen_fallback);
-            }
-
-            ejerciciosResumen.add(new EjercicioResumen(
-                    ejercicio.getNombre(),
-                    grupoMuscular,
-                    seriesResumen));
-        }
-
-        return new ResumenEntrenamiento(entrenamiento.getNombreRutina(),
-                entrenamiento.getFechaHoraInicio(),
-                entrenamiento.getSegundosTranscurridos(),
-                contarSeriesTotales(),
-                true,
-                ejerciciosResumen);
     }
 
     /** Pide confirmación antes de descartar la sesión y todo lo registrado en ella. */

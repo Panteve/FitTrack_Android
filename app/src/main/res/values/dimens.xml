@@ -22,13 +22,19 @@
          de columnas de la tarjeta, para que las etiquetas queden alineadas. -->
     <dimen name="check_serie_width">40dp</dimen>
 
+    <!-- Botón de icono al final de la fila de una serie (quitar serie). Mide igual que
+         la columna del check para que las tarjetas de ambas pantallas se vean iguales. -->
+    <dimen name="boton_icono_serie_width">40dp</dimen>
+
     <!-- Avatar circular del perfil: tamaño total y relleno que deja ver el ícono de persona. -->
     <dimen name="avatar_size">96dp</dimen>
     <dimen name="avatar_icon_padding">26dp</dimen>
 
-    <!-- Resumen del entrenamiento: área de escritura y vista previa provisional. -->
+    <!-- Resumen del entrenamiento: área de escritura y alto de la vista previa de la
+         foto. La imagen ocupa todo el ancho de la tarjeta y se recorta al centro; al
+         tocarla se abre a pantalla completa y ahí sí se ve entera. -->
     <dimen name="note_input_min_height">96dp</dimen>
-    <dimen name="workout_photo_preview_size">72dp</dimen>
+    <dimen name="workout_photo_preview_height">220dp</dimen>
 
     <!-- Barra de herramientas: espacio que se reserva a cada lado del título
          para que quede centrado y nunca debajo de la flecha ni del botón de acción. -->

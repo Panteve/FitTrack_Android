@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Fila de una serie: número, peso objetivo y repeticiones, todo en una sola línea. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutSerieRutina"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -54,4 +55,16 @@
         android:textColor="@color/colorTextPrimary"
         android:textColorHint="@color/colorTextStrong"
         android:textSize="14sp" />
+
+    <ImageButton
+        android:id="@+id/btnQuitarSerieRutina"
+        android:layout_width="@dimen/boton_icono_serie_width"
+        android:layout_height="@dimen/button_height_standard"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/cdQuitarSerieRutina"
+        android:padding="9dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_delete"
+        app:tint="@color/colorErrorText" />
 </LinearLayout>

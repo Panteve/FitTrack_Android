@@ -243,7 +243,10 @@
                     android:text="@string/btnGuardarNotaResumenEntrenamiento" />
             </LinearLayout>
 
-            <!-- La selección y subida de fotos se implementará en otra etapa. -->
+            <!-- Fotografía del entrenamiento. Sin foto se ve el icono de cámara
+                 centrado en el cuadro vacío; con foto, la imagen lo ocupa con recorte
+                 central. Al tocarla se abre a pantalla completa para verla entera, y
+                 cuando no hay foto el toque abre la cámara. -->
             <LinearLayout
                 android:id="@+id/layoutFotoResumenEntrenamiento"
                 android:layout_width="match_parent"
@@ -264,12 +267,15 @@
 
                 <ImageView
                     android:id="@+id/imgFotoResumenEntrenamiento"
-                    android:layout_width="@dimen/workout_photo_preview_size"
-                    android:layout_height="@dimen/workout_photo_preview_size"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/workout_photo_preview_height"
                     android:layout_marginTop="@dimen/spacing_md"
                     android:background="@drawable/bg_input"
+                    android:clickable="true"
                     android:contentDescription="@string/imgFotoResumenEntrenamiento"
+                    android:focusable="true"
                     android:padding="@dimen/spacing_xl"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_camera"
                     app:tint="@color/colorTextTertiary" />
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Vista a pantalla completa de la foto del entrenamiento.
+     El fondo negro es deliberado: la imagen manda en este cuadro y es lo que
+     se espera al ampliar una foto. Se cierra tocando cualquier parte de la pantalla.
+     El ajuste es fitCenter para que una foto vertical se vea completa y sin deformar. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutFotoEntrenamientoAmpliada"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/imgFotoEntrenamientoAmpliada"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/imgFotoEntrenamientoAmpliada"
+        android:scaleType="fitCenter" />
+</FrameLayout>
