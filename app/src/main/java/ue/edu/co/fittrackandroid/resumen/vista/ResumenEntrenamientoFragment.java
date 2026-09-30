@@ -51,11 +51,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import ue.edu.co.fittrackandroid.entrenamiento.datos.EntrenamientoRepository;
-import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoCrearRequest;
+import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoActualizarNotasRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoDetalleResponse;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoEnCurso;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoFotoResponse;
-import ue.edu.co.fittrackandroid.entrenamiento.modelo.RegistroSerieRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.RegistroSerieResponse;
 import ue.edu.co.fittrackandroid.imagenes.GaleriaImagenesFragment;
 import ue.edu.co.fittrackandroid.imagenes.PermisosImagenes;
@@ -368,18 +367,11 @@ public class ResumenEntrenamientoFragment extends Fragment {
             return;
         }
 
-        EntrenamientoCrearRequest request = crearSolicitudActualizacion(nota);
-        if (request == null) {
-            Toast.makeText(
-                    requireContext(),
-                    R.string.error_respuesta_invalida,
-                    Toast.LENGTH_SHORT
-            ).show();
-            return;
-        }
+        EntrenamientoActualizarNotasRequest request =
+                new EntrenamientoActualizarNotasRequest(nota);
 
         mostrarGuardandoNota(true);
-        currentCallActualizar = entrenamientoRepository.actualizarEntrenamiento(
+        currentCallActualizar = entrenamientoRepository.actualizarNotas(
                 idEntrenamiento,
                 request
         );
@@ -417,66 +409,6 @@ public class ResumenEntrenamientoFragment extends Fragment {
                 ManejadorErroresApi.obtenerToast(requireContext(), throwable).show();
             }
         });
-    }
-
-    /**
-     * Reconstruye el cuerpo completo que exige {@code PUT /entrenamientos/{id}}.
-     *
-     * @param nota nota escrita por el usuario, o texto vacío para eliminarla
-     * @return solicitud completa, o null si el detalle recibido está incompleto
-     */
-    private EntrenamientoCrearRequest crearSolicitudActualizacion(String nota) {
-        if (detalleEntrenamiento.getRutinaId() == null
-                || detalleEntrenamiento.getFecha() == null
-                || detalleEntrenamiento.getDuracionMinutos() == null
-                || detalleEntrenamiento.getDuracionMinutos() <= 0
-                || detalleEntrenamiento.getSeries() == null
-                || detalleEntrenamiento.getSeries().isEmpty()) {
-            return null;
-        }
-
-        List<RegistroSerieRequest> series = convertirSeriesParaSolicitud(
-                detalleEntrenamiento.getSeries());
-        if (series == null) {
-            return null;
-        }
-
-        int seriesTotales = detalleEntrenamiento.getSeriesTotales() == null
-                ? series.size()
-                : detalleEntrenamiento.getSeriesTotales();
-
-        return new EntrenamientoCrearRequest(
-                detalleEntrenamiento.getRutinaId(),
-                detalleEntrenamiento.getFecha(),
-                detalleEntrenamiento.getDuracionMinutos(),
-                nota,
-                seriesTotales,
-                series
-        );
-    }
-
-    /** @return las series listas para actualizar, o null si alguna está incompleta. */
-    private List<RegistroSerieRequest> convertirSeriesParaSolicitud(
-            List<RegistroSerieResponse> seriesGuardadas) {
-        List<RegistroSerieRequest> series = new ArrayList<>();
-
-        for (RegistroSerieResponse serie : seriesGuardadas) {
-            if (serie.getRutinaEjercicioId() == null
-                    || serie.getNumeroSerie() == null
-                    || serie.getRepeticiones() == null
-                    || serie.getPeso() == null) {
-                return null;
-            }
-
-            series.add(new RegistroSerieRequest(
-                    serie.getRutinaEjercicioId(),
-                    serie.getNumeroSerie(),
-                    serie.getRepeticiones(),
-                    serie.getPeso()
-            ));
-        }
-
-        return series;
     }
 
     /** Cambia el formulario entre su estado editable y el guardado en curso. */

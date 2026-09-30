@@ -4,6 +4,7 @@ import android.content.Context;
 
 import okhttp3.MultipartBody;
 import retrofit2.Call;
+import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoActualizarNotasRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoCrearRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoDetalleResponse;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoFotoResponse;
@@ -25,18 +26,18 @@ public class EntrenamientoRepository {
     }
 
     /**
-     * Prepara la actualización de un entrenamiento guardado.
+     * Prepara la actualización de las notas de un entrenamiento guardado.
      *
      * @param entrenamientoId identificador del entrenamiento
-     * @param entrenamientoRequest datos completos con la nota actualizada
+     * @param request notas nuevas del entrenamiento
      * @return llamada que devuelve el detalle actualizado
      */
-    public Call<EntrenamientoDetalleResponse> actualizarEntrenamiento(
+    public Call<EntrenamientoDetalleResponse> actualizarNotas(
             Long entrenamientoId,
-            EntrenamientoCrearRequest entrenamientoRequest) {
-        return entrenamientoApiService.actualizarEntrenamiento(
+            EntrenamientoActualizarNotasRequest request) {
+        return entrenamientoApiService.actualizarNotas(
                 entrenamientoId,
-                entrenamientoRequest
+                request
         );
     }
 

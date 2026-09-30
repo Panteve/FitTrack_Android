@@ -6,10 +6,11 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
-import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoActualizarNotasRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoCrearRequest;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoDetalleResponse;
 import ue.edu.co.fittrackandroid.entrenamiento.modelo.EntrenamientoFotoResponse;
@@ -22,16 +23,16 @@ public interface EntrenamientoApiService {
             @Body EntrenamientoCrearRequest entrenamientoCrearRequest);
 
     /**
-     * Actualiza los datos editables de un entrenamiento guardado.
+     * Actualiza únicamente las notas de un entrenamiento guardado.
      *
      * @param entrenamientoId identificador del entrenamiento
-     * @param entrenamientoRequest datos completos del entrenamiento con la nota actualizada
+     * @param request notas nuevas del entrenamiento
      * @return llamada que devuelve el detalle actualizado
      */
-    @PUT("entrenamientos/{id}")
-    Call<EntrenamientoDetalleResponse> actualizarEntrenamiento(
+    @PATCH("entrenamientos/{id}")
+    Call<EntrenamientoDetalleResponse> actualizarNotas(
             @Path("id") Long entrenamientoId,
-            @Body EntrenamientoCrearRequest entrenamientoRequest);
+            @Body EntrenamientoActualizarNotasRequest request);
 
     /**
      * Recupera el detalle completo de un entrenamiento ya guardado, incluidas sus series.
